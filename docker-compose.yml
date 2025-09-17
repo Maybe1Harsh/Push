@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  # This is the service for your Expo frontend app
+  frontend:
+    # Use the Dockerfile we just created
+    build: .
+    # Map the container ports to your local machine
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+    # This mounts your local project folder into the container
+    # so live reloading works
+    volumes:
+      - .:/app
+    # Pass along any environment variables if needed
+    environment:
+      - https://sphfvepyjatxbzwnnvbv.supabase.co
+      - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwaGZ2ZXB5amF0eGJ6d25udmJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwOTQxMTcsImV4cCI6MjA3MjY3MDExN30.aZ87EwK3-Cvs_ADNQXdcyS25MYSPXgCJqllEbwR2aXY

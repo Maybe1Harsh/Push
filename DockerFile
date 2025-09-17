@@ -1,0 +1,24 @@
+# Start from a base image with Node.js and npm
+FROM node:18-alpine
+
+# Set the working directory inside the container
+# All subsequent commands will run from here
+WORKDIR /app
+
+# Copy the package.json and package-lock.json files
+# This is a caching step to speed up future builds
+COPY package.json ./
+
+# Install the project dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the ports that Expo uses for live reloading
+EXPOSE 8081
+EXPOSE 19000
+EXPOSE 19001
+
+# This is the command that runs when you start the container
+CMD ["npm", "run", "start"]
