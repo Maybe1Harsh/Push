@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "ayur_healthplix",
+    "slug": "ayur_healthplix",
+    "version": "1.0.0",
+    "main": "App.js",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "ayurhealthplix",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "harsh2566.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d784d516-311d-4b94-95ff-fe26a53f3050"
+      }
+    }
+  }
+}
