@@ -140,7 +140,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       alert('Failed to accept appointment.');
     } else {
       alert('Appointment accepted.');
-      fetchAppointments();
+      // Optimistically update UI
+      setAppointments(prev => prev.filter(app => app.id !== id));
     }
     setLoading(false);
   };
@@ -152,7 +153,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       alert('Failed to reject appointment.');
     } else {
       alert('Appointment rejected.');
-      fetchAppointments();
+      // Optimistically update UI
+      setAppointments(prev => prev.filter(app => app.id !== id));
     }
     setLoading(false);
   };
