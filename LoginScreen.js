@@ -19,12 +19,23 @@ export default function LoginScreen({ navigation }) {
   const [isRegister, setIsRegister] = React.useState(false);
 
   const handleLogin = async () => {
+    console.log('Login button clicked');
+    setLoading(true);
+    
+    // Simple 2-second test
+    setTimeout(() => {
+      console.log('Test complete');
+      setLoading(false);
+      setMessage('Test completed - check console');
+    }, 2000);
+    
     if (!email || !password) {
       setMessage(t.pleaseEnterEmailPassword);
       return;
     }
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    console.log('Auth result:', { data, error }); // Debug log
     setLoading(false);
     if (error) {
       setMessage(error.message);
@@ -36,16 +47,22 @@ export default function LoginScreen({ navigation }) {
       .eq('email', email)
       .single();
 
+    console.log('Profile result:', { profileData, profileError }); // Debug log
+
     if (profileError || !profileData) {
       setMessage(t.profileNotFound);
       return;
     }
 
     setMessage(t.loginSuccess);
+    
+    // Save profile to AsyncStorage for both doctor and patient
+    await AsyncStorage.setItem('profile', JSON.stringify(profileData));
+    console.log('Navigating with profile:', profileData); // Debug log
+    
     if (profileData.Role === 'doctor') {
       navigation.replace('DoctorDashboard', { profile: profileData });
     } else {
-      await AsyncStorage.setItem('profile', JSON.stringify(profileData));
       navigation.replace('Dashboard', { profile: profileData });
     }
   };

@@ -1,4 +1,3 @@
-
 // filepath: c:\Users\harsh\OneDrive\Desktop\SIH\ayur_healthplix\supabaseClient.js
 import { createClient } from '@supabase/supabase-js';
 

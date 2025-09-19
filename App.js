@@ -9,8 +9,6 @@ import DashboardScreen from './Dashboard';
 import AyurvedicRemediesScreen from './AyurvedicRemedies';
 import DoctorDashboardScreen from './DoctorDashboard';
 import PatientPrescriptionsScreen from './PatientPrescriptions';
-
-
 import PrakritiGuesserScreen from './PrakritiGuesser';
 import CalorieCounter from './CalorieCounter';
 import NearbyDieticiansScreen from './NearbyDieticiansScreen';
@@ -23,8 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddPatientScreen from './AddPatient';
 import PatientAppointmentScreen from './PatientAppointment';
 import PrescriptionPage from './PrescriptionPage';
-import { View } from 'react-native'; // Add View import for debug
-
+import { View } from 'react-native';
 
 console.log('App.js loaded');
 
@@ -39,10 +36,12 @@ export default function App() {
       try {
         const saved = await AsyncStorage.getItem('profile');
         if (saved) {
-          setStoredProfile(JSON.parse(saved));
+          const profile = JSON.parse(saved);
+          console.log('Loaded profile:', profile); // Debug log
+          setStoredProfile(profile);
         }
       } catch (e) {
-        // Error handling removed
+        console.error('Error loading profile:', e);
       } finally {
         setBootstrapping(false);
       }
@@ -68,7 +67,14 @@ export default function App() {
               <Stack.Screen name="Dashboard" component={DashboardScreen} initialParams={{ profile: storedProfile }} />
               <Stack.Screen name="Landing" component={LandingScreen} />
               <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} />
+              <Stack.Screen 
+                name="DoctorDashboard" 
+                component={DoctorDashboardScreen}
+                initialParams={{ profile: storedProfile }}
+                options={{
+                  key: storedProfile?.email || 'doctor-dashboard'
+                }}
+              />
               <Stack.Screen name="DoctorPrescriptions" component={DoctorPrescriptions} />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} initialParams={{ profile: storedProfile }} />
@@ -83,14 +89,13 @@ export default function App() {
                 component={PatientAppointmentScreen}
                 options={{ title: 'Request Appointment' }}
               />
-
+              <Stack.Screen name="PrescriptionPage" component={PrescriptionPage} />
             </Stack.Navigator>
           ) : (
             <Stack.Navigator initialRouteName="Landing">
               <Stack.Screen name="Landing" component={LandingScreen} />
               <Stack.Screen name="Login" component={LoginScreen} />
               <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} />
-              <Stack.Screen name="DoctorPrescriptions" component={DoctorPrescriptions} />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} />
               <Stack.Screen name="Dashboard" component={DashboardScreen} />
@@ -106,16 +111,6 @@ export default function App() {
                 options={{ title: 'Request Appointment' }}
               />
               <Stack.Screen name="PrescriptionPage" component={PrescriptionPage} />
-              <Stack.Screen
-                name="PanchkarmaTreatments"
-                component={PanchkarmaTreatmentsScreen}
-                options={{ title: 'Panchkarma Treatments' }}
-              />
-              <Stack.Screen
-                name="PatientPanchkarmaTreatments"
-                component={PatientPanchkarmaTreatmentsScreen}
-                options={{ title: 'My Treatments' }}
-              />
             </Stack.Navigator>
           )}
         </NavigationContainer>
@@ -123,8 +118,3 @@ export default function App() {
     </PaperProvider>
   );
 }
-
-/* 
-// The following block is removed to avoid duplicate Stack and App declarations.
-// If you need the FCM token logic, move the saveToken and useEffect logic into the main App component above.
-*/
