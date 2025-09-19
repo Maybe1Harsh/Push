@@ -1,12 +1,16 @@
 import * as React from 'react';
-import { Provider as PaperProvider, ActivityIndicator, Text } from 'react-native-paper';
+
+import { Provider as PaperProvider, ActivityIndicator } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import LandingScreen from './Landingpage';
 import DashboardScreen from './Dashboard';
 import AyurvedicRemediesScreen from './AyurvedicRemedies';
 import DoctorDashboardScreen from './DoctorDashboard';
 import PatientPrescriptionsScreen from './PatientPrescriptions';
+
+
 import PrakritiGuesserScreen from './PrakritiGuesser';
 import CalorieCounter from './CalorieCounter';
 import NearbyDieticiansScreen from './NearbyDieticiansScreen';
@@ -18,7 +22,9 @@ import CustomizeDietChart from './CustomizeDietChart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddPatientScreen from './AddPatient';
 import PatientAppointmentScreen from './PatientAppointment';
+import PrescriptionPage from './PrescriptionPage';
 import { View } from 'react-native'; // Add View import for debug
+
 
 console.log('App.js loaded');
 
@@ -27,7 +33,6 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [bootstrapping, setBootstrapping] = React.useState(true);
   const [storedProfile, setStoredProfile] = React.useState(null);
-  const [error, setError] = React.useState(null);
 
   React.useEffect(() => {
     (async () => {
@@ -37,7 +42,7 @@ export default function App() {
           setStoredProfile(JSON.parse(saved));
         }
       } catch (e) {
-        setError(e);
+        // Error handling removed
       } finally {
         setBootstrapping(false);
       }
@@ -54,26 +59,6 @@ export default function App() {
     );
   }
 
-  if (error) {
-    return (
-      <PaperProvider>
-        <LanguageProvider initial="en">
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ color: 'red', fontSize: 18 }}>App Error: {error.message}</Text>
-          </View>
-        </LanguageProvider>
-      </PaperProvider>
-    );
-  }
-
-  // Add a debug message to confirm rendering
-  // Remove this after debugging
-  // return (
-  //   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //     <Text>App.js is rendering!</Text>
-  //   </View>
-  // );
-
   return (
     <PaperProvider>
       <LanguageProvider initial="en">
@@ -88,7 +73,7 @@ export default function App() {
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} initialParams={{ profile: storedProfile }} />
               <Stack.Screen name="AyurvedicRemedies" component={AyurvedicRemediesScreen} />
-              <Stack.Screen name="PatientPrescriptions" component={PatientPrescriptionsScreen} />
+              <Stack.Screen name="PatientPrescriptions" component={PatientPrescriptionsScreen} initialParams={{ profile: storedProfile }} />
               <Stack.Screen name="PrakritiGuesser" component={PrakritiGuesserScreen} />
               <Stack.Screen name="CalorieCounter" component={CalorieCounter} />
               <Stack.Screen name="NearbyDieticiansScreen" component={NearbyDieticiansScreen} />
@@ -98,6 +83,7 @@ export default function App() {
                 component={PatientAppointmentScreen}
                 options={{ title: 'Request Appointment' }}
               />
+
             </Stack.Navigator>
           ) : (
             <Stack.Navigator initialRouteName="Landing">
@@ -114,9 +100,21 @@ export default function App() {
               <Stack.Screen name="CalorieCounter" component={CalorieCounter} />
               <Stack.Screen name="AddPatient" component={AddPatientScreen} />
               <Stack.Screen name="NearbyDieticiansScreen" component={NearbyDieticiansScreen} />
-              <Stack.Screen name="PatientAppointment"
+              <Stack.Screen
+                name="PatientAppointment"
                 component={PatientAppointmentScreen}
                 options={{ title: 'Request Appointment' }}
+              />
+              <Stack.Screen name="PrescriptionPage" component={PrescriptionPage} />
+              <Stack.Screen
+                name="PanchkarmaTreatments"
+                component={PanchkarmaTreatmentsScreen}
+                options={{ title: 'Panchkarma Treatments' }}
+              />
+              <Stack.Screen
+                name="PatientPanchkarmaTreatments"
+                component={PatientPanchkarmaTreatmentsScreen}
+                options={{ title: 'My Treatments' }}
               />
             </Stack.Navigator>
           )}
@@ -125,3 +123,8 @@ export default function App() {
     </PaperProvider>
   );
 }
+
+/* 
+// The following block is removed to avoid duplicate Stack and App declarations.
+// If you need the FCM token logic, move the saveToken and useEffect logic into the main App component above.
+*/

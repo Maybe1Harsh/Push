@@ -1,24 +1,26 @@
-# Start from a base image with Node.js and npm
+
+# Use Node.js base image
 FROM node:18-alpine
 
-# Set the working directory inside the container
-# All subsequent commands will run from here
+# Install required system dependencies
+RUN apk add --no-cache bash python3 make g++
+
+# Set the working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
-# This is a caching step to speed up future builds
-COPY package.json ./
+# Copy package.json and package-lock.json first
+COPY package*.json ./
 
-# Install the project dependencies
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of the project
 COPY . .
 
-# Expose the ports that Expo uses for live reloading
+# Expose Expo ports
 EXPOSE 8081
 EXPOSE 19000
 EXPOSE 19001
 
-# This is the command that runs when you start the container
-CMD ["npm", "run", "start"]
+# Start Expo
+CMD ["npm", "run", "start", "--", "--tunnel"]

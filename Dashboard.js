@@ -266,7 +266,10 @@ export default function DashboardScreen({ navigation, route }) {
         </Button>
         <Button
           mode="contained"
-          onPress={() => navigation.navigate('PatientPrescriptions', { profile })}
+          onPress={() => {
+            console.log('Navigating to PatientPrescriptions with profile:', profile);
+            navigation.navigate('PatientPrescriptions', { profile });
+          }}
           style={{ marginBottom: 10, backgroundColor: '#1976d2' }}
         >
           {t.dashViewPrescriptions}

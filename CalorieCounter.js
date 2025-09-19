@@ -294,9 +294,13 @@ function CalorieCounter() {
     setModalVisible(true);
   };
 
+  // Add this debug line at the top of your return
+  // If you see this text, the component is rendering
+  // If not, the error is before this point
   return (
     <PaperProvider>
       <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#f3f6fa', flexGrow: 1 }}>
+        <Text style={{ color: 'red', fontWeight: 'bold', marginBottom: 10 }}>CalorieCounter is rendering</Text>
         <View>
           <Card style={{ marginBottom: 16, borderRadius: 14, backgroundColor: '#fff', padding: 12 }}>
             <Text style={{ fontWeight: 'bold', color: '#222', marginBottom: 8 }}>Personal Info (for BMR)</Text>
