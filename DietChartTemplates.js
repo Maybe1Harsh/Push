@@ -3,68 +3,69 @@ import { ScrollView, View } from 'react-native';
 import { Text, Card, Button, Provider as PaperProvider } from 'react-native-paper';
 import { useTranslation } from './hooks/useTranslation';
 
-const dietTemplates = [
+ const dietTemplates = [
   {
     id: 1,
     name: 'Vata Balancing Diet',
     description: 'Light, warm, and nourishing foods for Vata constitution',
     meals: {
-      breakfast: 'Warm oatmeal with ghee, dates, and almonds',
-      lunch: 'Rice with dal, cooked vegetables, and warm spices',
-      dinner: 'Light soup with rice or quinoa',
-      snacks: 'Warm herbal tea, soaked nuts, dates'
+      breakfast: 'Garam doodh mein khajoor aur badam, daliya',
+      lunch: 'Moong dal khichdi ghee ke saath, paka hua sabzi, chawal',
+      dinner: 'Sabzi ka soup, chawal ya soft gehu ki roti',
+      snacks: 'Adrak wali chai, bhige hue kishmish, aam ya kele jaise meethay phal'
     },
-    guidelines: 'Eat warm, cooked foods. Avoid cold, raw foods. Include healthy fats.'
+    guidelines: 'Khaana garam aur paka hua ho. Thanda, kaccha khana na khayein. Ghee aur tel ka upyog karein.'
   },
   {
     id: 2,
     name: 'Pitta Pacifying Diet',
     description: 'Cooling and calming foods for Pitta constitution',
     meals: {
-      breakfast: 'Cooling fruits, coconut water, sweet grains',
-      lunch: 'Rice with cooling vegetables, coconut curry',
-      dinner: 'Light salad with cooling herbs',
-      snacks: 'Sweet fruits, coconut water, cooling teas'
+      breakfast: 'Tarbooj, nashpati, anaar, ya saunf ke paani ke saath phal',
+      lunch: 'Basmati chawal, moong dal, kakdi, lauki, nariyal wali sabzi',
+      dinner: 'Halka khichdi dhaniya-pudina chutney ke saath, ya thandi sabzi ka soup',
+      snacks: 'Nariyal paani, meethay phal, gulab ya pudina wali chai'
     },
-    guidelines: 'Eat cooling foods. Avoid spicy, hot foods. Include sweet tastes.'
+    guidelines: 'Thanda aur shant karne wala khaana khayein. Teekha aur mirch-masala kam karein.'
   },
   {
     id: 3,
     name: 'Kapha Reducing Diet',
     description: 'Light, warm, and stimulating foods for Kapha constitution',
     meals: {
-      breakfast: 'Light fruits, warm spices, minimal grains',
-      lunch: 'Light vegetables, legumes, warming spices',
-      dinner: 'Light soup, minimal grains',
-      snacks: 'Warm teas, light fruits, warming spices'
+      breakfast: 'Adrak wali chai shahad ke saath, seb ya nashpati jaise halkay phal',
+      lunch: 'Jau ya bajre ki roti, karela, palak, ya dal',
+      dinner: 'Sabzi ka garam soup, kali mirch aur haldi ke saath',
+      snacks: 'Bhuna chana, tulsi wali chai, anar ya seb'
     },
-    guidelines: 'Eat light, warm foods. Avoid heavy, oily foods. Include pungent tastes.'
+    guidelines: 'Halka, garam khaana khayein. Tel, dahi, aur bhari khana na khayein. Teekha aur katu swad shamil karein.'
   },
   {
     id: 4,
     name: 'General Ayurvedic Diet',
     description: 'Balanced diet suitable for all constitutions',
     meals: {
-      breakfast: 'Fresh fruits, whole grains, nuts',
-      lunch: 'Rice with vegetables, dal, salad',
-      dinner: 'Light soup, vegetables, minimal grains',
-      snacks: 'Fresh fruits, nuts, herbal teas'
+      breakfast: 'Seasonal phal (seb, angoor), bhige hue badam, cardamom wala daliya',
+      lunch: 'Chawal, dal, roti, paka hua sabzi, salad nimbu ke saath',
+      dinner: 'Halka khichdi, sabzi ka soup',
+      snacks: 'Herbal chai (adrak, saunf, tulsi), phal, bhige hue nuts'
     },
-    guidelines: 'Eat seasonal, fresh foods. Include all six tastes. Eat mindfully.'
+    guidelines: 'Hamesha taza aur seasonal khana khayein. Chhe ras (meetha, khatta, lavan, katu, tikta, kashaya) shamil karein.'
   },
   {
     id: 5,
     name: 'Detox Diet',
     description: 'Cleansing diet for body purification',
     meals: {
-      breakfast: 'Warm lemon water, light fruits',
-      lunch: 'Steamed vegetables, quinoa, herbal tea',
-      dinner: 'Light soup, minimal grains',
-      snacks: 'Herbal teas, light fruits'
+      breakfast: 'Garam nimbu paani shahad ke saath, papita ya seb',
+      lunch: 'Moong dal khichdi haldi aur jeera ke saath',
+      dinner: 'Sabzi ka saaf soup, kali mirch ke saath',
+      snacks: 'Triphala ka kadha, jeera-dhaniya-adrak ka pani, halkay phal'
     },
-    guidelines: 'Avoid processed foods. Drink plenty of water. Include cleansing herbs.'
+    guidelines: 'Packet aur bazaar ka khana na khayein. Zyada paani piyein. Safaai karne wali jadi-booti shamil karein.'
   }
 ];
+
 
 export default function DietChartTemplatesScreen({ navigation, route }) {
   const { t } = useTranslation();

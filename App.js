@@ -75,7 +75,11 @@ export default function App() {
                   key: storedProfile?.email || 'doctor-dashboard'
                 }}
               />
-              <Stack.Screen name="DoctorPrescriptions" component={DoctorPrescriptions} />
+              <Stack.Screen 
+                name="DoctorPrescriptions" 
+                component={DoctorPrescriptions}
+                initialParams={{ profile: storedProfile }}
+              />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} initialParams={{ profile: storedProfile }} />
               <Stack.Screen name="AyurvedicRemedies" component={AyurvedicRemediesScreen} />
@@ -96,6 +100,7 @@ export default function App() {
               <Stack.Screen name="Landing" component={LandingScreen} />
               <Stack.Screen name="Login" component={LoginScreen} />
               <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} />
+              <Stack.Screen name="DoctorPrescriptions" component={DoctorPrescriptions} />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} />
               <Stack.Screen name="Dashboard" component={DashboardScreen} />
