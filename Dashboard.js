@@ -322,6 +322,17 @@ export default function DashboardScreen({ navigation, route }) {
       // Clear the pending request
       setPendingApprovalRequest(null);
     }
+
+    // Always refresh the dashboard data after consent changes
+    if (accepted) {
+      // Refresh all relevant data
+      fetchPendingRequests();
+      fetchAssignedDoctor();
+      // Show success message
+      setTimeout(() => {
+        alert('✅ Success! You are now registered with the doctor and will appear in their patient list.');
+      }, 500); // Small delay to ensure UI updates
+    }
   };
 
   const handleLogout = async () => {

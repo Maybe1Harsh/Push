@@ -130,22 +130,35 @@ I hereby consent to receive Ayurvedic consultation and treatment, including asse
         }
       }
 
-      Alert.alert(
-        'Success',
-        accepted 
-          ? 'Consent accepted and signed successfully! You have been added to the doctor\'s patient list.' 
-          : 'Consent declined and recorded.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Automatically close modal and trigger callback
-              onConsentStatusChange?.(accepted);
-              // Modal will be closed by the parent component
+      // Show a brief success message and automatically proceed
+      if (accepted) {
+        // Close modal and trigger callback immediately for a smoother experience
+        onClose?.(); // Close the modal first
+        onConsentStatusChange?.(accepted); // Then trigger the callback to refresh parent
+        
+        // Show success message after modal is closed
+        setTimeout(() => {
+          Alert.alert(
+            'Success! ✅',
+            'Consent accepted and signed successfully!\n\nYou have been added to the doctor\'s patient list and they can now see you in their dashboard.',
+            [{ text: 'Great!', style: 'default' }]
+          );
+        }, 300); // Small delay to let modal close first
+      } else {
+        Alert.alert(
+          'Declined',
+          'Consent declined and recorded.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                onClose?.(); // Close the modal
+                onConsentStatusChange?.(accepted); // Trigger callback
+              }
             }
-          }
-        ]
-      );
+          ]
+        );
+      }
 
     } catch (err) {
       console.error('Unexpected error saving consent:', err);
