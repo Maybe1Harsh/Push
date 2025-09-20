@@ -20,7 +20,7 @@ import CustomizeDietChart from './CustomizeDietChart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddPatientScreen from './AddPatient';
 import PatientAppointmentScreen from './PatientAppointment';
-import PatientAppointmentsViewScreen from './PatientAppointmentsView';
+import PatientAppointmentViewScreen from './PatientAppointmentView';
 import PrescriptionPage from './PrescriptionPage';
 import PanchkarmaScreen from './PanchkarmaScreen';
 import { View } from 'react-native';
@@ -102,7 +102,7 @@ export default function App() {
               />
               <Stack.Screen
                 name="PatientAppointmentsView"
-                component={PatientAppointmentsViewScreen}
+                component={PatientAppointmentViewScreen}
                 options={{ title: 'Your Appointments', headerShown: false }}
               />
               <Stack.Screen name="PrescriptionPage" component={PrescriptionPage} />
