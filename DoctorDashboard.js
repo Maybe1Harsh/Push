@@ -180,7 +180,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       contentContainerStyle={{
         flexGrow: 1,
         padding: 20,
-        backgroundColor: "#f9fafc",
+        backgroundColor: "#01050fff",
       }}
     >
       {/* Header */}
@@ -285,12 +285,12 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 }}
               >
                 <Card.Content>
-                  <Text style={{ fontWeight: "bold" }}>
+                  <Text style={{ fontWeight: "bold", color: "#000000" }}>
                     {patient.name}
                   </Text>
-                  <Text>{patient.email}</Text>
-                  <Text>Age: {patient.age}</Text>
-                  {patient.phone && <Text>Phone: {patient.phone}</Text>}
+                  <Text style={{ color: "#000000" }}>{patient.email}</Text>
+                  <Text style={{ color: "#000000" }}>Age: {patient.age}</Text>
+                  {patient.phone && <Text style={{ color: "#000000" }}>Phone: {patient.phone}</Text>}
                 </Card.Content>
               </Card>
             ))
