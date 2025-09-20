@@ -51,6 +51,21 @@ export default function App() {
     })();
   }, []);
 
+  // Function to determine initial route based on user role
+  const getInitialRouteName = (profile) => {
+    if (!profile) return 'Landing';
+    
+    console.log('Determining route for profile:', profile);
+    
+    // Check if user is a doctor based on Role field in profile
+    const isDoctor = profile.Role === 'doctor';
+    
+    console.log('Profile Role:', profile.Role);
+    console.log('Is doctor?', isDoctor);
+    
+    return isDoctor ? 'DoctorDashboard' : 'Dashboard';
+  };
+
   if (bootstrapping) {
     return (
       <PaperProvider>
@@ -66,7 +81,7 @@ export default function App() {
       <LanguageProvider initial="en">
         <NavigationContainer>
           {storedProfile ? (
-            <Stack.Navigator initialRouteName="Dashboard">
+            <Stack.Navigator initialRouteName={getInitialRouteName(storedProfile)}>
               <Stack.Screen name="Dashboard" component={DashboardScreen} initialParams={{ profile: storedProfile }} />
               <Stack.Screen name="Landing" component={LandingScreen} />
               <Stack.Screen name="Login" component={LoginScreen} />

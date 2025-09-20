@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, View, Dimensions } from "react-native";
 import { Text, Card, Button, Divider, TextInput, Modal, Portal, Provider as PaperProvider } from "react-native-paper";
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from "./supabaseClient";
 
 export default function DoctorDashboardScreen({ route, navigation }) {
@@ -447,6 +448,18 @@ export default function DoctorDashboardScreen({ route, navigation }) {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      await AsyncStorage.removeItem('profile');
+      navigation.reset({ index: 0, routes: [{ name: 'Landing' }] });
+    } catch (e) {
+      console.error('Logout error:', e);
+      // Still navigate even if there's an error
+      navigation.reset({ index: 0, routes: [{ name: 'Landing' }] });
+    }
+  };
+
   return (
     <PaperProvider>
       <ScrollView
@@ -470,6 +483,23 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           </Text>
         </Card.Content>
       </Card>
+
+      {/* Logout Button */}
+      <View style={{ alignItems: 'flex-end', marginBottom: 15 }}>
+        <Button 
+          mode="outlined" 
+          onPress={handleLogout} 
+          style={{ 
+            borderColor: '#d32f2f',
+            backgroundColor: 'white'
+          }}
+          textColor="#d32f2f"
+          icon="logout"
+          compact
+        >
+          Logout
+        </Button>
+      </View>
 
       {/* Action Buttons */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
