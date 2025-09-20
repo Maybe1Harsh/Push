@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { Text, Card, Button, TextInput, Modal, Portal, Provider as PaperProvider, Divider, DataTable, Chip, FAB, Menu } from 'react-native-paper';
 import { supabase } from './supabaseClient';
 
@@ -16,12 +16,25 @@ export default function DoctorScheduleScreen({ route, navigation }) {
   console.log('Doctor name:', doctorName);
   console.log('Email is valid:', !!doctorEmail && doctorEmail.includes('@'));
 
-  // Alert if no doctor email found
+  // Alert if no doctor email found and return early
   if (!doctorEmail || !doctorEmail.includes('@')) {
     console.log('❌ CRITICAL: No valid doctor email found!');
-    Alert.alert('Authentication Error', 
-      `No valid doctor email found.\n\nReceived: "${doctorEmail}"\n\nPlease log in again.`,
-      [{ text: 'Go Back', onPress: () => navigation.goBack() }]
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa', padding: 20 }}>
+        <Text style={{ color: '#d32f2f', fontSize: 18, textAlign: 'center', marginBottom: 20 }}>
+          Authentication Error: No valid doctor email found.
+        </Text>
+        <Text style={{ color: '#666', fontSize: 14, textAlign: 'center', marginBottom: 20 }}>
+          Received: "{doctorEmail}"
+        </Text>
+        <Button 
+          mode="contained" 
+          onPress={() => navigation.goBack()}
+          style={{ backgroundColor: '#1976d2' }}
+        >
+          Go Back
+        </Button>
+      </View>
     );
   }
 
@@ -50,6 +63,8 @@ export default function DoctorScheduleScreen({ route, navigation }) {
   const [newAppointmentTime, setNewAppointmentTime] = useState('');
   const [newAppointmentPatient, setNewAppointmentPatient] = useState('');
   const [newAppointmentNotes, setNewAppointmentNotes] = useState('');
+  const [showAppointmentDateModal, setShowAppointmentDateModal] = useState(false);
+  const [showAppointmentTimeModal, setShowAppointmentTimeModal] = useState(false);
 
   // Helper function to generate time options
   const generateTimeOptions = () => {
@@ -921,22 +936,42 @@ export default function DoctorScheduleScreen({ route, navigation }) {
             <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32' }}>
               Add Appointment
             </Text>
-            <TextInput
-              label="Date"
-              value={newAppointmentDate}
-              onChangeText={setNewAppointmentDate}
-              placeholder="YYYY-MM-DD"
+            
+            {/* Date Selection */}
+            <TouchableOpacity 
+              onPress={() => {
+                console.log('Date picker clicked!');
+                setShowAppointmentDateModal(true);
+              }}
               style={{ marginBottom: 12 }}
-              mode="outlined"
-            />
-            <TextInput
-              label="Time"
-              value={newAppointmentTime}
-              onChangeText={setNewAppointmentTime}
-              placeholder="14:30"
+            >
+              <TextInput
+                label="Date"
+                value={newAppointmentDate || 'Select date'}
+                editable={false}
+                right={<TextInput.Icon icon="calendar" />}
+                style={{ backgroundColor: '#f5f5f5' }}
+                mode="outlined"
+              />
+            </TouchableOpacity>
+
+            {/* Time Selection */}
+            <TouchableOpacity 
+              onPress={() => {
+                console.log('Time picker clicked!');
+                setShowAppointmentTimeModal(true);
+              }}
               style={{ marginBottom: 12 }}
-              mode="outlined"
-            />
+            >
+              <TextInput
+                label="Time"
+                value={newAppointmentTime || 'Select time'}
+                editable={false}
+                right={<TextInput.Icon icon="clock-outline" />}
+                style={{ backgroundColor: '#f5f5f5' }}
+                mode="outlined"
+              />
+            </TouchableOpacity>
             <TextInput
               label="Patient Email"
               value={newAppointmentPatient}
@@ -972,6 +1007,100 @@ export default function DoctorScheduleScreen({ route, navigation }) {
                 Add Appointment
               </Button>
             </View>
+          </Modal>
+        </Portal>
+
+        {/* Date Selection Modal for Add Appointment */}
+        <Portal>
+          <Modal 
+            visible={showAppointmentDateModal} 
+            onDismiss={() => setShowAppointmentDateModal(false)} 
+            contentContainerStyle={{ backgroundColor: 'white', padding: 24, margin: 24, borderRadius: 16, maxHeight: '80%' }}
+          >
+            <Text variant="titleLarge" style={{ marginBottom: 16, color: '#1976d2', textAlign: 'center' }}>
+              Select Date
+            </Text>
+            <ScrollView style={{ maxHeight: 400 }}>
+              {generateDateOptions().map((date) => (
+                <TouchableOpacity
+                  key={date}
+                  onPress={() => {
+                    console.log('Date selected:', date);
+                    setNewAppointmentDate(date);
+                    setShowAppointmentDateModal(false);
+                  }}
+                  style={{
+                    padding: 16,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#e0e0e0',
+                    backgroundColor: newAppointmentDate === date ? '#e3f2fd' : 'transparent'
+                  }}
+                >
+                  <Text style={{ 
+                    fontSize: 16,
+                    color: newAppointmentDate === date ? '#1976d2' : '#333',
+                    fontWeight: newAppointmentDate === date ? 'bold' : 'normal',
+                    textAlign: 'center'
+                  }}>
+                    {date}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <Button 
+              mode="outlined" 
+              onPress={() => setShowAppointmentDateModal(false)}
+              style={{ marginTop: 16 }}
+            >
+              Cancel
+            </Button>
+          </Modal>
+        </Portal>
+
+        {/* Time Selection Modal for Add Appointment */}
+        <Portal>
+          <Modal 
+            visible={showAppointmentTimeModal} 
+            onDismiss={() => setShowAppointmentTimeModal(false)} 
+            contentContainerStyle={{ backgroundColor: 'white', padding: 24, margin: 24, borderRadius: 16, maxHeight: '80%' }}
+          >
+            <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32', textAlign: 'center' }}>
+              Select Time
+            </Text>
+            <ScrollView style={{ maxHeight: 400 }}>
+              {generateTimeOptions().map((time) => (
+                <TouchableOpacity
+                  key={time}
+                  onPress={() => {
+                    console.log('Time selected:', time);
+                    setNewAppointmentTime(time);
+                    setShowAppointmentTimeModal(false);
+                  }}
+                  style={{
+                    padding: 16,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#e0e0e0',
+                    backgroundColor: newAppointmentTime === time ? '#e8f5e8' : 'transparent'
+                  }}
+                >
+                  <Text style={{ 
+                    fontSize: 16,
+                    color: newAppointmentTime === time ? '#2e7d32' : '#333',
+                    fontWeight: newAppointmentTime === time ? 'bold' : 'normal',
+                    textAlign: 'center'
+                  }}>
+                    {time}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <Button 
+              mode="outlined" 
+              onPress={() => setShowAppointmentTimeModal(false)}
+              style={{ marginTop: 16 }}
+            >
+              Cancel
+            </Button>
           </Modal>
         </Portal>
       </ScrollView>
