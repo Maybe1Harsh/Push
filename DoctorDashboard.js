@@ -6,7 +6,7 @@ import { supabase } from "./supabaseClient";
 
 export default function DoctorDashboardScreen({ route, navigation }) {
   const doctorEmail = route.params?.profile?.email || "";
-  const doctorName = route.params?.profile?.name || "";
+  const doctorName = route.params?.profile?.name || "Doctor";
 
   if (!doctorEmail) {
     return (
@@ -17,29 +17,78 @@ export default function DoctorDashboardScreen({ route, navigation }) {
   }
 
   const [patients, setPatients] = useState([]);
-  const [schedule, setSchedule] = useState([]);
+  const [todaySchedule, setTodaySchedule] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch patients (all patients or based on your business logic)
-  const fetchPatients = useCallback(() => {
-    // Since there's no doctor_email field, fetch all patients with Role 'patient'
-    // OR modify this based on your actual relationship logic
-    supabase
-      .from("patients")
-      .select("*")
-      .eq("Role", "patient") // Get all patients, not filtering by doctor_email
-      .then(({ data, error }) => {
-        if (error) {
-          console.error('Error fetching patients:', error);
-        } else {
-          console.log('Fetched patients:', data);
-          setPatients(data || []);
-        }
-      });
-  }, []);
+  // Fetch patients assigned to this doctor
+  const fetchPatients = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("doctor_email", doctorEmail);
 
-  useFocusEffect(fetchPatients);
+      if (error) {
+        console.error('Error fetching patients:', error);
+      } else {
+        console.log('Fetched patients:', data);
+        setPatients(data || []);
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching patients:', err);
+    }
+  }, [doctorEmail]);
+
+  // Fetch today's schedule
+  const fetchTodaySchedule = useCallback(async () => {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const { data, error } = await supabase
+        .from("doctor_schedule")
+        .select("*")
+        .eq("doctor_email", doctorEmail)
+        .eq("date", today)
+        .order('start_time', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching today schedule:', error);
+      } else {
+        setTodaySchedule(data || []);
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching schedule:', err);
+    }
+  }, [doctorEmail]);
+
+  // Fetch pending appointments
+  const fetchAppointments = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('doctor_email', doctorEmail)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(5); // Show only latest 5
+
+      if (error) {
+        console.error('Error fetching appointments:', error);
+      } else {
+        setAppointments(data || []);
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching appointments:', err);
+    }
+  }, [doctorEmail]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPatients();
+      fetchTodaySchedule();
+      fetchAppointments();
+    }, [fetchPatients, fetchTodaySchedule, fetchAppointments])
+  );
 
   // Remove the real-time subscription that filters by doctor_email since that field doesn't exist
   React.useEffect(() => {
@@ -90,43 +139,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
     }
   }, [doctorEmail]);
 
-  // Fetch today's schedule (only if schedule table exists)
-  useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    supabase
-      .from("schedule")
-      .select("*")
-      .eq("doctor_email", doctorEmail)
-      .eq("date", today)
-      .then(({ data, error }) => {
-        if (error) {
-          console.error('Error fetching schedule:', error);
-        } else {
-          setSchedule(data || []);
-        }
-      });
-  }, [doctorEmail]);
-
-  // Fetch pending appointment requests (only if appointments table exists)
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      const { data, error } = await supabase
-        .from('appointments')
-        .select('*')
-        .eq('doctor_email', doctorEmail)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error fetching appointments:', error);
-      } else {
-        setAppointments(data || []);
-      }
-    };
-
-    if (doctorEmail) fetchAppointments();
-  }, [doctorEmail]);
-
   const handleAccept = async (id) => {
     setLoading(true);
     const { error } = await supabase.from('appointments').update({ status: 'accepted' }).eq('id', id);
@@ -134,8 +146,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       alert('Failed to accept appointment.');
     } else {
       alert('Appointment accepted.');
-      // Optimistically update UI
-      setAppointments(prev => prev.filter(app => app.id !== id));
+      fetchAppointments(); // Refresh appointments
     }
     setLoading(false);
   };
@@ -147,10 +158,21 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       alert('Failed to reject appointment.');
     } else {
       alert('Appointment rejected.');
-      // Optimistically update UI
-      setAppointments(prev => prev.filter(app => app.id !== id));
+      fetchAppointments(); // Refresh appointments
     }
     setLoading(false);
+  };
+
+  const formatTime = (timeString) => {
+    try {
+      return new Date(`2000-01-01 ${timeString}`).toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (e) {
+      return timeString;
+    }
   };
 
   return (
@@ -250,7 +272,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   </Text>
                   <Text>{patient.email}</Text>
                   <Text>Age: {patient.age}</Text>
-                  <Text>Role: {patient.Role}</Text>
+                  {patient.phone && <Text>Phone: {patient.phone}</Text>}
                 </Card.Content>
               </Card>
             ))
@@ -258,31 +280,163 @@ export default function DoctorDashboardScreen({ route, navigation }) {
         </Card.Content>
       </Card>
 
-      {/* Schedule Section */}
+      {/* Today's Schedule Section */}
       <Card style={{ marginBottom: 20, borderRadius: 12 }}>
         <Card.Content>
-          <Text
-            variant="titleMedium"
-            style={{ fontWeight: "bold", marginBottom: 10 }}
-          >
-            📅 Today's Schedule
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "bold" }}
+            >
+              📅 Today's Schedule
+            </Text>
+            <Button
+              mode="outlined"
+              onPress={() => {
+                console.log('Navigating to DoctorSchedule with params:', route.params);
+                navigation.navigate("DoctorSchedule", { 
+                  profile: route.params?.profile,
+                  doctorEmail: doctorEmail,
+                  doctorName: doctorName
+                });
+              }}
+              compact
+            >
+              Manage Schedule
+            </Button>
+          </View>
           <Divider style={{ marginBottom: 10 }} />
-          <Text>Schedule feature coming soon...</Text>
+          {todaySchedule.length === 0 ? (
+            <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+              <Text style={{ color: '#666', marginBottom: 12 }}>No schedule set for today.</Text>
+              <Button
+                mode="contained"
+                onPress={() => {
+                  console.log('Navigating to DoctorSchedule with params:', route.params);
+                  navigation.navigate("DoctorSchedule", { 
+                    profile: route.params?.profile,
+                    doctorEmail: doctorEmail,
+                    doctorName: doctorName
+                  });
+                }}
+                style={{ backgroundColor: '#1976d2' }}
+              >
+                Add Schedule
+              </Button>
+            </View>
+          ) : (
+            todaySchedule.map((slot) => (
+              <Card
+                key={slot.id}
+                style={{
+                  marginBottom: 8,
+                  backgroundColor: slot.status === 'available' ? '#e8f5e8' : '#fff3e0',
+                  borderRadius: 8
+                }}
+              >
+                <Card.Content style={{ paddingVertical: 12 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View>
+                      <Text style={{ fontWeight: 'bold' }}>
+                        {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                      </Text>
+                      {slot.break_start && (
+                        <Text style={{ color: '#666', fontSize: 12 }}>
+                          Break: {formatTime(slot.break_start)} - {formatTime(slot.break_end)}
+                        </Text>
+                      )}
+                    </View>
+                    <Text style={{ 
+                      color: slot.status === 'available' ? '#2e7d32' : '#f57c00',
+                      fontWeight: 'bold',
+                      textTransform: 'capitalize'
+                    }}>
+                      {slot.status}
+                    </Text>
+                  </View>
+                </Card.Content>
+              </Card>
+            ))
+          )}
         </Card.Content>
       </Card>
 
       {/* Appointment Requests Section */}
       <Card style={{ marginBottom: 20, borderRadius: 12 }}>
         <Card.Content>
-          <Text
-            variant="titleMedium"
-            style={{ fontWeight: "bold", marginBottom: 10 }}
-          >
-            📋 Appointment Requests
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "bold" }}
+            >
+              📋 Appointment Requests ({appointments.length})
+            </Text>
+            <Button
+              mode="outlined"
+              onPress={() => {
+                console.log('Navigating to DoctorSchedule with params:', route.params);
+                navigation.navigate("DoctorSchedule", { 
+                  profile: route.params?.profile,
+                  doctorEmail: doctorEmail,
+                  doctorName: doctorName
+                });
+              }}
+              compact
+            >
+              View All
+            </Button>
+          </View>
           <Divider style={{ marginBottom: 10 }} />
-          <Text>No appointment system configured yet.</Text>
+          {appointments.length === 0 ? (
+            <Text style={{ textAlign: 'center', color: '#666', paddingVertical: 16 }}>
+              No pending appointment requests.
+            </Text>
+          ) : (
+            appointments.map((app) => (
+              <Card
+                key={app.id}
+                style={{
+                  marginBottom: 12,
+                  backgroundColor: '#fff3e0',
+                  borderRadius: 8
+                }}
+              >
+                <Card.Content>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
+                    Patient: {app.patient_email}
+                  </Text>
+                  <Text style={{ color: '#666', marginBottom: 4 }}>
+                    Requested: {new Date(app.requested_time).toLocaleString('en-IN')}
+                  </Text>
+                  {app.notes && (
+                    <Text style={{ color: '#666', fontStyle: 'italic', marginBottom: 8 }}>
+                      Notes: {app.notes}
+                    </Text>
+                  )}
+                </Card.Content>
+                <Card.Actions>
+                  <Button 
+                    mode="contained" 
+                    onPress={() => handleAccept(app.id)}
+                    style={{ backgroundColor: '#4caf50', marginRight: 8 }}
+                    loading={loading}
+                    compact
+                  >
+                    Accept
+                  </Button>
+                  <Button 
+                    mode="outlined" 
+                    onPress={() => handleReject(app.id)}
+                    textColor="#f44336"
+                    loading={loading}
+                    compact
+                  >
+                    Reject
+                  </Button>
+                </Card.Actions>
+              </Card>
+            ))
+          )}
         </Card.Content>
       </Card>
     </ScrollView>
