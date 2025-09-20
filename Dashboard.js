@@ -223,6 +223,16 @@ export default function DashboardScreen({ navigation, route }) {
 
   return (
     <>
+      {!profile ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#ff0000' }}>
+            Error: No profile data found
+          </Text>
+          <Button mode="contained" onPress={() => navigation.navigate('Landing')}>
+            Go to Landing Page
+          </Button>
+        </View>
+      ) : (
       <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', padding: 20, backgroundColor: '#f3f6fa' }}>
         <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#2e7d32' }}>
           {profile?.name ? t.dashWelcomeName.replace('{name}', profile.name) : t.dashWelcome}
@@ -358,6 +368,7 @@ export default function DashboardScreen({ navigation, route }) {
           </Card.Actions>
         </Card>
       </ScrollView>
+      )}
     </>
   );
 }
