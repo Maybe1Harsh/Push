@@ -15,6 +15,7 @@ import NearbyDieticiansScreen from './NearbyDieticiansScreen';
 import { LanguageProvider } from './context/LanguageContext';
 import LoginScreen from './LoginScreen';
 import DoctorPrescriptions from './DoctorPrescriptions';
+import DoctorSchedule from './DoctorSchedule';
 import DietChartTemplates from './DietChartTemplates';
 import CustomizeDietChart from './CustomizeDietChart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -82,6 +83,12 @@ export default function App() {
                 component={DoctorPrescriptions}
                 initialParams={{ profile: storedProfile }}
               />
+              <Stack.Screen 
+                name="DoctorSchedule" 
+                component={DoctorSchedule}
+                initialParams={{ profile: storedProfile }}
+                options={{ title: 'Manage Schedule' }}
+              />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} initialParams={{ profile: storedProfile }} />
               <Stack.Screen 
@@ -113,6 +120,11 @@ export default function App() {
               <Stack.Screen name="Login" component={LoginScreen} />
               <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} />
               <Stack.Screen name="DoctorPrescriptions" component={DoctorPrescriptions} />
+              <Stack.Screen 
+                name="DoctorSchedule" 
+                component={DoctorSchedule}
+                options={{ title: 'Manage Schedule' }}
+              />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} />
               <Stack.Screen 

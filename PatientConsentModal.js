@@ -49,7 +49,7 @@ I hereby consent to receive Ayurvedic consultation and treatment, including asse
     
     try {
       // Save consent response to database
-      const { data, error } = await supabase
+      const { data: consentData, error: consentError } = await supabase
         .from('patient_consent')
         .insert([
           {
@@ -63,10 +63,71 @@ I hereby consent to receive Ayurvedic consultation and treatment, including asse
           }
         ]);
 
-      if (error) {
-        console.error('Error saving consent:', error);
+      if (consentError) {
+        console.error('Error saving consent:', consentError);
         Alert.alert('Error', 'Failed to save consent. Please try again.');
         return;
+      }
+
+      // If consent is accepted, add patient to doctor's patients list
+      if (accepted) {
+        // First check if patient is already in the doctor's list
+        const { data: existingPatient, error: checkError } = await supabase
+          .from('patients')
+          .select('*')
+          .eq('email', patientProfile.email)
+          .eq('doctor_email', assignedDoctor.email)
+          .single();
+
+        if (checkError && checkError.code !== 'PGRST116') { // PGRST116 means no rows returned
+          console.error('Error checking existing patient:', checkError);
+          Alert.alert('Error', 'Failed to verify patient status. Please try again.');
+          return;
+        }
+
+        // Only add if patient doesn't already exist in doctor's list
+        if (!existingPatient) {
+          const { error: insertError } = await supabase
+            .from('patients')
+            .insert([
+              {
+                name: patientProfile.name,
+                email: patientProfile.email,
+                doctor_email: assignedDoctor.email,
+                age: patientProfile.age || 0, // Default age if not provided
+              },
+            ]);
+
+          if (insertError) {
+            console.error('Error adding patient to doctor list:', insertError);
+            Alert.alert('Error', 'Failed to add you to doctor\'s patient list. Please try again.');
+            return;
+          }
+        }
+
+        // Update any pending request status to accepted
+        const { error: updateRequestError } = await supabase
+          .from('patient_requests')
+          .update({ status: 'accepted' })
+          .eq('patient_email', patientProfile.email)
+          .eq('doctor_email', assignedDoctor.email);
+
+        if (updateRequestError) {
+          console.error('Error updating request status:', updateRequestError);
+          // Don't fail the whole process for this, just log it
+        }
+      } else {
+        // If consent is declined, update any pending request status
+        const { error: updateRequestError } = await supabase
+          .from('patient_requests')
+          .update({ status: 'declined' })
+          .eq('patient_email', patientProfile.email)
+          .eq('doctor_email', assignedDoctor.email);
+
+        if (updateRequestError) {
+          console.error('Error updating request status:', updateRequestError);
+          // Don't fail the whole process for this, just log it
+        }
       }
 
       Alert.alert(
