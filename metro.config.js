@@ -10,4 +10,8 @@ config.transformer.asyncRequireModulePath = require.resolve(
 // Ensure async import support
 config.resolver.unstable_enablePackageExports = true;
 
+// Fix for Supabase on web
+config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
+config.resolver.platforms = ['ios', 'android', 'native', 'web'];
+
 module.exports = config;

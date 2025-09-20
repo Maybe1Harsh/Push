@@ -21,6 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddPatientScreen from './AddPatient';
 import PatientAppointmentScreen from './PatientAppointment';
 import PrescriptionPage from './PrescriptionPage';
+import PanchkarmaScreen from './PanchkarmaScreen';
 import { View } from 'react-native';
 
 console.log('App.js loaded');
@@ -82,6 +83,11 @@ export default function App() {
               />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} initialParams={{ profile: storedProfile }} />
+              <Stack.Screen 
+                name="PanchkarmaScreen" 
+                component={PanchkarmaScreen} 
+                options={{ title: 'Panchkarma Treatments' }}
+              />
               <Stack.Screen name="AyurvedicRemedies" component={AyurvedicRemediesScreen} />
               <Stack.Screen name="PatientPrescriptions" component={PatientPrescriptionsScreen} initialParams={{ profile: storedProfile }} />
               <Stack.Screen name="PrakritiGuesser" component={PrakritiGuesserScreen} />
@@ -103,6 +109,11 @@ export default function App() {
               <Stack.Screen name="DoctorPrescriptions" component={DoctorPrescriptions} />
               <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
               <Stack.Screen name="CustomizeDietChart" component={CustomizeDietChart} />
+              <Stack.Screen 
+                name="PanchkarmaScreen" 
+                component={PanchkarmaScreen} 
+                options={{ title: 'Panchkarma Treatments' }}
+              />
               <Stack.Screen name="Dashboard" component={DashboardScreen} />
               <Stack.Screen name="AyurvedicRemedies" component={AyurvedicRemediesScreen} />
               <Stack.Screen name="PatientPrescriptions" component={PatientPrescriptionsScreen} />

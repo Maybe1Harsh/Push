@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, RefreshControl } from 'react-native';
-import { Card, Text, Divider, Button, ActivityIndicator, Chip } from 'react-native-paper';
+import { Card, Text, Divider, Button, ActivityIndicator, Chip, SegmentedButtons } from 'react-native-paper';
 import { supabase } from './supabaseClient';
 
 export default function PatientPrescriptions({ route }) {
@@ -13,6 +13,8 @@ export default function PatientPrescriptions({ route }) {
   const patientName = patientProfile.name || 'Patient';
 
   const [prescriptions, setPrescriptions] = useState([]);
+  const [panchkarmaPrescriptions, setPanchkarmaPrescriptions] = useState([]);
+  const [activeTab, setActiveTab] = useState('medicines');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -51,13 +53,39 @@ export default function PatientPrescriptions({ route }) {
     }
   };
 
+  const fetchPanchkarmaPrescriptions = async () => {
+    if (!patientEmail) {
+      return;
+    }
+
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('panchkarma_prescriptions')
+        .select('*')
+        .eq('patient_email', patientEmail)
+        .order('created_at', { ascending: false });
+
+      if (fetchError) {
+        console.error('Error fetching Panchkarma prescriptions:', fetchError);
+        setPanchkarmaPrescriptions([]);
+      } else {
+        setPanchkarmaPrescriptions(data || []);
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching Panchkarma:', err);
+      setPanchkarmaPrescriptions([]);
+    }
+  };
+
   useEffect(() => {
     fetchPrescriptions();
+    fetchPanchkarmaPrescriptions();
   }, [patientEmail]);
 
   const onRefresh = () => {
     setRefreshing(true);
     fetchPrescriptions();
+    fetchPanchkarmaPrescriptions();
   };
 
   const formatDate = (dateString) => {
@@ -131,6 +159,56 @@ export default function PatientPrescriptions({ route }) {
     }
     
     return prescriptionData;
+  };
+
+  const renderPanchkarmaTreatments = (treatments) => {
+    if (!treatments) return null;
+    
+    let treatmentArray;
+    if (typeof treatments === 'string') {
+      try {
+        treatmentArray = JSON.parse(treatments);
+      } catch (e) {
+        return <Text style={{ marginLeft: 8, color: '#666' }}>Unable to parse treatments</Text>;
+      }
+    } else {
+      treatmentArray = treatments;
+    }
+
+    if (!Array.isArray(treatmentArray)) return null;
+
+    return treatmentArray.map((treatment, index) => (
+      <Card key={index} style={{ marginLeft: 8, marginBottom: 8, backgroundColor: '#f0f8f0' }}>
+        <Card.Content style={{ paddingVertical: 12 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#2e7d32' }}>
+              {treatment.name}
+            </Text>
+            <Chip size="small" style={{ backgroundColor: '#c8e6c9' }}>
+              {treatment.category}
+            </Chip>
+          </View>
+          <Text style={{ color: '#666', marginBottom: 4, lineHeight: 18 }}>
+            {treatment.description}
+          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+            <Text style={{ color: '#1976d2', fontWeight: '500' }}>
+              ⏱️ Duration: {treatment.duration}
+            </Text>
+          </View>
+          {treatment.benefits && (
+            <Text style={{ color: '#388e3c', marginTop: 4, fontSize: 12 }}>
+              Benefits: {treatment.benefits}
+            </Text>
+          )}
+          {treatment.precautions && (
+            <Text style={{ color: '#f57c00', marginTop: 4, fontSize: 12 }}>
+              ⚠️ Precautions: {treatment.precautions}
+            </Text>
+          )}
+        </Card.Content>
+      </Card>
+    ));
   };
 
   const renderAyurvedicAssessment = (prescData) => {
@@ -292,6 +370,25 @@ export default function PatientPrescriptions({ route }) {
         </Card.Content>
       </Card>
 
+      {/* Tab Navigation */}
+      <SegmentedButtons
+        value={activeTab}
+        onValueChange={setActiveTab}
+        buttons={[
+          {
+            value: 'medicines',
+            label: 'Medicines',
+            icon: 'pill',
+          },
+          {
+            value: 'panchkarma',
+            label: 'Panchkarma',
+            icon: 'leaf',
+          },
+        ]}
+        style={{ marginBottom: 16 }}
+      />
+
       {/* Error Card */}
       {error ? (
         <Card style={{ marginBottom: 16, borderRadius: 12, backgroundColor: '#ffebee' }}>
@@ -305,78 +402,156 @@ export default function PatientPrescriptions({ route }) {
         </Card>
       ) : null}
 
-      {/* Prescriptions */}
-      {prescriptions.length === 0 ? (
-        <Card style={{ borderRadius: 12 }}>
-          <Card.Content style={{ alignItems: 'center', padding: 32 }}>
-            <Text style={{ fontSize: 18, color: '#666', textAlign: 'center', marginBottom: 8 }}>
-              No prescriptions found
-            </Text>
-            <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 16 }}>
-              Your doctor hasn't sent any prescriptions yet.
-            </Text>
-            <Button mode="contained" onPress={onRefresh} style={{ backgroundColor: '#4caf50' }}>
-              Refresh
-            </Button>
-          </Card.Content>
-        </Card>
-      ) : (
-        prescriptions.map((presc, idx) => {
-          const prescData = parsePrescriptionData(presc.prescription_data);
-          
-          return (
-            <Card key={presc.id || idx} style={{ marginBottom: 16, borderRadius: 12, elevation: 3 }}>
-              <Card.Content>
-                {/* Header with Doctor and Date */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <View>
-                    <Text style={{ fontWeight: 'bold', fontSize: 18, color: '#2e7d32' }}>
-                      Dr. {presc.doctor_name || 'Unknown Doctor'}
-                    </Text>
-                    <Text style={{ color: '#666', fontSize: 14, marginTop: 2 }}>
-                      Ayurvedic Consultation
-                    </Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
-                      {formatDate(presc.created_at)}
-                    </Text>
-                  </View>
-                </View>
-                
-                <Divider style={{ marginVertical: 8, backgroundColor: '#e0e0e0' }} />
-                
-                {/* Medicines Section */}
-                <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#1976d2', fontSize: 16 }}>
-                  Prescribed Medicines:
+      {/* Prescriptions - Medicines Tab */}
+      {activeTab === 'medicines' && (
+        <>
+          {prescriptions.length === 0 ? (
+            <Card style={{ borderRadius: 12 }}>
+              <Card.Content style={{ alignItems: 'center', padding: 32 }}>
+                <Text style={{ fontSize: 18, color: '#666', textAlign: 'center', marginBottom: 8 }}>
+                  No medicine prescriptions found
                 </Text>
-                {renderMedicines(presc.medicines)}
-                
-                {/* Additional Advice */}
-                {presc.advice && (
-                  <>
-                    <Divider style={{ marginVertical: 12 }} />
-                    <Text style={{ fontWeight: 'bold', marginBottom: 4, color: '#1976d2', fontSize: 16 }}>
-                      Additional Instructions:
-                    </Text>
-                    <Text style={{ marginLeft: 8, color: '#666', lineHeight: 20, fontStyle: 'italic' }}>
-                      {presc.advice}
-                    </Text>
-                  </>
-                )}
-
-                {/* Ayurvedic Assessment Details */}
-                {renderAyurvedicAssessment(prescData)}
-
-                {/* Footer */}
-                <Divider style={{ marginVertical: 12 }} />
-                <Text style={{ fontSize: 12, color: '#999', textAlign: 'center', fontStyle: 'italic' }}>
-                  Prescription ID: {presc.id} • Keep this for your records
+                <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 16 }}>
+                  Your doctor hasn't sent any medicine prescriptions yet.
                 </Text>
+                <Button mode="contained" onPress={onRefresh} style={{ backgroundColor: '#4caf50' }}>
+                  Refresh
+                </Button>
               </Card.Content>
             </Card>
-          );
-        })
+          ) : (
+            prescriptions.map((presc, idx) => {
+              const prescData = parsePrescriptionData(presc.prescription_data);
+              
+              return (
+                <Card key={presc.id || idx} style={{ marginBottom: 16, borderRadius: 12, elevation: 3 }}>
+                  <Card.Content>
+                    {/* Header with Doctor and Date */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <View>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18, color: '#2e7d32' }}>
+                          Dr. {presc.doctor_name || 'Unknown Doctor'}
+                        </Text>
+                        <Text style={{ color: '#666', fontSize: 14, marginTop: 2 }}>
+                          Ayurvedic Consultation
+                        </Text>
+                      </View>
+                      <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
+                          {formatDate(presc.created_at)}
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    <Divider style={{ marginVertical: 8, backgroundColor: '#e0e0e0' }} />
+                    
+                    {/* Medicines Section */}
+                    <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#1976d2', fontSize: 16 }}>
+                      Prescribed Medicines:
+                    </Text>
+                    {renderMedicines(presc.medicines)}
+                    
+                    {/* Additional Advice */}
+                    {presc.advice && (
+                      <>
+                        <Divider style={{ marginVertical: 12 }} />
+                        <Text style={{ fontWeight: 'bold', marginBottom: 4, color: '#1976d2', fontSize: 16 }}>
+                          Additional Instructions:
+                        </Text>
+                        <Text style={{ marginLeft: 8, color: '#666', lineHeight: 20, fontStyle: 'italic' }}>
+                          {presc.advice}
+                        </Text>
+                      </>
+                    )}
+
+                    {/* Ayurvedic Assessment Details */}
+                    {renderAyurvedicAssessment(prescData)}
+
+                    {/* Footer */}
+                    <Divider style={{ marginVertical: 12 }} />
+                    <Text style={{ fontSize: 12, color: '#999', textAlign: 'center', fontStyle: 'italic' }}>
+                      Prescription ID: {presc.id} • Keep this for your records
+                    </Text>
+                  </Card.Content>
+                </Card>
+              );
+            })
+          )}
+        </>
+      )}
+
+      {/* Panchkarma Tab Content */}
+      {activeTab === 'panchkarma' && (
+        <>
+          {panchkarmaPrescriptions.length === 0 ? (
+            <Card style={{ borderRadius: 12 }}>
+              <Card.Content style={{ alignItems: 'center', padding: 32 }}>
+                <Text style={{ fontSize: 18, color: '#666', textAlign: 'center', marginBottom: 8 }}>
+                  No Panchkarma prescriptions found
+                </Text>
+                <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 16 }}>
+                  Your doctor hasn't prescribed any Panchkarma treatments yet.
+                </Text>
+                <Button mode="contained" onPress={onRefresh} style={{ backgroundColor: '#4caf50' }}>
+                  Refresh
+                </Button>
+              </Card.Content>
+            </Card>
+          ) : (
+            panchkarmaPrescriptions.map((presc, idx) => (
+              <Card key={presc.id || idx} style={{ marginBottom: 16, borderRadius: 12, elevation: 3 }}>
+                <Card.Content>
+                  {/* Header with Doctor and Date */}
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <View>
+                      <Text style={{ fontWeight: 'bold', fontSize: 18, color: '#4caf50' }}>
+                        Dr. {presc.doctor_name || 'Unknown Doctor'}
+                      </Text>
+                      <Text style={{ color: '#666', fontSize: 14, marginTop: 2 }}>
+                        🌿 Panchkarma Treatment Plan
+                      </Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                      <Text style={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
+                        {formatDate(presc.created_at)}
+                      </Text>
+                      <Chip size="small" style={{ marginTop: 4, backgroundColor: '#c8e6c9' }}>
+                        {presc.status || 'Prescribed'}
+                      </Chip>
+                    </View>
+                  </View>
+                  
+                  <Divider style={{ marginVertical: 8, backgroundColor: '#e0e0e0' }} />
+                  
+                  {/* Treatments Section */}
+                  <Text style={{ fontWeight: 'bold', marginBottom: 12, color: '#4caf50', fontSize: 16 }}>
+                    🌿 Prescribed Treatments:
+                  </Text>
+                  {renderPanchkarmaTreatments(presc.treatments)}
+                  
+                  {/* Additional Notes */}
+                  {presc.notes && (
+                    <>
+                      <Divider style={{ marginVertical: 12 }} />
+                      <Text style={{ fontWeight: 'bold', marginBottom: 4, color: '#4caf50', fontSize: 16 }}>
+                        Doctor's Notes:
+                      </Text>
+                      <Text style={{ marginLeft: 8, color: '#666', lineHeight: 20, fontStyle: 'italic' }}>
+                        {presc.notes}
+                      </Text>
+                    </>
+                  )}
+
+                  {/* Footer */}
+                  <Divider style={{ marginVertical: 12 }} />
+                  <Text style={{ fontSize: 12, color: '#999', textAlign: 'center', fontStyle: 'italic' }}>
+                    Panchkarma Prescription ID: {presc.id} • Follow treatments as prescribed
+                  </Text>
+                </Card.Content>
+              </Card>
+            ))
+          )}
+        </>
       )}
     </ScrollView>
   );

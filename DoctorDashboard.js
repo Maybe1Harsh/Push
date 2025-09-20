@@ -230,19 +230,37 @@ export default function DoctorDashboardScreen({ route, navigation }) {
         </Button>
       </View>
       
-      <Button
-        mode="contained"
-        onPress={() => navigation.navigate("DietChartTemplates", { profile: route.params?.profile })}
-        style={{
-          marginBottom: 20,
-          backgroundColor: "#ff9800",
-          borderRadius: 10,
-          paddingVertical: 5,
-        }}
-        labelStyle={{ fontSize: 16 }}
-      >
-        🍽️ Diet Charts
-      </Button>
+      {/* Second row of action buttons */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate("DietChartTemplates", { profile: route.params?.profile })}
+          style={{
+            flex: 1,
+            marginRight: 8,
+            backgroundColor: "#ff9800",
+            borderRadius: 10,
+            paddingVertical: 5,
+          }}
+          labelStyle={{ fontSize: 14 }}
+        >
+          🍽️ Diet Charts
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate("PanchkarmaScreen", { profile: route.params?.profile })}
+          style={{
+            flex: 1,
+            marginLeft: 8,
+            backgroundColor: "#4caf50",
+            borderRadius: 10,
+            paddingVertical: 5,
+          }}
+          labelStyle={{ fontSize: 14 }}
+        >
+          🌿 Panchkarma
+        </Button>
+      </View>
 
       {/* Patients Section */}
       <Card style={{ marginBottom: 20, borderRadius: 12 }}>
