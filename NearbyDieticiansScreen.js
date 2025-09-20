@@ -49,7 +49,7 @@ export default function NearbyDieticiansScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#f3f6fa' }}>
       <Card style={{ marginBottom: 20, borderRadius: 16 }}>
-        <Card.Title title="Ayurvedic Dieticians Nearby" />
+        <Card.Title title="CureVeda Dieticians Nearby" />
         <Card.Content>
           {sortedDieticians.map((doc, idx) => (
             <Card key={idx} style={{ marginBottom: 16, borderRadius: 12, backgroundColor: '#fff' }}>

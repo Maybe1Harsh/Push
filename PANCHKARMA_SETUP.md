@@ -1,7 +1,7 @@
 # Panchkarma Feature Setup Instructions
 
 ## Overview
-This document provides setup instructions for the new Panchkarma feature added to the Ayurvedic Health Management System.
+This document provides setup instructions for the new Panchkarma feature added to the CureVeda Health Management System.
 
 ## Features Added
 

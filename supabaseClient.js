@@ -1,4 +1,4 @@
-// filepath: c:\Users\harsh\OneDrive\Desktop\SIH\ayur_healthplix\supabaseClient.js
+// filepath: c:\Users\harsh\OneDrive\Desktop\SIH\cureveda\supabaseClient.js
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://sphfvepyjatxbzwnnvbv.supabase.co';

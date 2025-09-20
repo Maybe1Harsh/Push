@@ -544,7 +544,7 @@ export default function CalorieCounter() {
               color: '#2e7d32',
               marginBottom: 8
             }}>
-              Ayurvedic Calorie & Nutrition Counter
+              CureVeda Calorie & Nutrition Counter
             </Text>
             <Text style={{ 
               textAlign: 'center', 

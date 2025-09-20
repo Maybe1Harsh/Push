@@ -831,7 +831,7 @@ export default function DashboardScreen({ navigation, route }) {
                   color: '#388e3c', 
                   marginBottom: 8
                 }}>
-                  🌿 Ayurvedic Remedies
+                  🌿 CureVeda Remedies
                 </Text>
                 <Text style={{
                   color: '#333',

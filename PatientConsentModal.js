@@ -33,7 +33,7 @@ I have been informed that acupuncture (including Marmapuncture) is a generally s
 
 I understand the clinical and administrative staff may review my patient records and lab reports, but all my records will be kept confidential and will not be released without my written consent.
 
-I understand that the Ayurveda Health Counselor below is not a licensed medical practitioner or health care professional and is not trained in Western diagnosis or treatment and that I should consult my Medical Doctor for diagnosis, treatment, and advice of medical conditions.
+I understand that the CureVeda Health Counselor below is not a licensed medical practitioner or health care professional and is not trained in Western diagnosis or treatment and that I should consult my Medical Doctor for diagnosis, treatment, and advice of medical conditions.
 
 By voluntarily signing below, I show that I have read, or have had read to me, the above consent to treatment, have been told about the risks and benefits of acupuncture and of other procedures, and have had an opportunity to ask questions.
 

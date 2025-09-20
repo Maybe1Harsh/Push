@@ -5,7 +5,7 @@ export const translations = {
     aboutText: `Ayurveda, the 5000-year-old "Science of Life", offers holistic solutions for modern health challenges.
 Our platform bridges ancient wisdom with cutting-edge technology to provide personalized healthcare solutions.`,
     whatWeOffer: "What We Offer",
-    whyChoose: "Why Choose Ayur HealthPlix?",
+    whyChoose: "Why Choose CureVeda?",
     benefit1: "✅ Personalized health assessments",
     benefit2: "✅ Evidence-based natural remedies",
     benefit3: "✅ Expert medical consultations",
@@ -13,7 +13,7 @@ Our platform bridges ancient wisdom with cutting-edge technology to provide pers
     benefit5: "✅ Track your wellness journey",
     readyToBegin: "Ready to begin your wellness journey?",
     getStarted: "Get Started",
-    joinThousands: "Join thousands who trust Ayur HealthPlix for their wellness needs",
+    joinThousands: "Join thousands who trust CureVeda for their wellness needs",
     // login (full)
     welcomeBack: "Welcome Back",
     createAccount: "Create Your Account",
@@ -108,7 +108,7 @@ Our platform bridges ancient wisdom with cutting-edge technology to provide pers
     aboutText: `आयुर्वेद, 5000 साल पुराना "जीवन का विज्ञान", आधुनिक स्वास्थ्य चुनौतियों के लिए समग्र समाधान प्रदान करता है।
 हमारा प्लेटफॉर्म प्राचीन ज्ञान को अत्याधुनिक तकनीक के साथ जोड़ता है ताकि व्यक्तिगत स्वास्थ्य समाधान मिल सकें।`,
     whatWeOffer: "हम क्या प्रदान करते हैं",
-    whyChoose: "क्यों चुनें Ayur HealthPlix?",
+    whyChoose: "क्यों चुनें CureVeda?",
     benefit1: "✅ व्यक्तिगत स्वास्थ्य मूल्यांकन",
     benefit2: "✅ प्रमाणित प्राकृतिक उपचार",
     benefit3: "✅ विशेषज्ञ चिकित्सा परामर्श",
@@ -116,7 +116,7 @@ Our platform bridges ancient wisdom with cutting-edge technology to provide pers
     benefit5: "✅ अपनी स्वास्थ्य यात्रा को ट्रैक करें",
     readyToBegin: "क्या आप अपनी स्वास्थ्य यात्रा शुरू करने के लिए तैयार हैं?",
     getStarted: "शुरू करें",
-    joinThousands: "हज़ारों लोग Ayur HealthPlix पर भरोसा करते हैं अपनी सेहत के लिए",
+    joinThousands: "हज़ारों लोग CureVeda पर भरोसा करते हैं अपनी सेहत के लिए",
     // login (full)
     welcomeBack: "वापस स्वागत है",
     createAccount: "अपना खाता बनाएं",

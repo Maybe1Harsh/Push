@@ -107,7 +107,7 @@ export default function LoginScreen({ navigation }) {
               <Text style={loginStyles.logoEmoji}>🌿</Text>
             </View>
             <Text variant="headlineLarge" style={loginStyles.title}>
-              Ayur HealthPlix
+              CureVeda
             </Text>
             <Text variant="titleMedium" style={loginStyles.subtitle}>
               {isRegister ? t.createAccount : t.welcomeBack}

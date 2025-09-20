@@ -13,7 +13,7 @@ import {
 
 const translations = {
   en: {
-    navTitle: "Ayur HealthPlix",
+    navTitle: "CureVeda",
     navHome: "Home",
     navContact: "Contact",
     mainHeading: "INFORMED CONSENT TO TREAT",
@@ -33,23 +33,23 @@ const translations = {
     mainPara6:
       "I understand the clinical and administrative staff may review my patient records and lab reports, but all my records will be kept confidential and will not be released without my written consent.",
     mainPara7:
-      "I understand that the Ayurveda Health Counselor below is not a licensed medical practitioner or health care professional and is not trained in Western diagnosis or treatment and that I should consult my Medical Doctor for diagnosis, treatment, and advice of medical conditions...",
+      "I understand that the CureVeda Health Counselor below is not a licensed medical practitioner or health care professional and is not trained in Western diagnosis or treatment and that I should consult my Medical Doctor for diagnosis, treatment, and advice of medical conditions...",
     mainPara8:
       "By voluntarily signing below, I show that I have read, or have had read to me, the above consent to treatment, have been told about the risks and benefits of acupuncture...",
     mainPara9:
       "I hereby consent to receive Ayurvedic consultation and treatment, including assessment of my health, dietary recommendations, dosha evaluation, and prescription of Ayurvedic medicines, provided by an authenticated and qualified Ayurvedic doctor or clinic...",
-    counselorName: "Ayurveda Health Counselor Name: Agustín Reyna",
+    counselorName: "CureVeda Health Counselor Name: Agustín Reyna",
     acupuncturistName: "Licensed Acupuncturist/Marmapuncturist Name: Dr. Sachin Bhor",
     labelAgree: "I have read, understood, and agree to the above consent and disclaimer.",
     submitBtn: "Submit",
     termsLink: "Terms & conditions",
-    footerTitle: "Ayur HealthPlix",
+    footerTitle: "CureVeda",
     footerDesc:
       "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste atque ea quis molestias. Fugiat pariatur maxime quis culpa corporis vitae repudiandae aliquam voluptatem veniam, est atque cumque eum delectus sint!",
     footerContactTitle: "Contact Us",
     footerEmail: "Email: example@example.com",
     footerPhone: "Phone: +1234567890",
-    footerCopyright: "© 2023 Ayur HealthPlix",
+    footerCopyright: "© 2023 CureVeda",
   },
   hi: {
     navTitle: "आयुर हेल्थप्लिक्स",
@@ -92,7 +92,7 @@ const translations = {
   },
 };
 
-export default function AyurHealthPlix() {
+export default function CureVeda() {
   const [language, setLanguage] = useState("en");
   const [clientName, setClientName] = useState("");
   const [doctorName, setDoctorName] = useState("");
@@ -411,7 +411,7 @@ const styles = {
 
 // const translations = {
 //   en: {
-//     navTitle: "Ayur HealthPlix",
+//     navTitle: "CureVeda",
 //     navHome: "Home",
 //     navContact: "Contact",
 //     mainHeading: "INFORMED CONSENT TO TREAT",
@@ -431,23 +431,23 @@ const styles = {
 //     mainPara6:
 //       "I understand the clinical and administrative staff may review my patient records and lab reports, but all my records will be kept confidential and will not be released without my written consent.",
 //     mainPara7:
-//       "I understand that the Ayurveda Health Counselor below is not a licensed medical practitioner or health care professional and is not trained in Western diagnosis or treatment and that I should consult my Medical Doctor for diagnosis, treatment, and advice of medical conditions...",
+//       "I understand that the CureVeda Health Counselor below is not a licensed medical practitioner or health care professional and is not trained in Western diagnosis or treatment and that I should consult my Medical Doctor for diagnosis, treatment, and advice of medical conditions...",
 //     mainPara8:
 //       "By voluntarily signing below, I show that I have read, or have had read to me, the above consent to treatment, have been told about the risks and benefits of acupuncture...",
 //     mainPara9:
 //       "I hereby consent to receive Ayurvedic consultation and treatment, including assessment of my health, dietary recommendations, dosha evaluation, and prescription of Ayurvedic medicines, provided by an authenticated and qualified Ayurvedic doctor or clinic...",
-//     counselorName: "Ayurveda Health Counselor Name: Agustín Reyna",
+//     counselorName: "CureVeda Health Counselor Name: Agustín Reyna",
 //     acupuncturistName: "Licensed Acupuncturist/Marmapuncturist Name: Dr. Sachin Bhor",
 //     labelAgree: "I have read, understood, and agree to the above consent and disclaimer.",
 //     submitBtn: "Submit",
 //     termsLink: "Terms & conditions",
-//     footerTitle: "Ayur HealthPlix",
+//     footerTitle: "CureVeda",
 //     footerDesc:
 //       "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste atque ea quis molestias. Fugiat pariatur maxime quis culpa corporis vitae repudiandae aliquam voluptatem veniam, est atque cumque eum delectus sint!",
 //     footerContactTitle: "Contact Us",
 //     footerEmail: "Email: example@example.com",
 //     footerPhone: "Phone: +1234567890",
-//     footerCopyright: "© 2023 Ayur HealthPlix",
+//     footerCopyright: "© 2023 CureVeda",
 //   },
 //   hi: {
 //     navTitle: "आयुर हेल्थप्लिक्स",

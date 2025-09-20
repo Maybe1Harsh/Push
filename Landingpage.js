@@ -55,7 +55,7 @@ export default function LandingScreen({ navigation }) {
             <Text style={styles.logoEmoji}>🌿</Text>
           </View>
           <Text variant="headlineLarge" style={styles.title}>
-            Ayur HealthPlix
+            CureVeda
           </Text>
           <Text style={styles.subtitle}>
             {t.subtitle || "Ancient Wisdom • Modern Technology • Personalized Care"}
@@ -98,7 +98,7 @@ export default function LandingScreen({ navigation }) {
         <Card style={styles.benefitsCard}>
           <Card.Content>
             <Text variant="headlineSmall" style={styles.sectionTitle}>
-              {t.whyChoose || "Why Choose Ayur HealthPlix?"}
+              {t.whyChoose || "Why Choose CureVeda?"}
             </Text>
             <View style={styles.benefitsList}>
               <Text style={styles.benefitItem}>{t.benefit1 || "✅ Personalized health assessments"}</Text>
@@ -125,7 +125,7 @@ export default function LandingScreen({ navigation }) {
             {t.getStarted || "Get Started"}
           </Button>
           <Text style={styles.footerText}>
-            {t.joinThousands || "Join thousands who trust Ayur HealthPlix for their wellness needs"}
+            {t.joinThousands || "Join thousands who trust CureVeda for their wellness needs"}
           </Text>
         </View>
       </ScrollView>
