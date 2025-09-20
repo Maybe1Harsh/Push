@@ -91,6 +91,25 @@ export default function DoctorDashboardScreen({ route, navigation }) {
     }
   };
 
+  // Generate date options for date picker (next 14 days)
+  const generateDateOptions = () => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 0; i <= 14; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const dateString = date.toISOString().slice(0, 10);
+      const displayDate = date.toLocaleDateString('en-IN', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      dates.push({ value: dateString, label: displayDate });
+    }
+    return dates;
+  };
+
   // Fetch patients assigned to this doctor
   const fetchPatients = useCallback(async () => {
     try {
@@ -853,9 +872,9 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                         {item.title}
                       </Text>
                       
-                      {item.type === 'manual_schedule' && item.break_start && (
+                      {item.type === 'manual_schedule' && item.description && (
                         <Text style={{ color: '#666', fontSize: 12 }}>
-                          Break: {formatTime(item.break_start)} - {formatTime(item.break_end)}
+                          {item.description}
                         </Text>
                       )}
                       
@@ -974,89 +993,46 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           onDismiss={() => setShowDatePicker(false)} 
           contentContainerStyle={{ 
             backgroundColor: 'white', 
-            padding: 24, 
-            margin: 24, 
-            borderRadius: 16 
+            padding: 20, 
+            margin: 20, 
+            borderRadius: 16,
+            maxHeight: '80%'
           }}
         >
           <Text variant="titleLarge" style={{ marginBottom: 16, color: '#1976d2', textAlign: 'center' }}>
             Select Date for Schedule
           </Text>
           
-          <Text style={{ marginBottom: 12, color: '#666', textAlign: 'center' }}>
-            Enter date manually or use quick select buttons below
+          <Text style={{ marginBottom: 16, color: '#666', textAlign: 'center' }}>
+            Choose a date to view the schedule
           </Text>
           
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <TextInput
-              label="Date (YYYY-MM-DD)"
-              value={selectedDate}
-              onChangeText={(text) => {
-                // Allow typing any text, validate later
-                setSelectedDate(text);
-              }}
-              placeholder="2025-09-20"
-              style={{ flex: 1, marginRight: 8 }}
-              mode="outlined"
-              keyboardType="numeric"
-            />
-            <Button
-              mode="outlined"
-              onPress={() => setSelectedDate('')}
-              compact
-            >
-              Clear
-            </Button>
-          </View>
+          <ScrollView style={{ maxHeight: 400 }}>
+            {generateDateOptions().map((option) => (
+              <Button
+                key={option.value}
+                mode={selectedDate === option.value ? "contained" : "outlined"}
+                onPress={() => {
+                  handleDateChange(option.value);
+                }}
+                style={{ 
+                  marginBottom: 8,
+                  backgroundColor: selectedDate === option.value ? '#1976d2' : 'transparent'
+                }}
+                contentStyle={{ paddingVertical: 8 }}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </ScrollView>
           
-          <Text style={{ fontSize: 12, color: '#999', marginBottom: 20, textAlign: 'center' }}>
-            Format: Year-Month-Day (e.g., 2025-09-20)
-          </Text>
-          
-          <Text style={{ marginBottom: 12, color: '#666', textAlign: 'center' }}>
-            Quick Select:
-          </Text>
-          
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 }}>
-            <Button
-              mode="outlined"
-              onPress={() => setSelectedDate(new Date().toISOString().slice(0, 10))}
-              compact
-            >
-              Today
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={() => setSelectedDate(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10))}
-              compact
-            >
-              Tomorrow
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={() => setSelectedDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10))}
-              compact
-            >
-              Next Week
-            </Button>
-          </View>
-          
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Button 
-              mode="outlined" 
-              onPress={() => setShowDatePicker(false)}
-              style={{ flex: 1, marginRight: 8 }}
-            >
-              Cancel
-            </Button>
-            <Button 
-              mode="contained" 
-              onPress={() => handleDateChange(selectedDate)}
-              style={{ flex: 1, marginLeft: 8, backgroundColor: '#1976d2' }}
-            >
-              View Schedule
-            </Button>
-          </View>
+          <Button 
+            mode="outlined" 
+            onPress={() => setShowDatePicker(false)}
+            style={{ marginTop: 16 }}
+          >
+            Cancel
+          </Button>
         </Modal>
       </Portal>
     </ScrollView>

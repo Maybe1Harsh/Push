@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Alert } from 'react-native';
-import { Text, Card, Button, TextInput, Modal, Portal, Provider as PaperProvider, Divider, DataTable, Chip, FAB } from 'react-native-paper';
+import { Text, Card, Button, TextInput, Modal, Portal, Provider as PaperProvider, Divider, DataTable, Chip, FAB, Menu } from 'react-native-paper';
 import { supabase } from './supabaseClient';
 
 export default function DoctorScheduleScreen({ route, navigation }) {
@@ -9,9 +9,21 @@ export default function DoctorScheduleScreen({ route, navigation }) {
   const doctorEmail = doctorProfile.email || '';
   const doctorName = doctorProfile.name || 'Doctor';
 
-  console.log('DoctorSchedule received params:', route?.params);
+  console.log('=== DOCTOR SCHEDULE SCREEN INITIALIZED ===');
+  console.log('Route params:', JSON.stringify(route?.params, null, 2));
+  console.log('Doctor profile:', JSON.stringify(doctorProfile, null, 2));
   console.log('Doctor email:', doctorEmail);
   console.log('Doctor name:', doctorName);
+  console.log('Email is valid:', !!doctorEmail && doctorEmail.includes('@'));
+
+  // Alert if no doctor email found
+  if (!doctorEmail || !doctorEmail.includes('@')) {
+    console.log('❌ CRITICAL: No valid doctor email found!');
+    Alert.alert('Authentication Error', 
+      `No valid doctor email found.\n\nReceived: "${doctorEmail}"\n\nPlease log in again.`,
+      [{ text: 'Go Back', onPress: () => navigation.goBack() }]
+    );
+  }
 
   const [appointments, setAppointments] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -22,18 +34,94 @@ export default function DoctorScheduleScreen({ route, navigation }) {
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
   const [addAppointmentModalVisible, setAddAppointmentModalVisible] = useState(false);
 
+  // Date and Time Picker states
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+
   // Form states
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [postponeTime, setPostponeTime] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [breakStart, setBreakStart] = useState('');
-  const [breakEnd, setBreakEnd] = useState('');
+  const [description, setDescription] = useState('');
   const [newAppointmentDate, setNewAppointmentDate] = useState('');
   const [newAppointmentTime, setNewAppointmentTime] = useState('');
   const [newAppointmentPatient, setNewAppointmentPatient] = useState('');
   const [newAppointmentNotes, setNewAppointmentNotes] = useState('');
+
+  // Helper function to generate time options
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 15) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        const displayTime = new Date(`2000-01-01 ${timeString}`).toLocaleTimeString('en-IN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+        times.push({ value: timeString, label: displayTime });
+      }
+    }
+    return times;
+  };
+
+  // Helper function to generate date options (next 30 days)
+  const generateDateOptions = () => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const dateString = date.toISOString().slice(0, 10);
+      const displayDate = date.toLocaleDateString('en-IN', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      dates.push({ value: dateString, label: displayDate });
+    }
+    return dates;
+  };
+
+  // Test database connection function
+  const testDatabaseConnection = async () => {
+    console.log('=== TESTING DATABASE CONNECTION ===');
+    try {
+      // Test basic Supabase connection
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      console.log('Auth status:', { authData, authError });
+
+      // Test if doctor_schedule table exists
+      console.log('Testing doctor_schedule table access...');
+      const { data, error } = await supabase
+        .from('doctor_schedule')
+        .select('count', { count: 'exact', head: true });
+      
+      if (error) {
+        console.error('❌ TABLE ACCESS ERROR:', error);
+        Alert.alert(
+          'Database Error', 
+          `Cannot access doctor_schedule table.\n\nError: ${error.message}\n\nCode: ${error.code}\n\nThis table needs to be created in Supabase.`
+        );
+        return false;
+      } else {
+        console.log('✅ Table access successful!', data);
+        Alert.alert('Success', 'Database connection and table access working correctly!');
+        return true;
+      }
+    } catch (err) {
+      console.error('❌ UNEXPECTED ERROR:', err);
+      Alert.alert('Error', `Unexpected error: ${err.message}`);
+      return false;
+    }
+  };
+
+  const timeOptions = generateTimeOptions();
+  const dateOptions = generateDateOptions();
 
   useEffect(() => {
     console.log('DoctorSchedule useEffect triggered with doctorEmail:', doctorEmail);
@@ -68,18 +156,24 @@ export default function DoctorScheduleScreen({ route, navigation }) {
 
   const fetchSchedule = async () => {
     try {
+      console.log('=== FETCHING SCHEDULE ===');
       console.log('Fetching schedule for doctor:', doctorEmail);
-      const { data, error } = await supabase
+      
+      const { data, error, count } = await supabase
         .from('doctor_schedule')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('doctor_email', doctorEmail)
         .order('date', { ascending: true });
       
+      console.log('Schedule fetch result:', { data, error, count });
+      console.log('Raw data array:', data);
+      
       if (error) {
         console.error('Error fetching schedule:', error);
-        Alert.alert('Error', `Failed to fetch schedule: ${error.message}`);
+        Alert.alert('Error', `Failed to fetch schedule: ${error.message}\n\nDetails: ${JSON.stringify(error, null, 2)}`);
       } else {
-        console.log('Fetched schedule:', data);
+        console.log('Fetched schedule successfully:', data);
+        console.log('Schedule count:', count);
         setSchedule(data || []);
       }
     } catch (err) {
@@ -118,40 +212,116 @@ export default function DoctorScheduleScreen({ route, navigation }) {
   };
 
   const handleAddSchedule = async () => {
+    console.log('=== ADD SCHEDULE ATTEMPT ===');
+    console.log('Form data:', { scheduleDate, startTime, endTime, description });
+    console.log('Doctor details:', { doctorEmail, doctorName });
+    
+    // Check if all required fields are filled
     if (!scheduleDate || !startTime || !endTime) {
-      Alert.alert('Error', 'Please fill all required fields');
+      console.log('❌ Missing required fields');
+      console.log('Missing:', {
+        scheduleDate: !scheduleDate ? 'MISSING' : 'OK',
+        startTime: !startTime ? 'MISSING' : 'OK', 
+        endTime: !endTime ? 'MISSING' : 'OK'
+      });
+      Alert.alert('Error', 'Please fill all required fields (date, start time, end time)');
+      return;
+    }
+    
+    // Validate end time is after start time
+    if (startTime && endTime) {
+      const startDateTime = new Date(`2000-01-01 ${startTime}`);
+      const endDateTime = new Date(`2000-01-01 ${endTime}`);
+      
+      if (endDateTime <= startDateTime) {
+        console.log('❌ End time validation failed:', { startTime, endTime });
+        Alert.alert('Invalid Time', 'End time must be after start time. Please select a later end time.');
+        return;
+      }
+    }
+    
+    // Additional validation
+    if (!doctorEmail || !doctorEmail.includes('@')) {
+      console.log('❌ Missing or invalid doctor email:', doctorEmail);
+      Alert.alert('Error', 'Doctor email is missing or invalid. Please log in again.');
       return;
     }
 
+    console.log('✅ All validations passed, proceeding with database insert...');
     setLoading(true);
+    
     try {
-      const { error } = await supabase
+      const scheduleData = {
+        doctor_email: doctorEmail,
+        doctor_name: doctorName,
+        date: scheduleDate,
+        start_time: startTime,
+        end_time: endTime,
+        description: description || null,
+        status: 'available',
+        created_at: new Date().toISOString()
+      };
+      
+      console.log('Inserting schedule data:', scheduleData);
+      
+      // First, let's check if the table exists by trying a simple query
+      console.log('🔍 Testing table access...');
+      const { data: testData, error: testError } = await supabase
         .from('doctor_schedule')
-        .insert([{
-          doctor_email: doctorEmail,
-          doctor_name: doctorName,
-          date: scheduleDate,
-          start_time: startTime,
-          end_time: endTime,
-          break_start: breakStart || null,
-          break_end: breakEnd || null,
-          status: 'available',
-          created_at: new Date().toISOString()
-        }]);
+        .select('count', { count: 'exact', head: true });
+        
+      console.log('Table test result:', { testData, testError });
+      
+      if (testError) {
+        console.error('❌ Table access error:', testError);
+        Alert.alert(
+          'Database Table Missing', 
+          `The doctor_schedule table does not exist in the database.\n\nError: ${testError.message}\n\nCode: ${testError.code}\n\nPlease run the SQL script to create the table:\n\n1. Go to Supabase Dashboard\n2. Open SQL Editor\n3. Run the script from create_doctor_schedule_table.sql`
+        );
+        setLoading(false);
+        return;
+      }
+      
+      console.log('✅ Table exists, proceeding with insert...');
+      
+      const { data, error } = await supabase
+        .from('doctor_schedule')
+        .insert([scheduleData])
+        .select();
+
+      console.log('📤 Supabase insert response:', { data, error });
 
       if (error) {
-        Alert.alert('Error', `Failed to add schedule: ${error.message}`);
+        console.error('❌ Database insert error:', error);
+        
+        // Provide specific error messages based on error type
+        let errorMessage = `Failed to add schedule: ${error.message}`;
+        
+        if (error.code === '23505') {
+          errorMessage = 'A schedule already exists for this date and time. Please choose a different time slot.';
+        } else if (error.code === '42501') {
+          errorMessage = 'Permission denied. Please check your account permissions or contact support.';
+        } else if (error.code === '23514') {
+          errorMessage = 'Invalid data format. Please check your input values.';
+        }
+        
+        Alert.alert('Database Error', `${errorMessage}\n\nTechnical details:\nCode: ${error.code}\nHint: ${error.hint || 'N/A'}`);
       } else {
+        console.log('✅ Schedule added successfully:', data);
         Alert.alert('Success', 'Schedule added successfully!');
         setScheduleModalVisible(false);
+        // Reset form and close all pickers
         setScheduleDate('');
         setStartTime('');
         setEndTime('');
-        setBreakStart('');
-        setBreakEnd('');
-        fetchSchedule();
+        setDescription('');
+        setShowDatePicker(false);
+        setShowStartTimePicker(false);
+        setShowEndTimePicker(false);
+        fetchSchedule(); // Refresh the schedule list
       }
     } catch (err) {
+      console.error('Unexpected error:', err);
       Alert.alert('Error', `Unexpected error: ${err.message}`);
     } finally {
       setLoading(false);
@@ -197,21 +367,76 @@ export default function DoctorScheduleScreen({ route, navigation }) {
   };
 
   const deleteSchedule = async (scheduleId) => {
+    console.log('=== DELETE SCHEDULE ATTEMPT ===');
+    console.log('Schedule ID to delete:', scheduleId);
+    console.log('Doctor email:', doctorEmail);
+    
+    // First check if scheduleId is valid
+    if (!scheduleId) {
+      console.error('❌ No schedule ID provided');
+      Alert.alert('Error', 'No schedule ID found. Cannot delete.');
+      return;
+    }
+    
     Alert.alert(
       'Delete Schedule',
-      'Are you sure you want to delete this schedule?',
+      `Are you sure you want to delete this schedule? (ID: ${scheduleId})`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            const { error } = await supabase
-              .from('doctor_schedule')
-              .delete()
-              .eq('id', scheduleId);
-            if (!error) {
-              fetchSchedule();
+            console.log('Delete confirmed, proceeding...');
+            setLoading(true);
+            
+            try {
+              // Method 1: Try with .single() to get better error info
+              console.log('Attempting delete method 1...');
+              const { data: deleteData, error: deleteError } = await supabase
+                .from('doctor_schedule')
+                .delete()
+                .eq('id', scheduleId)
+                .select()
+                .single();
+              
+              console.log('Delete method 1 response:', { deleteData, deleteError });
+              
+              if (deleteError) {
+                // Method 2: Try without .single()
+                console.log('Method 1 failed, trying method 2...');
+                const { data: deleteData2, error: deleteError2 } = await supabase
+                  .from('doctor_schedule')
+                  .delete()
+                  .eq('id', scheduleId);
+                
+                console.log('Delete method 2 response:', { deleteData2, deleteError2 });
+                
+                if (deleteError2) {
+                  console.error('❌ Both delete methods failed');
+                  console.error('Error 1:', deleteError);
+                  console.error('Error 2:', deleteError2);
+                  Alert.alert('Delete Failed', 
+                    `Both delete attempts failed:\n\n` +
+                    `Method 1: ${deleteError.message}\n` +
+                    `Method 2: ${deleteError2.message}`
+                  );
+                } else {
+                  console.log('✅ Method 2 succeeded');
+                  Alert.alert('Success', 'Schedule deleted successfully!');
+                  setTimeout(() => fetchSchedule(), 500);
+                }
+              } else {
+                console.log('✅ Method 1 succeeded');
+                Alert.alert('Success', 'Schedule deleted successfully!');
+                setTimeout(() => fetchSchedule(), 500);
+              }
+              
+            } catch (err) {
+              console.error('❌ Unexpected delete error:', err);
+              Alert.alert('Error', `Unexpected error: ${err.message}`);
+            } finally {
+              setLoading(false);
             }
           }
         }
@@ -300,7 +525,7 @@ export default function DoctorScheduleScreen({ route, navigation }) {
                   <DataTable.Header>
                     <DataTable.Title>Date</DataTable.Title>
                     <DataTable.Title>Time</DataTable.Title>
-                    <DataTable.Title>Status</DataTable.Title>
+                    <DataTable.Title>Description</DataTable.Title>
                     <DataTable.Title>Action</DataTable.Title>
                   </DataTable.Header>
                   
@@ -309,19 +534,31 @@ export default function DoctorScheduleScreen({ route, navigation }) {
                       <DataTable.Cell>{formatDate(slot.date)}</DataTable.Cell>
                       <DataTable.Cell>
                         {slot.start_time} - {slot.end_time}
-                        {slot.break_start && (
-                          <Text style={{ fontSize: 10, color: '#666' }}>
-                            {'\n'}Break: {slot.break_start} - {slot.break_end}
-                          </Text>
-                        )}
                       </DataTable.Cell>
                       <DataTable.Cell>
-                        <Chip style={{ backgroundColor: slot.status === 'available' ? '#4caf50' : '#ff9800' }}>
-                          {slot.status}
-                        </Chip>
+                        <Text style={{ 
+                          fontSize: 12, 
+                          color: '#666',
+                          fontStyle: slot.description ? 'normal' : 'italic'
+                        }}>
+                          {slot.description || 'No description'}
+                        </Text>
                       </DataTable.Cell>
                       <DataTable.Cell>
-                        <Button mode="outlined" onPress={() => deleteSchedule(slot.id)} compact>
+                        <Button 
+                          mode="outlined" 
+                          onPress={() => {
+                            console.log('🗑️ Delete button clicked for slot:', slot);
+                            console.log('Slot ID:', slot.id);
+                            console.log('Slot type:', typeof slot.id);
+                            console.log('Full slot object:', JSON.stringify(slot, null, 2));
+                            deleteSchedule(slot.id);
+                          }} 
+                          compact
+                          disabled={loading}
+                          style={{ borderColor: '#f44336' }}
+                          textColor="#f44336"
+                        >
                           Delete
                         </Button>
                       </DataTable.Cell>
@@ -480,68 +717,197 @@ export default function DoctorScheduleScreen({ route, navigation }) {
           <Modal 
             visible={scheduleModalVisible} 
             onDismiss={() => setScheduleModalVisible(false)} 
-            contentContainerStyle={{ backgroundColor: 'white', padding: 24, margin: 24, borderRadius: 16 }}
+            contentContainerStyle={{ backgroundColor: 'white', padding: 24, margin: 24, borderRadius: 16, maxHeight: '90%' }}
           >
-            <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32' }}>
-              Add Schedule
-            </Text>
-            <TextInput
-              label="Date"
-              value={scheduleDate}
-              onChangeText={setScheduleDate}
-              placeholder="YYYY-MM-DD"
-              style={{ marginBottom: 12 }}
-              mode="outlined"
-            />
-            <TextInput
-              label="Start Time"
-              value={startTime}
-              onChangeText={setStartTime}
-              placeholder="09:00"
-              style={{ marginBottom: 12 }}
-              mode="outlined"
-            />
-            <TextInput
-              label="End Time"
-              value={endTime}
-              onChangeText={setEndTime}
-              placeholder="17:00"
-              style={{ marginBottom: 12 }}
-              mode="outlined"
-            />
-            <TextInput
-              label="Break Start (Optional)"
-              value={breakStart}
-              onChangeText={setBreakStart}
-              placeholder="13:00"
-              style={{ marginBottom: 12 }}
-              mode="outlined"
-            />
-            <TextInput
-              label="Break End (Optional)"
-              value={breakEnd}
-              onChangeText={setBreakEnd}
-              placeholder="14:00"
-              style={{ marginBottom: 16 }}
-              mode="outlined"
-            />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Button 
-                mode="outlined" 
-                onPress={() => setScheduleModalVisible(false)}
-                style={{ flex: 1, marginRight: 8 }}
-              >
-                Cancel
-              </Button>
-              <Button 
-                mode="contained" 
-                onPress={handleAddSchedule}
-                loading={loading}
-                style={{ flex: 1, marginLeft: 8, backgroundColor: '#1976d2' }}
-              >
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32', textAlign: 'center' }}>
                 Add Schedule
+              </Text>
+              
+              {/* Date Picker */}
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
+                📅 Select Date
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={() => setShowDatePicker(!showDatePicker)}
+                style={{ marginBottom: 12, borderColor: '#2e7d32' }}
+                contentStyle={{ paddingVertical: 8 }}
+              >
+                {scheduleDate ? 
+                  dateOptions.find(d => d.value === scheduleDate)?.label || scheduleDate :
+                  'Tap to select date'
+                }
               </Button>
-            </View>
+              
+              {showDatePicker && (
+                <ScrollView 
+                  style={{ maxHeight: 150, backgroundColor: '#f5f5f5', borderRadius: 8, marginBottom: 12 }}
+                  showsVerticalScrollIndicator={true}
+                >
+                  {dateOptions.map((date) => (
+                    <Button
+                      key={date.value}
+                      mode={scheduleDate === date.value ? "contained" : "text"}
+                      onPress={() => {
+                        setScheduleDate(date.value);
+                        setShowDatePicker(false);
+                      }}
+                      style={{ 
+                        marginVertical: 2,
+                        backgroundColor: scheduleDate === date.value ? '#2e7d32' : 'transparent'
+                      }}
+                      textColor={scheduleDate === date.value ? 'white' : '#333'}
+                    >
+                      {date.label}
+                    </Button>
+                  ))}
+                </ScrollView>
+              )}
+
+              {/* Start Time Picker */}
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
+                🕐 Start Time
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={() => setShowStartTimePicker(!showStartTimePicker)}
+                style={{ marginBottom: 12, borderColor: '#1976d2' }}
+                contentStyle={{ paddingVertical: 8 }}
+              >
+                {startTime ? 
+                  timeOptions.find(t => t.value === startTime)?.label || startTime :
+                  'Tap to select start time'
+                }
+              </Button>
+              
+              {showStartTimePicker && (
+                <ScrollView 
+                  style={{ maxHeight: 150, backgroundColor: '#f5f5f5', borderRadius: 8, marginBottom: 12 }}
+                  showsVerticalScrollIndicator={true}
+                >
+                  {timeOptions.map((time) => (
+                    <Button
+                      key={`start-${time.value}`}
+                      mode={startTime === time.value ? "contained" : "text"}
+                      onPress={() => {
+                        setStartTime(time.value);
+                        setShowStartTimePicker(false);
+                      }}
+                      style={{ 
+                        marginVertical: 1,
+                        backgroundColor: startTime === time.value ? '#1976d2' : 'transparent'
+                      }}
+                      textColor={startTime === time.value ? 'white' : '#333'}
+                      compact
+                    >
+                      {time.label}
+                    </Button>
+                  ))}
+                </ScrollView>
+              )}
+
+              {/* End Time Picker */}
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
+                🕐 End Time
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={() => setShowEndTimePicker(!showEndTimePicker)}
+                style={{ marginBottom: 12, borderColor: '#1976d2' }}
+                contentStyle={{ paddingVertical: 8 }}
+              >
+                {endTime ? 
+                  timeOptions.find(t => t.value === endTime)?.label || endTime :
+                  'Tap to select end time'
+                }
+              </Button>
+              
+              {showEndTimePicker && (
+                <ScrollView 
+                  style={{ maxHeight: 150, backgroundColor: '#f5f5f5', borderRadius: 8, marginBottom: 12 }}
+                  showsVerticalScrollIndicator={true}
+                >
+                  {timeOptions
+                    .filter(time => {
+                      // Only show times that are after the selected start time
+                      if (!startTime) return true;
+                      const startDateTime = new Date(`2000-01-01 ${startTime}`);
+                      const currentTime = new Date(`2000-01-01 ${time.value}`);
+                      return currentTime > startDateTime;
+                    })
+                    .map((time) => (
+                    <Button
+                      key={`end-${time.value}`}
+                      mode={endTime === time.value ? "contained" : "text"}
+                      onPress={() => {
+                        setEndTime(time.value);
+                        setShowEndTimePicker(false);
+                      }}
+                      style={{ 
+                        marginVertical: 1,
+                        backgroundColor: endTime === time.value ? '#1976d2' : 'transparent'
+                      }}
+                      textColor={endTime === time.value ? 'white' : '#333'}
+                      compact
+                    >
+                      {time.label}
+                    </Button>
+                  ))}
+                  {timeOptions.filter(time => {
+                    if (!startTime) return false;
+                    const startDateTime = new Date(`2000-01-01 ${startTime}`);
+                    const currentTime = new Date(`2000-01-01 ${time.value}`);
+                    return currentTime <= startDateTime;
+                  }).length === timeOptions.length && (
+                    <Text style={{ textAlign: 'center', color: '#999', padding: 16 }}>
+                      Please select a start time first
+                    </Text>
+                  )}
+                </ScrollView>
+              )}
+
+              {/* Description Section */}
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, color: '#333' }}>
+                📝 Description (Optional)
+              </Text>
+              <TextInput
+                label="Schedule Description"
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Add notes about this schedule (e.g., consultation hours, emergency availability, etc.)"
+                multiline
+                numberOfLines={3}
+                style={{ marginBottom: 16 }}
+                mode="outlined"
+                contentStyle={{ paddingVertical: 8 }}
+              />
+
+              {/* Action Buttons */}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+                <Button 
+                  mode="outlined" 
+                  onPress={() => {
+                    setScheduleModalVisible(false);
+                    setShowDatePicker(false);
+                    setShowStartTimePicker(false);
+                    setShowEndTimePicker(false);
+                  }}
+                  style={{ flex: 1, marginRight: 8 }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  mode="contained" 
+                  onPress={handleAddSchedule}
+                  loading={loading}
+                  style={{ flex: 1, marginLeft: 8, backgroundColor: '#1976d2' }}
+                  disabled={!scheduleDate || !startTime || !endTime}
+                >
+                  Add Schedule
+                </Button>
+              </View>
+            </ScrollView>
           </Modal>
         </Portal>
 
