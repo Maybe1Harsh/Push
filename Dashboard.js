@@ -4,6 +4,7 @@ import { Text, Button, Card } from 'react-native-paper';
 import { supabase } from './supabaseClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from './hooks/useTranslation';
+import PatientConsentModal from './PatientConsentModal';
 
 export default function DashboardScreen({ navigation, route }) {
   const { t } = useTranslation();
@@ -14,6 +15,10 @@ export default function DashboardScreen({ navigation, route }) {
   const [scheduledAppointments, setScheduledAppointments] = React.useState([]);
   const [loadingAppointments, setLoadingAppointments] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  
+  // Consent state
+  const [consentModalVisible, setConsentModalVisible] = React.useState(false);
+  const [pendingApprovalRequest, setPendingApprovalRequest] = React.useState(null);
 
   const fetchAssignedDoctor = React.useCallback(async () => {
     if (!profile?.email) return;
@@ -206,30 +211,54 @@ export default function DashboardScreen({ navigation, route }) {
     };
   }, [profile?.email, fetchPendingRequests, fetchScheduledAppointments]);
 
-  // Fix: handleApprove now accepts 'request' as an argument
+  // Fix: handleApprove now shows consent modal first
   const handleApprove = async (request) => {
     if (!request) return;
+    
+    // Store the request and show consent modal
+    setPendingApprovalRequest(request);
+    setConsentModalVisible(true);
+  };
+
+  // New function to handle the actual approval after consent
+  const handleApprovalAfterConsent = async (request, consentGiven) => {
+    if (!consentGiven) {
+      alert('Consent was declined. Doctor approval cancelled.');
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Add patient to doctor's list
+      console.log('Adding patient to doctor list:', {
+        patientName: profile.name,
+        patientEmail: profile.email,
+        doctorEmail: request.doctor_email,
+        patientAge: profile.age
+      });
+      
       const { error: insertError } = await supabase
         .from('patients')
         .insert([
           {
             name: profile.name,
             email: profile.email,
-            doctor_email: request.doctor_email, // Use 'request' instead of 'selectedRequest'
+            doctor_email: request.doctor_email,
             age: profile.age,
           },
         ]);
 
       if (insertError) {
+        console.error('Error inserting patient:', insertError);
         throw new Error('Failed to add you to the doctor\'s patient list. Please try again.');
       }
 
+      console.log('Patient successfully added to doctor list');
+
+      // Update request status
       const { error: updateError } = await supabase
         .from('patient_requests')
-        // Fix: Use 'accepted' to match your workflow, or change workflow to 'approved'
         .update({ status: 'accepted' })
         .eq('id', request.id);
 
@@ -239,7 +268,9 @@ export default function DashboardScreen({ navigation, route }) {
 
       await fetchPendingRequests();
       await fetchAssignedDoctor();
-      alert('You have approved the doctor\'s request and are now added to their patient list.');
+      
+      console.log('Patient approval completed successfully');
+      alert(`✅ Success! You are now registered as a patient under Dr. ${request.doctor.name}. The doctor can see you in their patient list.`);
     } catch (error) {
       console.error('Error approving request:', error);
       alert(error.message || 'An unexpected error occurred. Please try again.');
@@ -274,6 +305,25 @@ export default function DashboardScreen({ navigation, route }) {
     }
   };
 
+  // Consent handlers
+  const handleConsentStatusChange = (accepted) => {
+    // Always close the modal first
+    setConsentModalVisible(false);
+
+    // If this is part of an approval process, complete the approval
+    if (pendingApprovalRequest) {
+      if (accepted) {
+        // Proceed with approval and add to database
+        handleApprovalAfterConsent(pendingApprovalRequest, accepted);
+      } else {
+        // Consent was declined - show message and cancel approval
+        alert('❌ Consent declined. You will not be added to the doctor\'s patient list.');
+      }
+      // Clear the pending request
+      setPendingApprovalRequest(null);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -299,7 +349,8 @@ export default function DashboardScreen({ navigation, route }) {
           </Button>
         </View>
       ) : (
-      <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', padding: 20, backgroundColor: '#f3f6fa' }}>
+        <>
+          <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', padding: 20, backgroundColor: '#f3f6fa' }}>
         <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#2e7d32' }}>
           {profile?.name ? t.dashWelcomeName.replace('{name}', profile.name) : t.dashWelcome}
         </Text>
@@ -932,9 +983,23 @@ export default function DashboardScreen({ navigation, route }) {
             </Button>
           </Card.Actions>
         </Card>
-      </ScrollView>
+          </ScrollView>
+
+          <PatientConsentModal
+            visible={consentModalVisible}
+            onClose={() => {
+              setConsentModalVisible(false);
+              setPendingApprovalRequest(null);
+            }}
+            patientProfile={profile}
+            assignedDoctor={pendingApprovalRequest ? {
+              email: pendingApprovalRequest.doctor_email,
+              name: pendingApprovalRequest.doctor.name
+            } : null}
+            onConsentStatusChange={handleConsentStatusChange}
+          />
+        </>
       )}
     </>
   );
 }
-

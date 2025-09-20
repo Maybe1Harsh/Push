@@ -521,33 +521,120 @@ export default function DoctorDashboardScreen({ route, navigation }) {
         <Card.Content>
           <Text
             variant="titleMedium"
-            style={{ fontWeight: "bold", marginBottom: 10 }}
+            style={{ fontWeight: "bold", marginBottom: 15 }}
           >
-            👥 All Patients
+            👥 My Patients ({patients.length})
           </Text>
-          <Divider style={{ marginBottom: 10 }} />
+          <Divider style={{ marginBottom: 15 }} />
+          
           {patients.length === 0 ? (
-            <Text>No patients found.</Text>
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text style={{ color: '#666', fontSize: 16 }}>
+                No patients found. Patients will appear here when they approve your consultation requests.
+              </Text>
+            </View>
           ) : (
-            patients.map((patient) => (
-              <Card
-                key={patient.id}
-                style={{
-                  marginBottom: 10,
-                  borderRadius: 10,
-                  backgroundColor: "#fff3e0",
-                }}
-              >
-                <Card.Content>
-                  <Text style={{ fontWeight: "bold" }}>
-                    {patient.name}
-                  </Text>
-                  <Text>{patient.email}</Text>
-                  <Text>Age: {patient.age}</Text>
-                  {patient.phone && <Text>Phone: {patient.phone}</Text>}
-                </Card.Content>
-              </Card>
-            ))
+            <View>
+              {/* Table Header */}
+              <View style={{
+                flexDirection: 'row',
+                backgroundColor: '#f5f5f5',
+                padding: 12,
+                borderRadius: 8,
+                marginBottom: 10
+              }}>
+                <Text style={{ flex: 2, fontWeight: 'bold', fontSize: 14 }}>Patient Name</Text>
+                <Text style={{ flex: 2.5, fontWeight: 'bold', fontSize: 14 }}>Email</Text>
+                <Text style={{ flex: 1, fontWeight: 'bold', fontSize: 14, textAlign: 'center' }}>Age</Text>
+                <Text style={{ flex: 1, fontWeight: 'bold', fontSize: 14, textAlign: 'center' }}>Actions</Text>
+              </View>
+
+              {/* Table Rows */}
+              {patients.map((patient, index) => (
+                <View key={patient.id}>
+                  <View style={{
+                    flexDirection: 'row',
+                    padding: 12,
+                    backgroundColor: index % 2 === 0 ? '#fafafa' : '#ffffff',
+                    alignItems: 'center'
+                  }}>
+                    {/* Patient Name */}
+                    <View style={{ flex: 2 }}>
+                      <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#333' }}>
+                        {patient.name}
+                      </Text>
+                      <Text style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+                        ID: {patient.id.slice(0, 8)}...
+                      </Text>
+                    </View>
+
+                    {/* Email */}
+                    <View style={{ flex: 2.5 }}>
+                      <Text style={{ fontSize: 14, color: '#1976d2' }}>
+                        {patient.email}
+                      </Text>
+                    </View>
+
+                    {/* Age */}
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                      <Text style={{ 
+                        fontSize: 16, 
+                        fontWeight: 'bold', 
+                        color: '#333',
+                        backgroundColor: '#e3f2fd',
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 12
+                      }}>
+                        {patient.age}
+                      </Text>
+                    </View>
+
+                    {/* Actions */}
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                      <Button
+                        mode="outlined"
+                        compact
+                        onPress={() => {
+                          // Add action for viewing patient details
+                          console.log('View patient:', patient.name);
+                          alert(`Patient Details:\n\nName: ${patient.name}\nEmail: ${patient.email}\nAge: ${patient.age}\nDoctor: ${doctorEmail}`);
+                        }}
+                        style={{
+                          borderColor: '#1976d2',
+                          borderRadius: 20
+                        }}
+                        labelStyle={{ fontSize: 10 }}
+                      >
+                        View
+                      </Button>
+                    </View>
+                  </View>
+                  
+                  {/* Divider between rows */}
+                  {index < patients.length - 1 && (
+                    <Divider style={{ marginVertical: 1 }} />
+                  )}
+                </View>
+              ))}
+
+              {/* Table Footer with summary */}
+              <View style={{
+                marginTop: 15,
+                padding: 12,
+                backgroundColor: '#f0f7ff',
+                borderRadius: 8,
+                borderLeftWidth: 4,
+                borderLeftColor: '#1976d2'
+              }}>
+                <Text style={{ fontSize: 14, color: '#1976d2', fontWeight: 'bold' }}>
+                  📊 Summary: {patients.length} total patient{patients.length !== 1 ? 's' : ''} under your care
+                </Text>
+                <Text style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
+                  Age range: {Math.min(...patients.map(p => p.age))} - {Math.max(...patients.map(p => p.age))} years
+                </Text>
+              </View>
+            </View>
           )}
         </Card.Content>
       </Card>
