@@ -46,7 +46,7 @@ Our platform bridges ancient wisdom with cutting-edge technology to provide pers
     dashYouHaveRequests: "You have pending requests from doctors:",
     commonApprove: "Approve",
     commonReject: "Reject",
-    dashPrakritiTitle: "Prakriti Guesser",
+    dashPrakritiTitle: "Dosha Quiz",
     dashPrakritiSubtitle: "Find your Ayurvedic body type!",
     commonStart: "Start",
     dashNearbyReco: "Nearby Doctor Recommendation",
@@ -149,7 +149,7 @@ Our platform bridges ancient wisdom with cutting-edge technology to provide pers
     dashYouHaveRequests: "आपके पास डॉक्टरों से लंबित अनुरोध हैं:",
     commonApprove: "स्वीकृत करें",
     commonReject: "अस्वीकृत करें",
-    dashPrakritiTitle: "प्रकृति गेसर",
+    dashPrakritiTitle: "दोष क्विज़",
     dashPrakritiSubtitle: "अपना आयुर्वेदिक शरीर प्रकार जानें!",
     commonStart: "शुरू करें",
     dashNearbyReco: "नज़दीकी डॉक्टर की सिफारिश",
@@ -206,5 +206,8 @@ Our platform bridges ancient wisdom with cutting-edge technology to provide pers
     pgDisclaimer: "यह क्विज़ केवल जानकारी के लिए है और चिकित्सा सलाह का विकल्प नहीं है।",
   },
 };
+
+
+
 
 
