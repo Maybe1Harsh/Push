@@ -285,9 +285,7 @@ export default function PanchkarmaScreen({ route, navigation }) {
         <Button
           mode="contained"
           onPress={openPrescriptionModal}
-          style={styles.primaryButton}
-          contentStyle={styles.buttonContent}
-          labelStyle={styles.buttonLabel}
+          style={{ flex: 1, backgroundColor: '#2e7d32' }}
           icon="plus"
         >
           New Prescription
