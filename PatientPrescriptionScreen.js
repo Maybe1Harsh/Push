@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, RefreshControl } from 'react-native';
+import { View, ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { Card, Text, Divider, Button, IconButton, ActivityIndicator } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from './supabaseClient';
 
 export default function PatientPrescriptionScreen({ route }) {
@@ -66,46 +67,69 @@ export default function PatientPrescriptionScreen({ route }) {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa' }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 16 }}>Loading prescriptions...</Text>
-      </View>
+      <LinearGradient
+        colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+        style={styles.gradient}
+      >
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#4caf50" />
+          <Text style={styles.loadingText}>Loading prescriptions...</Text>
+        </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <ScrollView 
-      contentContainerStyle={{ padding: 16, backgroundColor: '#f3f6fa', flexGrow: 1 }}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    <LinearGradient
+      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+      style={styles.gradient}
     >
-      <Card style={{ marginBottom: 16, borderRadius: 12, padding: 16 }}>
-        <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 8 }}>My Prescriptions</Text>
-        <Text style={{ fontSize: 16, color: '#666' }}>Patient: {patientName}</Text>
-        <Text style={{ fontSize: 14, color: '#666' }}>Email: {patientEmail}</Text>
-      </Card>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#4caf50']} />}
+      >
+        {/* Header Section */}
+        <View style={styles.headerSection}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoEmoji}>💊</Text>
+          </View>
+          <Text variant="headlineLarge" style={styles.title}>
+            My Prescriptions
+          </Text>
+          <Text style={styles.subtitle}>
+            Patient: {patientName}
+          </Text>
+          <Text style={styles.emailText}>
+            {patientEmail}
+          </Text>
+        </View>
 
       {error ? (
-        <Card style={{ marginBottom: 16, borderRadius: 12, padding: 16, backgroundColor: '#ffebee' }}>
-          <Text style={{ color: '#d32f2f', fontWeight: 'bold' }}>Error</Text>
-          <Text style={{ color: '#d32f2f' }}>{error}</Text>
-          <Button mode="outlined" onPress={fetchPrescriptions} style={{ marginTop: 8 }}>
-            Retry
-          </Button>
+        <Card style={styles.errorCard}>
+          <Card.Content>
+            <Text style={styles.errorTitle}>Error</Text>
+            <Text style={styles.errorText}>{error}</Text>
+            <Button mode="outlined" onPress={fetchPrescriptions} style={styles.errorButton}>
+              Retry
+            </Button>
+          </Card.Content>
         </Card>
       ) : null}
 
       {prescriptions.length === 0 ? (
-        <Card style={{ borderRadius: 12, padding: 16, alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, color: '#666', textAlign: 'center' }}>
-            No prescriptions found.
-          </Text>
-          <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginTop: 8 }}>
-            Pull down to refresh or contact your doctor.
-          </Text>
+        <Card style={styles.card}>
+          <Card.Content style={styles.emptyCardContent}>
+            <Text style={styles.emptyTitle}>
+              No prescriptions found.
+            </Text>
+            <Text style={styles.emptySubtitle}>
+              Pull down to refresh or contact your doctor.
+            </Text>
+          </Card.Content>
         </Card>
       ) : (
         prescriptions.map((prescription, index) => (
-          <Card key={prescription.id || index} style={{ marginBottom: 16, borderRadius: 12 }}>
+          <Card key={prescription.id || index} style={styles.card}>
             <Card.Content>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Dr. {prescription.doctor_name}</Text>
@@ -141,6 +165,122 @@ export default function PatientPrescriptionScreen({ route }) {
           </Card>
         ))
       )}
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollContainer: {
+    padding: 20,
+    flexGrow: 1,
+  },
+  headerSection: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  logoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 50,
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logoEmoji: {
+    fontSize: 35,
+  },
+  title: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#424242',
+    textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  emailText: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    color: '#424242',
+    fontSize: 16,
+  },
+  card: {
+    marginBottom: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  errorCard: {
+    marginBottom: 16,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255, 235, 238, 0.95)',
+    shadowColor: '#d32f2f',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  errorTitle: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  errorText: {
+    color: '#d32f2f',
+    marginBottom: 12,
+  },
+  errorButton: {
+    borderColor: '#d32f2f',
+    marginTop: 8,
+  },
+  emptyCardContent: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    color: '#424242',
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
+  },
+});

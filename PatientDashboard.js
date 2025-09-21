@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Button } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // Data for the 10 basic yoga exercises
 const yogaExercises = [
@@ -52,21 +53,33 @@ export default function PatientDashboard({ navigation, route }) {
   const [showYoga, setShowYoga] = React.useState(false);
 
   return (
-    <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text variant="headlineMedium" style={styles.title}>
-          Welcome to Your Dashboard
-        </Text>
+    <LinearGradient
+      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+      style={styles.gradient}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        {/* Header Section */}
+        <View style={styles.headerSection}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoEmoji}>🧘‍♀️</Text>
+          </View>
+          <Text variant="headlineLarge" style={styles.title}>
+            Welcome to Your Dashboard
+          </Text>
+          <Text style={styles.subtitle}>
+            Your wellness journey starts here
+          </Text>
+        </View>
         <Button
           mode="contained"
-          style={styles.button}
+          style={styles.primaryButton}
           onPress={() => navigation.navigate('PatientAppointment', { patientEmail })}
         >
           Request Appointment
         </Button>
         <Button
           mode="contained"
-          style={styles.button}
+          style={styles.primaryButton}
           onPress={() => setShowYoga(!showYoga)} // Toggle visibility
         >
           {showYoga ? 'Hide Yoga Exercises' : 'Show Basic Yoga Exercises'}
@@ -74,7 +87,7 @@ export default function PatientDashboard({ navigation, route }) {
 
         {/* Conditionally render the list of yoga exercises */}
         {showYoga && (
-          <View style={styles.yogaSection}>
+          <View style={styles.yogaCard}>
             <Text style={styles.yogaHeader}>10 Basic Yoga Exercises</Text>
             {yogaExercises.map((exercise, index) => (
               <View key={index} style={styles.yogaItem}>
@@ -85,52 +98,101 @@ export default function PatientDashboard({ navigation, route }) {
           </View>
         )}
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  gradient: {
     flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     padding: 20,
-    backgroundColor: '#e8f5e9', // Light green background
+  },
+  headerSection: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  logoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 50,
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logoEmoji: {
+    fontSize: 35,
   },
   title: {
-    marginBottom: 20,
+    color: '#2e7d32',
+    fontWeight: 'bold',
     textAlign: 'center',
-    color: '#1b5e20', // Darker green for text
+    marginBottom: 8,
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
-  button: {
+  subtitle: {
+    fontSize: 16,
+    color: '#424242',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  primaryButton: {
     marginVertical: 8,
-    backgroundColor: '#2e7d32', // A pleasant, medium green
+    backgroundColor: '#4caf50',
+    borderRadius: 25,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  yogaSection: {
+  yogaCard: {
     marginTop: 20,
-    padding: 15,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#a5d6a7', // Light green border
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
   },
   yogaHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1b5e20',
+    color: '#2e7d32',
     textAlign: 'center',
     marginBottom: 15,
   },
   yogaItem: {
     marginBottom: 15,
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4caf50',
   },
   yogaTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#2e7d32', // Medium green for pose names
+    color: '#2e7d32',
+    marginBottom: 4,
   },
   yogaInstructions: {
     fontSize: 14,
-    color: '#388e3c', // Lighter, readable green for instructions
-    marginTop: 4,
+    color: '#424242',
     lineHeight: 20,
   },
 });

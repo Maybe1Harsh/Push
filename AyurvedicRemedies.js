@@ -5,44 +5,44 @@ import { useTranslation } from './hooks/useTranslation';
 
 const healthIssues = {
   "🤕 Headache": {
-    explanation: "Headaches can be caused by a variety of factors including tension, dehydration, and lack of sleep.",
-    remedies: "1. 🫖 Ginger tea: Ginger has anti-inflammatory properties that can help reduce headache symptoms. 2. 🌿 Peppermint oil: Applying diluted peppermint oil to the temples may help alleviate tension headaches. 3. 💜 Lavender oil: Inhaling lavender essential oil has been shown to reduce headache symptoms in some people.",
-    avoid: "1. ☕ Excessive caffeine: While small amounts of caffeine can help some headaches, too much can lead to rebound headaches. 2. 🍷 Alcohol: Alcohol can cause dehydration and trigger headaches in some individuals. 3. 🧀 Aged cheeses and processed meats: These contain tyramine, which can trigger headaches in some people.",
+    explanation: "Headaches can be caused by a variety of factors including tension, dehydration, and lack of sleep. They may also be linked to eye strain, poor posture, or excessive screen time.",
+    remedies: "1. 🫖 Ginger tea: Ginger has anti-inflammatory properties that can help reduce headache symptoms.\n2. 🌿 Peppermint oil: Applying diluted peppermint oil to the temples may help alleviate tension headaches.\n3. 💜 Lavender oil: Inhaling lavender essential oil has been shown to reduce headache symptoms in some people.\n4. 💧 Hydration: Drinking enough water can relieve dehydration-related headaches.\n5. 🧘 Relaxation techniques: Yoga or meditation can reduce stress-induced headaches.",
+    avoid: "1. ☕ Excessive caffeine: While small amounts can help, too much can cause rebound headaches.\n2. 🍷 Alcohol: Alcohol can cause dehydration and trigger headaches in some individuals.\n3. 🧀 Aged cheeses and processed meats: These contain tyramine, which can trigger headaches.\n4. 📱 Excess screen time: Prolonged digital use without breaks can worsen headaches.",
     color: "#ffcdd2",
     iconColor: "#d32f2f"
   },
   "🦴 Back Pain": {
-    explanation: "Back pain can result from strain, poor posture, or underlying medical conditions.",
-    remedies: "1. 🥛 Turmeric milk: Turmeric has anti-inflammatory properties that may help reduce pain. 2. 🫖 Ginger compress: A warm compress with ginger can help soothe muscle pain. 3. 🛁 Epsom salt bath: Magnesium sulfate in Epsom salt can help relax muscles and reduce pain.",
-    avoid: "1. 🪑 Prolonged sitting or standing: Take breaks and change positions regularly. 2. 🏋️ Heavy lifting: Avoid lifting heavy objects improperly, which can strain the back. 3. 👠 High heels: They can alter your posture and exacerbate back pain.",
+    explanation: "Back pain can result from strain, poor posture, injuries, or underlying medical conditions like slipped disc or arthritis.",
+    remedies: "1. 🥛 Turmeric milk: Turmeric has anti-inflammatory properties that may help reduce pain.\n2. 🫖 Ginger compress: A warm compress with ginger can help soothe muscle pain.\n3. 🛁 Epsom salt bath: Magnesium sulfate in Epsom salt can help relax muscles and reduce pain.\n4. 🧘 Gentle yoga: Stretching and yoga improve flexibility and posture.\n5. 💆 Massage therapy: Improves circulation and relieves muscle tension.",
+    avoid: "1. 🪑 Prolonged sitting or standing: Take breaks and change positions regularly.\n2. 🏋️ Heavy lifting: Avoid lifting heavy objects improperly.\n3. 👠 High heels: They can alter posture and worsen back pain.\n4. 🛋️ Poor sleeping posture: Use a supportive mattress and pillow.",
     color: "#ffe0b2",
     iconColor: "#f57c00"
   },
   "🍽️ Digestive Issues": {
-    explanation: "Digestive issues can include bloating, gas, constipation, and diarrhea.",
-    remedies: "1. 🌿 Peppermint tea: It can help relax the digestive system and reduce bloating. 2. 🫚 Ginger: It can help with nausea and digestion. 3. 🌱 Fennel seeds: Chewing on fennel seeds can help reduce bloating and gas.",
-    avoid: "1. 🍟 Fatty and fried foods: They can exacerbate digestive issues. 2. 🥛 Dairy products: They can cause problems for those who are lactose intolerant. 3. 🍬 Artificial sweeteners: They can cause gas and bloating in some people.",
+    explanation: "Digestive issues can include bloating, gas, constipation, diarrhea, and indigestion. These may be caused by diet, stress, or infections.",
+    remedies: "1. 🌿 Peppermint tea: Helps relax the digestive system and reduce bloating.\n2. 🫚 Ginger: Aids nausea and improves digestion.\n3. 🌱 Fennel seeds: Chewing fennel seeds reduces bloating and gas.\n4. 🥭 Papaya: Contains enzymes that improve digestion.\n5. 🥛 Buttermilk with cumin: An Ayurvedic remedy for indigestion.",
+    avoid: "1. 🍟 Fatty and fried foods: They worsen digestive discomfort.\n2. 🥛 Dairy products: Problematic for lactose-intolerant individuals.\n3. 🍬 Artificial sweeteners: May cause gas and bloating.\n4. 🌶️ Spicy foods: Can irritate the stomach lining.",
     color: "#f3e5f5",
     iconColor: "#7b1fa2"
   },
   "🌸 Skin Rashes": {
-    explanation: "Skin rashes can be caused by allergies, irritants, or underlying health conditions.",
-    remedies: "1. 🌵 Aloe vera: Its gel can soothe irritated skin and reduce inflammation. 2. 🥥 Coconut oil: It has moisturizing properties and can help reduce dryness and itching. 3. 🌾 Oatmeal baths: Colloidal oatmeal can help soothe itchy and inflamed skin.",
-    avoid: "1. 🧴 Harsh soaps and detergents: They can irritate the skin further. 2. ✋ Scratching: It can worsen the rash and lead to infection. 3. 👕 Tight clothing: It can cause friction and irritate the rash.",
+    explanation: "Skin rashes can be caused by allergies, infections, heat, or underlying health conditions such as eczema or psoriasis.",
+    remedies: "1. 🌵 Aloe vera: Soothes irritated skin and reduces inflammation.\n2. 🥥 Coconut oil: Moisturizes and reduces itching.\n3. 🌾 Oatmeal baths: Relieves itchy and inflamed skin.\n4. 🍯 Honey: Has antibacterial properties that help healing.\n5. 🌿 Neem paste: An Ayurvedic remedy for skin irritation.",
+    avoid: "1. 🧴 Harsh soaps and detergents: They worsen irritation.\n2. ✋ Scratching: Increases the risk of infection.\n3. 👕 Tight clothing: Causes friction and worsens rash.\n4. ☀️ Excess sun exposure: May aggravate skin conditions.",
     color: "#fce4ec",
     iconColor: "#c2185b"
   },
   "😴 Fatigue": {
-    explanation: "Fatigue is a feeling of constant tiredness or weakness and can be physical, mental, or both.",
-    remedies: "1. 🌿 Ashwagandha: This herb is known to reduce stress and fatigue. 2. 🌺 Rhodiola Rosea: It may help improve energy levels and reduce fatigue. 3. 🌱 Ginseng: It can help boost energy and reduce fatigue.",
-    avoid: "1. 🍷 Alcohol: It can interfere with sleep and contribute to fatigue. 2. ☕ Caffeine: While it may provide a temporary boost, it can lead to a crash later. 3. 🍭 Sugary foods: They can cause a rapid spike and drop in energy levels.",
+    explanation: "Fatigue is a constant feeling of tiredness or weakness, which can be physical, mental, or both. It may result from poor sleep, anemia, or stress.",
+    remedies: "1. 🌿 Ashwagandha: Reduces stress and fatigue.\n2. 🌺 Rhodiola Rosea: Improves energy levels.\n3. 🌱 Ginseng: Boosts energy and reduces tiredness.\n4. 🚶 Light exercise: Walking or stretching improves circulation.\n5. 💧 Staying hydrated: Prevents dehydration-related fatigue.",
+    avoid: "1. 🍷 Alcohol: Interferes with sleep.\n2. ☕ Excess caffeine: Leads to energy crashes.\n3. 🍭 Sugary foods: Cause rapid energy spikes and drops.\n4. ⏰ Irregular sleep: Disrupts circadian rhythm.",
     color: "#e8eaf6",
     iconColor: "#3f51b5"
   },
   "😰 Stress": {
-    explanation: "Stress is a feeling of emotional or physical tension and can come from any event or thought that makes you feel frustrated, angry, or nervous.",
-    remedies: "1. 🧘 Meditation: It can help calm the mind and reduce stress. 2. 🫁 Deep breathing exercises: They can help reduce tension and promote relaxation. 3. 🧘‍♀️ Yoga: It combines physical movement, meditation, and breathing exercises to help reduce stress.",
-    avoid: "1. 📅 Overcommitment: Learn to say no to tasks or activities that can lead to excessive stress. 2. 🚭 Unhealthy coping mechanisms: Such as smoking, excessive drinking, or overeating. 3. 🙈 Ignoring the problem: Face stressors head-on rather than avoiding them.",
+    explanation: "Stress is a state of mental or emotional strain that can negatively impact both mind and body.",
+    remedies: "1. 🧘 Meditation: Calms the mind.\n2. 🫁 Deep breathing: Promotes relaxation.\n3. 🧘‍♀️ Yoga: Combines physical and mental relaxation.\n4. 🎶 Listening to music: Helps reduce anxiety.\n5. 🌿 Brahmi herb: Traditionally used in Ayurveda for stress relief.",
+    avoid: "1. 📅 Overcommitment: Leads to burnout.\n2. 🚭 Smoking and alcohol: Harmful coping methods.\n3. 🙈 Ignoring issues: Worsens stress in long term.\n4. 💻 Excess screen time: Can increase mental fatigue.",
     color: "#e0f2f1",
     iconColor: "#00695c"
   },
@@ -133,7 +133,16 @@ export default function AyurvedicRemedies() {
   const { t } = useTranslation();
   const [selected, setSelected] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [remedyBoxVisible, setRemedyBoxVisible] = useState(false);
+
+  // Function to remove emojis and keep only the text
+  const removeEmojis = (text) => {
+    return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+  };
+
+  // Function to clean text content (remedies and avoid text)
+  const cleanTextContent = (text) => {
+    return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+  };
 
   const handleSelect = (issueKey) => {
     setSelected(issueKey);
@@ -147,9 +156,7 @@ export default function AyurvedicRemedies() {
 
   return (
     <PaperProvider>
-      <TouchableWithoutFeedback onPress={() => setRemedyBoxVisible(true)}>
-        <View style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={true}>
             <Text style={styles.header}>{t.remTitle}</Text>
             <View style={styles.grid}>
               {Object.keys(healthIssues).map((issue) => (
@@ -167,12 +174,13 @@ export default function AyurvedicRemedies() {
                   onPress={() => handleSelect(issue)}
                 >
                   <Card.Title 
-                    title={issue} 
+                    title={removeEmojis(issue)} 
                     titleStyle={{ 
-                      fontSize: 16, 
+                      fontSize: 14, 
                       textAlign: 'center',
-                      color: healthIssues[issue].iconColor,
+                      color: '#424242',
                       fontWeight: '700',
+                      lineHeight: 18,
                     }} 
                   />
                 </Card>
@@ -180,14 +188,13 @@ export default function AyurvedicRemedies() {
             </View>
             {/* Disclaimer (subtle, visible once per screen) */}
             <Text style={{ 
-              fontSize: 13, 
-              color: '#2e7d32', 
+              fontSize: 12, 
+              color: '#424242', 
               textAlign: 'center', 
               marginVertical: 15, 
-              opacity: 0.9,
-              backgroundColor: '#c8e6c9',
-              padding: 12,
-              borderRadius: 10,
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              padding: 10,
+              borderRadius: 8,
               fontStyle: 'italic',
             }}>
               {t.remDisclaimer}
@@ -196,13 +203,13 @@ export default function AyurvedicRemedies() {
               {/* Existing Modal for health issues */}
               <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={styles.modal}>
                 {selected && (
-                  <ScrollView>
-                    <Text style={styles.modalTitle}>{selected}</Text>
+                  <ScrollView style={{ maxHeight: 500 }} showsVerticalScrollIndicator={true}>
+                    <Text style={styles.modalTitle}>{removeEmojis(selected)}</Text>
                     <Text style={styles.modalExplanation}>{healthIssues[selected].explanation}</Text>
-                    <Text style={styles.modalSection}>🌿 {t.remRemedies}</Text>
-                    <Text style={styles.modalText}>{healthIssues[selected].remedies}</Text>
-                    <Text style={styles.modalSection}>🍎 {t.remAvoid}</Text>
-                    <Text style={styles.modalText}>{healthIssues[selected].avoid}</Text>
+                    <Text style={styles.modalSection}>{t.remRemedies}</Text>
+                    <Text style={styles.modalText}>{cleanTextContent(healthIssues[selected].remedies)}</Text>
+                    <Text style={styles.modalSection}>{t.remAvoid}</Text>
+                    <Text style={styles.modalText}>{cleanTextContent(healthIssues[selected].avoid)}</Text>
                     <Button 
                       mode="contained" 
                       onPress={hideModal} 
@@ -219,37 +226,8 @@ export default function AyurvedicRemedies() {
                   </ScrollView>
                 )}
               </Modal>
-              {/* Remedy Box Modal, can be opened from anywhere */}
-              <Modal visible={remedyBoxVisible} onDismiss={() => setRemedyBoxVisible(false)} contentContainerStyle={styles.remedyBoxModal}>
-                <Text style={styles.remedyBoxTitle}>{t.remBox}</Text>
-                <Text style={styles.remedyBoxContent}>{t.remBoxContent}</Text>
-                <Button 
-                  mode="contained" 
-                  onPress={() => setRemedyBoxVisible(false)} 
-                  style={{ 
-                    marginTop: 15,
-                    backgroundColor: '#4caf50',
-                    borderRadius: 15,
-                    elevation: 3,
-                  }}
-                  contentStyle={{ paddingVertical: 5 }}
-                >
-                  {t.commonClose}
-                </Button>
-              </Modal>
             </Portal>
-            {/* Floating Button to open Remedy Box */}
-            <Button
-              mode="contained"
-              style={styles.fab}
-              onPress={() => setRemedyBoxVisible(true)}
-              icon="plus"
-            >
-              {t.remBox}
-            </Button>
           </ScrollView>
-        </View>
-      </TouchableWithoutFeedback>
     </PaperProvider>
   );
 }
@@ -258,7 +236,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f0f8f0',
+    backgroundColor: 'transparent',
   },
   header: {
     marginBottom: 30,
@@ -277,27 +255,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    width: 185,
-    height: 120,
-    margin: 12,
-    borderRadius: 25,
+    width: 165,
+    height: 100,
+    margin: 8,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 10,
-    elevation: 8,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    borderLeftWidth: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    elevation: 6,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    borderLeftWidth: 4,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   cardSelected: {
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#1b5e20',
-    elevation: 12,
-    transform: [{ scale: 1.05 }],
-    shadowOpacity: 0.4,
+    elevation: 8,
+    transform: [{ scale: 1.02 }],
+    shadowOpacity: 0.3,
   },
   image: {
     width: 70,
@@ -319,103 +298,44 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   modalTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#1b5e20',
+    marginBottom: 15,
+    color: '#2e7d32',
     textAlign: 'center',
-    textShadowColor: 'rgba(27, 94, 32, 0.2)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
   },
   modalExplanation: {
     fontStyle: 'italic',
     color: '#424242',
-    marginBottom: 20,
+    marginBottom: 15,
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: 16,
     backgroundColor: '#f8fdf8',
-    padding: 15,
-    borderRadius: 15,
-    borderLeftWidth: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderLeftWidth: 3,
     borderLeftColor: '#81c784',
-    lineHeight: 24,
+    lineHeight: 20,
   },
   modalSection: {
     fontWeight: 'bold',
-    color: '#1b5e20',
-    marginBottom: 10,
-    marginTop: 20,
-    fontSize: 20,
-    textShadowColor: 'rgba(27, 94, 32, 0.1)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    color: '#2e7d32',
+    marginBottom: 8,
+    marginTop: 15,
+    fontSize: 18,
   },
   modalText: {
-    marginBottom: 18,
+    marginBottom: 15,
     color: '#424242',
     textAlign: 'left',
-    fontSize: 16,
-    lineHeight: 26,
+    fontSize: 15,
+    lineHeight: 22,
     backgroundColor: '#fafafa',
-    padding: 15,
-    borderRadius: 12,
-    borderLeftWidth: 4,
+    padding: 12,
+    borderRadius: 10,
+    borderLeftWidth: 3,
     borderLeftColor: '#66bb6a',
     borderWidth: 1,
     borderColor: 'rgba(102, 187, 106, 0.2)',
-  },
-  // Remedy Box Modal styles
-  remedyBoxModal: {
-    backgroundColor: '#ffffff',
-    padding: 35,
-    margin: 24,
-    borderRadius: 30,
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#4caf50',
-    elevation: 15,
-    shadowColor: '#4caf50',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-  },
-  remedyBoxTitle: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#1b5e20',
-    marginBottom: 20,
-    textAlign: 'center',
-    textShadowColor: 'rgba(27, 94, 32, 0.2)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
-  },
-  remedyBoxContent: {
-    fontSize: 18,
-    color: '#424242',
-    marginBottom: 30,
-    textAlign: 'center',
-    lineHeight: 28,
-    backgroundColor: '#f8fdf8',
-    padding: 20,
-    borderRadius: 15,
-    borderLeftWidth: 4,
-    borderLeftColor: '#66bb6a',
-  },
-  fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 30,
-    borderRadius: 40,
-    elevation: 12,
-    backgroundColor: '#4caf50',
-    zIndex: 10,
-    paddingHorizontal: 12,
-    shadowColor: '#2e7d32',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    borderWidth: 2,
-    borderColor: '#ffffff',
   },
 });

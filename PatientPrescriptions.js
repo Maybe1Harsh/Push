@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, RefreshControl } from 'react-native';
+import { ScrollView, View, RefreshControl, StyleSheet } from 'react-native';
 import { Card, Text, Divider, Button, ActivityIndicator, Chip, SegmentedButtons } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from './supabaseClient';
 
 export default function PatientPrescriptions({ route }) {
@@ -178,13 +179,13 @@ export default function PatientPrescriptions({ route }) {
     if (!Array.isArray(treatmentArray)) return null;
 
     return treatmentArray.map((treatment, index) => (
-      <Card key={index} style={{ marginLeft: 8, marginBottom: 8, backgroundColor: '#f0f8f0' }}>
+      <Card key={index} style={styles.treatmentCard}>
         <Card.Content style={{ paddingVertical: 12 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
             <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#2e7d32' }}>
               {treatment.name}
             </Text>
-            <Chip size="small" style={{ backgroundColor: '#c8e6c9' }}>
+            <Chip size="small" style={styles.categoryChip}>
               {treatment.category}
             </Chip>
           </View>
@@ -331,44 +332,59 @@ export default function PatientPrescriptions({ route }) {
 
   if (!patientEmail) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa', padding: 20 }}>
-        <Text style={{ color: '#d32f2f', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginBottom: 8 }}>
+      <LinearGradient
+        colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+        style={[styles.gradient, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}
+      >
+        <Text style={[styles.errorTitle, { fontSize: 18, textAlign: 'center', marginBottom: 8 }]}>
           No patient email found!
         </Text>
-        <Text style={{ color: '#666', textAlign: 'center' }}>
+        <Text style={[styles.bodyText, { textAlign: 'center' }]}>
           Please make sure you're logged in properly.
         </Text>
-        <Text style={{ color: '#666', fontSize: 12, marginTop: 8 }}>
+        <Text style={[styles.captionText, { marginTop: 8, textAlign: 'center' }]}>
           Debug: {JSON.stringify(route?.params)}
         </Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa' }}>
+      <LinearGradient
+        colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+        style={[styles.gradient, { justifyContent: 'center', alignItems: 'center' }]}
+      >
         <ActivityIndicator size="large" color="#4caf50" />
-        <Text style={{ marginTop: 16, color: '#666' }}>Loading prescriptions...</Text>
-      </View>
+        <Text style={[styles.bodyText, { marginTop: 16, textAlign: 'center' }]}>Loading prescriptions...</Text>
+      </LinearGradient>
     );
   }
 
   return (
-    <ScrollView 
-      contentContainerStyle={{ padding: 16, backgroundColor: '#f3f6fa', flexGrow: 1 }}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#4caf50']} />}
+    <LinearGradient
+      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+      style={styles.gradient}
     >
-      {/* Header Card */}
-      <Card style={{ marginBottom: 16, borderRadius: 12 }}>
-        <Card.Content>
-          <Text style={{ fontWeight: 'bold', fontSize: 20, color: '#2e7d32', marginBottom: 4 }}>
-            My Ayurvedic Prescriptions
-          </Text>
-          <Text style={{ color: '#666', fontSize: 16 }}>Patient: {patientName}</Text>
-          <Text style={{ color: '#666', fontSize: 14 }}>Email: {patientEmail}</Text>
-        </Card.Content>
-      </Card>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#4caf50']} />}
+      >
+      {/* Header Section */}
+      <View style={styles.headerSection}>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoEmoji}>🩺</Text>
+        </View>
+        <Text variant="headlineLarge" style={styles.title}>
+          My Prescriptions
+        </Text>
+        <Text style={styles.subtitle}>
+          Patient: {patientName}
+        </Text>
+        <Text style={styles.emailText}>
+          {patientEmail}
+        </Text>
+      </View>
 
       {/* Tab Navigation */}
       <SegmentedButtons
@@ -386,16 +402,27 @@ export default function PatientPrescriptions({ route }) {
             icon: 'leaf',
           },
         ]}
-        style={{ marginBottom: 16 }}
+        style={styles.tabContainer}
+        theme={{
+          colors: {
+            primary: '#000000',
+            onPrimary: '#ffffff',
+            secondary: '#000000',
+            onSecondary: '#ffffff',
+            surface: '#ffffff',
+            onSurface: '#000000',
+            outline: '#000000',
+          }
+        }}
       />
 
       {/* Error Card */}
       {error ? (
-        <Card style={{ marginBottom: 16, borderRadius: 12, backgroundColor: '#ffebee' }}>
+        <Card style={styles.errorCard}>
           <Card.Content>
-            <Text style={{ color: '#d32f2f', fontWeight: 'bold', fontSize: 16, marginBottom: 8 }}>Error</Text>
-            <Text style={{ color: '#d32f2f', marginBottom: 12 }}>{error}</Text>
-            <Button mode="outlined" onPress={fetchPrescriptions} textColor="#d32f2f">
+            <Text style={styles.errorTitle}>Error</Text>
+            <Text style={styles.errorText}>{error}</Text>
+            <Button mode="outlined" onPress={fetchPrescriptions} style={styles.errorButton} textColor="#d32f2f">
               Retry
             </Button>
           </Card.Content>
@@ -406,15 +433,15 @@ export default function PatientPrescriptions({ route }) {
       {activeTab === 'medicines' && (
         <>
           {prescriptions.length === 0 ? (
-            <Card style={{ borderRadius: 12 }}>
-              <Card.Content style={{ alignItems: 'center', padding: 32 }}>
-                <Text style={{ fontSize: 18, color: '#666', textAlign: 'center', marginBottom: 8 }}>
+            <Card style={styles.card}>
+              <Card.Content style={styles.emptyCardContent}>
+                <Text style={styles.emptyTitle}>
                   No medicine prescriptions found
                 </Text>
-                <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 16 }}>
+                <Text style={styles.emptySubtitle}>
                   Your doctor hasn't sent any medicine prescriptions yet.
                 </Text>
-                <Button mode="contained" onPress={onRefresh} style={{ backgroundColor: '#4caf50' }}>
+                <Button mode="contained" onPress={onRefresh} style={styles.primaryButton}>
                   Refresh
                 </Button>
               </Card.Content>
@@ -424,7 +451,7 @@ export default function PatientPrescriptions({ route }) {
               const prescData = parsePrescriptionData(presc.prescription_data);
               
               return (
-                <Card key={presc.id || idx} style={{ marginBottom: 16, borderRadius: 12, elevation: 3 }}>
+                <Card key={presc.id || idx} style={styles.card}>
                   <Card.Content>
                     {/* Header with Doctor and Date */}
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -484,38 +511,38 @@ export default function PatientPrescriptions({ route }) {
       {activeTab === 'panchkarma' && (
         <>
           {panchkarmaPrescriptions.length === 0 ? (
-            <Card style={{ borderRadius: 12 }}>
-              <Card.Content style={{ alignItems: 'center', padding: 32 }}>
-                <Text style={{ fontSize: 18, color: '#666', textAlign: 'center', marginBottom: 8 }}>
+            <Card style={styles.card}>
+              <Card.Content style={styles.emptyCardContent}>
+                <Text style={styles.emptyTitle}>
                   No Panchkarma prescriptions found
                 </Text>
-                <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 16 }}>
+                <Text style={styles.emptySubtitle}>
                   Your doctor hasn't prescribed any Panchkarma treatments yet.
                 </Text>
-                <Button mode="contained" onPress={onRefresh} style={{ backgroundColor: '#4caf50' }}>
+                <Button mode="contained" onPress={onRefresh} style={styles.primaryButton}>
                   Refresh
                 </Button>
               </Card.Content>
             </Card>
           ) : (
             panchkarmaPrescriptions.map((presc, idx) => (
-              <Card key={presc.id || idx} style={{ marginBottom: 16, borderRadius: 12, elevation: 3 }}>
+              <Card key={presc.id || idx} style={styles.card}>
                 <Card.Content>
                   {/* Header with Doctor and Date */}
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <View>
-                      <Text style={{ fontWeight: 'bold', fontSize: 18, color: '#4caf50' }}>
+                      <Text style={styles.prescriptionTitle}>
                         Dr. {presc.doctor_name || 'Unknown Doctor'}
                       </Text>
-                      <Text style={{ color: '#666', fontSize: 14, marginTop: 2 }}>
+                      <Text style={styles.bodyText}>
                         🌿 Panchkarma Treatment Plan
                       </Text>
                     </View>
                     <View style={{ alignItems: 'flex-end' }}>
-                      <Text style={{ fontSize: 12, color: '#666', fontWeight: 'bold' }}>
+                      <Text style={styles.captionText}>
                         {formatDate(presc.created_at)}
                       </Text>
-                      <Chip size="small" style={{ marginTop: 4, backgroundColor: '#c8e6c9' }}>
+                      <Chip size="small" style={styles.statusChip}>
                         {presc.status || 'Prescribed'}
                       </Chip>
                     </View>
@@ -524,7 +551,7 @@ export default function PatientPrescriptions({ route }) {
                   <Divider style={{ marginVertical: 8, backgroundColor: '#e0e0e0' }} />
                   
                   {/* Treatments Section */}
-                  <Text style={{ fontWeight: 'bold', marginBottom: 12, color: '#4caf50', fontSize: 16 }}>
+                  <Text style={styles.sectionTitle}>
                     🌿 Prescribed Treatments:
                   </Text>
                   {renderPanchkarmaTreatments(presc.treatments)}
@@ -533,10 +560,10 @@ export default function PatientPrescriptions({ route }) {
                   {presc.notes && (
                     <>
                       <Divider style={{ marginVertical: 12 }} />
-                      <Text style={{ fontWeight: 'bold', marginBottom: 4, color: '#4caf50', fontSize: 16 }}>
+                      <Text style={styles.sectionTitle}>
                         Doctor's Notes:
                       </Text>
-                      <Text style={{ marginLeft: 8, color: '#666', lineHeight: 20, fontStyle: 'italic' }}>
+                      <Text style={[styles.bodyText, { marginLeft: 8, fontStyle: 'italic' }]}>
                         {presc.notes}
                       </Text>
                     </>
@@ -553,6 +580,177 @@ export default function PatientPrescriptions({ route }) {
           )}
         </>
       )}
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
+  scrollContainer: {
+    padding: 20,
+    flexGrow: 1,
+  },
+  headerSection: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  logoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 50,
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logoEmoji: {
+    fontSize: 35,
+  },
+  title: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#424242',
+    textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  emailText: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+  },
+  tabContainer: {
+    marginBottom: 16,
+    marginHorizontal: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    elevation: 4,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  card: {
+    marginBottom: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  errorCard: {
+    marginBottom: 16,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255, 235, 238, 0.95)',
+    shadowColor: '#d32f2f',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  errorTitle: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  errorText: {
+    color: '#d32f2f',
+    marginBottom: 12,
+  },
+  errorButton: {
+    borderColor: '#d32f2f',
+  },
+  emptyCardContent: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    color: '#424242',
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  primaryButton: {
+    backgroundColor: '#4caf50',
+    borderRadius: 25,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  // Text styles for better consistency
+  bodyText: {
+    color: '#424242',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  captionText: {
+    color: '#666666',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  sectionTitle: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  prescriptionTitle: {
+    color: '#4caf50',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  doctorName: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  statusChip: {
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    borderColor: '#4caf50',
+  },
+  treatmentCard: {
+    marginBottom: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 12,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  categoryChip: {
+    backgroundColor: '#e8f5e8',
+    borderColor: '#4caf50',
+  },
+});

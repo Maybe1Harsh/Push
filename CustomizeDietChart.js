@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, StyleSheet } from 'react-native';
 import { Text, Card, Button, TextInput, Portal, Modal, Provider as PaperProvider } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from './supabaseClient';
 import { useTranslation } from './hooks/useTranslation';
 
@@ -21,9 +22,14 @@ export default function CustomizeDietChartScreen({ navigation, route }) {
     if (!route) {
       return (
         <PaperProvider>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa' }}>
-            <Text style={{ color: '#d32f2f', fontSize: 18 }}>No navigation object received!</Text>
-          </View>
+          <LinearGradient
+            colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+            style={styles.gradient}
+          >
+            <View style={styles.centerContainer}>
+              <Text style={styles.errorTitle}>No navigation object received!</Text>
+            </View>
+          </LinearGradient>
         </PaperProvider>
       );
     }
@@ -31,17 +37,22 @@ export default function CustomizeDietChartScreen({ navigation, route }) {
     if (!params || !template || !template.meals) {
       return (
         <PaperProvider>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa' }}>
-            <Text variant="headlineMedium" style={{ color: '#d32f2f', marginBottom: 16 }}>
-              Error: Diet template not found.
-            </Text>
-            <Text style={{ color: '#666', textAlign: 'center' }}>
-              Please go back and select a diet template again.
-            </Text>
-            <Button mode="contained" style={{ marginTop: 24 }} onPress={() => navigation?.goBack && navigation.goBack()}>
-              Go Back
-            </Button>
-          </View>
+          <LinearGradient
+            colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+            style={styles.gradient}
+          >
+            <View style={styles.centerContainer}>
+              <Text variant="headlineMedium" style={styles.errorTitle}>
+                Error: Diet template not found.
+              </Text>
+              <Text style={styles.errorSubtitle}>
+                Please go back and select a diet template again.
+              </Text>
+              <Button mode="contained" style={styles.primaryButton} onPress={() => navigation?.goBack && navigation.goBack()}>
+                Go Back
+              </Button>
+            </View>
+          </LinearGradient>
         </PaperProvider>
       );
     }
@@ -133,16 +144,28 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
 
     return (
       <PaperProvider>
-        <ScrollView style={{ flex: 1, backgroundColor: '#f3f6fa' }}>
-          <View style={{ padding: 20 }}>
-            <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#2e7d32', textAlign: 'center' }}>
-              Customize Diet Chart
-            </Text>
+        <LinearGradient
+          colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+          style={styles.gradient}
+        >
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {/* Header Section */}
+            <View style={styles.headerSection}>
+              <View style={styles.logoContainer}>
+                <Text style={styles.logoEmoji}>🍽️</Text>
+              </View>
+              <Text variant="headlineLarge" style={styles.title}>
+                Customize Diet Chart
+              </Text>
+              <Text style={styles.subtitle}>
+                Template: {template.name}
+              </Text>
+            </View>
             
-            <Card style={{ marginBottom: 20, borderRadius: 16, backgroundColor: '#fff' }}>
+            <Card style={styles.card}>
               <Card.Content>
-                <Text variant="titleMedium" style={{ color: '#2e7d32', marginBottom: 16 }}>
-                  Template: {template.name}
+                <Text variant="titleMedium" style={styles.sectionTitle}>
+                  📋 Diet Plan Customization
                 </Text>
                 
                 <TextInput
@@ -152,7 +175,9 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   multiline
                   numberOfLines={2}
                   mode="outlined"
-                  style={{ marginBottom: 12 }}
+                  style={styles.textInput}
+                  textColor="#000000"
+                  contentStyle={{ color: '#000000' }}
                 />
                 
                 <TextInput
@@ -162,7 +187,9 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   multiline
                   numberOfLines={2}
                   mode="outlined"
-                  style={{ marginBottom: 12 }}
+                  style={styles.textInput}
+                  textColor="#000000"
+                  contentStyle={{ color: '#000000' }}
                 />
                 
                 <TextInput
@@ -172,7 +199,9 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   multiline
                   numberOfLines={2}
                   mode="outlined"
-                  style={{ marginBottom: 12 }}
+                  style={styles.textInput}
+                  textColor="#000000"
+                  contentStyle={{ color: '#000000' }}
                 />
                 
                 <TextInput
@@ -182,7 +211,9 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   multiline
                   numberOfLines={2}
                   mode="outlined"
-                  style={{ marginBottom: 12 }}
+                  style={styles.textInput}
+                  textColor="#000000"
+                  contentStyle={{ color: '#000000' }}
                 />
                 
                 <TextInput
@@ -192,7 +223,9 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   multiline
                   numberOfLines={2}
                   mode="outlined"
-                  style={{ marginBottom: 12 }}
+                  style={styles.textInput}
+                  textColor="#000000"
+                  contentStyle={{ color: '#000000' }}
                 />
                 
                 <TextInput
@@ -202,33 +235,40 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   multiline
                   numberOfLines={3}
                   mode="outlined"
-                  style={{ marginBottom: 16 }}
+                  style={styles.textInput}
                   placeholder="Add any specific instructions or modifications..."
+                  textColor="#000000"
+                  contentStyle={{ color: '#000000' }}
                 />
               </Card.Content>
             </Card>
 
-            <Text variant="titleMedium" style={{ marginBottom: 16, color: '#2e7d32' }}>
-              Assign to Patient:
+            <Text variant="titleMedium" style={styles.sectionTitle}>
+              👤 Assign to Patient:
             </Text>
             
             {patients.length === 0 ? (
-              <Card style={{ padding: 20, borderRadius: 16, backgroundColor: '#fff' }}>
-                <Text style={{ textAlign: 'center', color: '#666' }}>
-                  No patients assigned yet. Add patients to assign diet charts.
-                </Text>
+              <Card style={styles.card}>
+                <Card.Content style={styles.emptyCardContent}>
+                  <Text style={styles.emptyTitle}>
+                    No patients assigned yet
+                  </Text>
+                  <Text style={styles.emptySubtitle}>
+                    Add patients to assign diet charts.
+                  </Text>
+                </Card.Content>
               </Card>
             ) : (
               patients.map((patient) => (
-                <Card key={patient.id} style={{ marginBottom: 15, borderRadius: 16, backgroundColor: '#fff' }}>
+                <Card key={patient.id} style={styles.card}>
                   <Card.Content>
-                    <Text variant="titleMedium" style={{ color: '#2e7d32', marginBottom: 8 }}>
+                    <Text variant="titleMedium" style={styles.patientName}>
                       {patient.name}
                     </Text>
-                    <Text style={{ color: '#666', marginBottom: 12 }}>
+                    <Text style={styles.bodyText}>
                       Email: {patient.email}
                     </Text>
-                    <Text style={{ color: '#666', marginBottom: 12 }}>
+                    <Text style={styles.bodyText}>
                       Age: {patient.age}
                     </Text>
                   </Card.Content>
@@ -236,7 +276,7 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                     <Button 
                       mode="contained" 
                       onPress={() => handleAssignDiet(patient)}
-                      style={{ backgroundColor: '#4caf50' }}
+                      style={styles.primaryButton}
                     >
                       Assign Diet Chart
                     </Button>
@@ -244,24 +284,23 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                 </Card>
               ))
             )}
-          </View>
 
           <Portal>
             <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} 
-                   contentContainerStyle={{ backgroundColor: 'white', padding: 24, margin: 24, borderRadius: 16 }}>
-              <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32' }}>
+                   contentContainerStyle={styles.modalContent}>
+              <Text variant="titleLarge" style={styles.modalTitle}>
                 Assign Diet Chart to {selectedPatient?.name}
               </Text>
               
-              <Text style={{ marginBottom: 16, color: '#666' }}>
+              <Text style={styles.modalText}>
                 Are you sure you want to assign this customized diet chart to {selectedPatient?.name}?
               </Text>
               
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={styles.modalButtons}>
                 <Button 
                   mode="outlined" 
                   onPress={() => setModalVisible(false)}
-                  style={{ flex: 1, marginRight: 8 }}
+                  style={styles.cancelButton}
                 >
                   Cancel
                 </Button>
@@ -270,24 +309,189 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   onPress={handleSaveDietChart}
                   loading={loading}
                   disabled={loading}
-                  style={{ flex: 1, marginLeft: 8, backgroundColor: '#4caf50' }}
+                  style={styles.confirmButton}
                 >
                   Assign Diet Chart
                 </Button>
               </View>
             </Modal>
           </Portal>
-        </ScrollView>
+          </ScrollView>
+        </LinearGradient>
       </PaperProvider>
     );
   } catch (err) {
     // Catch any unexpected error and show it
     return (
       <PaperProvider>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa' }}>
-          <Text style={{ color: '#d32f2f', fontSize: 18 }}>Unexpected error: {String(err.message || err)}</Text>
-        </View>
+        <LinearGradient
+          colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+          style={styles.gradient}
+        >
+          <View style={styles.centerContainer}>
+            <Text style={styles.errorTitle}>Unexpected error: {String(err.message || err)}</Text>
+          </View>
+        </LinearGradient>
       </PaperProvider>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  headerSection: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  logoContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 50,
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logoEmoji: {
+    fontSize: 35,
+  },
+  title: {
+    color: '#000000',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#000000',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  card: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  sectionTitle: {
+    color: '#000000',
+    fontWeight: 'bold',
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  textInput: {
+    marginBottom: 12,
+    backgroundColor: '#ffffff',
+  },
+  emptyCardContent: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    color: '#000000',
+    textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#000000',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  patientName: {
+    color: '#000000',
+    marginBottom: 8,
+  },
+  bodyText: {
+    color: '#000000',
+    marginBottom: 8,
+    fontSize: 14,
+  },
+  primaryButton: {
+    backgroundColor: '#4caf50',
+    borderRadius: 25,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    padding: 24,
+    margin: 24,
+    borderRadius: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 12,
+  },
+  modalTitle: {
+    marginBottom: 16,
+    color: '#000000',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  modalText: {
+    marginBottom: 16,
+    color: '#000000',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cancelButton: {
+    flex: 1,
+    marginRight: 8,
+    borderColor: '#4caf50',
+  },
+  confirmButton: {
+    flex: 1,
+    marginLeft: 8,
+    backgroundColor: '#4caf50',
+  },
+  errorTitle: {
+    color: '#d32f2f',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  errorSubtitle: {
+    color: '#666666',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+});

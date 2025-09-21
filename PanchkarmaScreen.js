@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, View, Alert } from 'react-native';
+import { ScrollView, View, Alert, StyleSheet } from 'react-native';
 import { Text, Card, Button, Divider, DataTable, Modal, Portal, TextInput, List, Chip } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from './supabaseClient';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -261,25 +262,32 @@ export default function PanchkarmaScreen({ route, navigation }) {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: '#f9fafc' }}>
+    <LinearGradient
+      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+      style={styles.gradient}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Header */}
-      <Card style={{ margin: 16, backgroundColor: '#4caf50' }}>
-        <Card.Content>
-          <Text variant="headlineMedium" style={{ color: 'white', fontWeight: 'bold' }}>
-            🌿 Panchkarma Center
-          </Text>
-          <Text style={{ color: 'white', marginTop: 5 }}>
-            Prescribe traditional Ayurvedic treatments
-          </Text>
-        </Card.Content>
-      </Card>
+      <View style={styles.headerSection}>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoEmoji}>🌿</Text>
+        </View>
+        <Text variant="headlineLarge" style={styles.title}>
+          Panchkarma Center
+        </Text>
+        <Text style={styles.subtitle}>
+          Prescribe traditional Ayurvedic treatments
+        </Text>
+      </View>
 
       {/* Action Buttons */}
-      <View style={{ flexDirection: 'row', margin: 16, gap: 10 }}>
+      <View style={styles.buttonContainer}>
         <Button
           mode="contained"
           onPress={openPrescriptionModal}
-          style={{ flex: 1, backgroundColor: '#2e7d32' }}
+          style={styles.primaryButton}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.buttonLabel}
           icon="plus"
         >
           New Prescription
@@ -287,16 +295,18 @@ export default function PanchkarmaScreen({ route, navigation }) {
         <Button
           mode="outlined"
           onPress={() => navigation.goBack()}
-          style={{ flex: 1 }}
+          style={styles.secondaryButton}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.secondaryButtonLabel}
         >
           Back to Dashboard
         </Button>
       </View>
 
       {/* Treatments Library */}
-      <Card style={{ margin: 16 }}>
+      <Card style={styles.card}>
         <Card.Content>
-          <Text variant="titleLarge" style={{ fontWeight: 'bold', marginBottom: 16 }}>
+          <Text variant="titleLarge" style={styles.sectionTitle}>
             📚 Panchkarma Treatments Library
           </Text>
           
@@ -324,17 +334,17 @@ export default function PanchkarmaScreen({ route, navigation }) {
 
           <DataTable>
             <DataTable.Header>
-              <DataTable.Title>Treatment</DataTable.Title>
-              <DataTable.Title>Category</DataTable.Title>
-              <DataTable.Title>Duration</DataTable.Title>
+              <DataTable.Title style={styles.tableHeader}>Treatment</DataTable.Title>
+              <DataTable.Title style={styles.tableHeader}>Category</DataTable.Title>
+              <DataTable.Title style={styles.tableHeader}>Duration</DataTable.Title>
             </DataTable.Header>
 
             {filteredTreatments.map(treatment => (
               <DataTable.Row key={treatment.id}>
                 <DataTable.Cell style={{ flex: 2 }}>
                   <View>
-                    <Text style={{ fontWeight: 'bold' }}>{treatment.name}</Text>
-                    <Text style={{ fontSize: 12, color: '#666' }} numberOfLines={2}>
+                    <Text style={styles.treatmentName}>{treatment.name}</Text>
+                    <Text style={styles.treatmentDescription} numberOfLines={2}>
                       {treatment.description}
                     </Text>
                   </View>
@@ -350,27 +360,27 @@ export default function PanchkarmaScreen({ route, navigation }) {
       </Card>
 
       {/* Recent Prescriptions */}
-      <Card style={{ margin: 16 }}>
+      <Card style={styles.card}>
         <Card.Content>
-          <Text variant="titleLarge" style={{ fontWeight: 'bold', marginBottom: 16 }}>
+          <Text variant="titleLarge" style={styles.sectionTitle}>
             📋 Recent Prescriptions ({sentPrescriptions.length})
           </Text>
           
           {sentPrescriptions.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: '#666', paddingVertical: 20 }}>
+            <Text style={{ textAlign: 'center', color: '#424242', paddingVertical: 20 }}>
               No prescriptions sent yet.
             </Text>
           ) : (
             sentPrescriptions.slice(0, 5).map((prescription, index) => (
-              <Card key={index} style={{ marginBottom: 12, backgroundColor: '#f0f8f0' }}>
+              <Card key={index} style={styles.prescriptionCard}>
                 <Card.Content>
                   <Text style={{ fontWeight: 'bold' }}>
                     Patient: {prescription.patient_name}
                   </Text>
-                  <Text style={{ color: '#666' }}>
+                  <Text style={{ color: '#000000' }}>
                     Email: {prescription.patient_email}
                   </Text>
-                  <Text style={{ color: '#666' }}>
+                  <Text style={{ color: '#000000' }}>
                     Date: {new Date(prescription.created_at).toLocaleDateString('en-IN')}
                   </Text>
                   <Text style={{ marginTop: 8 }}>
@@ -393,21 +403,15 @@ export default function PanchkarmaScreen({ route, navigation }) {
         <Modal
           visible={modalVisible}
           onDismiss={() => setModalVisible(false)}
-          contentContainerStyle={{
-            backgroundColor: 'white',
-            padding: 20,
-            margin: 20,
-            borderRadius: 8,
-            maxHeight: '80%'
-          }}
+          contentContainerStyle={styles.modalContainer}
         >
           <ScrollView>
-            <Text variant="titleLarge" style={{ fontWeight: 'bold', marginBottom: 16 }}>
+            <Text variant="titleLarge" style={styles.modalTitle}>
               Create Panchkarma Prescription
             </Text>
 
             {/* Patient Selection */}
-            <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+            <Text variant="titleMedium" style={styles.modalSectionTitle}>
               Select Patient:
             </Text>
             <TextInput
@@ -438,7 +442,7 @@ export default function PanchkarmaScreen({ route, navigation }) {
             <Divider style={{ marginVertical: 16 }} />
 
             {/* Treatment Selection */}
-            <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+            <Text variant="titleMedium" style={styles.modalSectionTitle}>
               Select Treatments:
             </Text>
             <TextInput
@@ -487,7 +491,9 @@ export default function PanchkarmaScreen({ route, navigation }) {
               <Button
                 mode="outlined"
                 onPress={() => setModalVisible(false)}
-                style={{ flex: 1, marginRight: 8 }}
+                style={[styles.secondaryButton, { marginRight: 8 }]}
+                contentStyle={styles.buttonContent}
+                labelStyle={styles.secondaryButtonLabel}
               >
                 Cancel
               </Button>
@@ -496,7 +502,9 @@ export default function PanchkarmaScreen({ route, navigation }) {
                 onPress={sendPanchkarmaPrescription}
                 loading={loading}
                 disabled={!selectedPatient || selectedTreatments.length === 0}
-                style={{ flex: 1, marginLeft: 8, backgroundColor: '#4caf50' }}
+                style={[styles.primaryButton, { marginLeft: 8 }]}
+                contentStyle={styles.buttonContent}
+                labelStyle={styles.buttonLabel}
               >
                 Send Prescription
               </Button>
@@ -504,6 +512,154 @@ export default function PanchkarmaScreen({ route, navigation }) {
           </ScrollView>
         </Modal>
       </Portal>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  headerSection: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  logoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 50,
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logoEmoji: {
+    fontSize: 35,
+  },
+  title: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#424242',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  card: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  prescriptionCard: {
+    marginBottom: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 12,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  sectionTitle: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginVertical: 10,
+    gap: 10,
+  },
+  primaryButton: {
+    flex: 1,
+    backgroundColor: '#4caf50',
+    borderRadius: 25,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  secondaryButton: {
+    flex: 1,
+    borderColor: '#4caf50',
+    borderRadius: 25,
+    borderWidth: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  buttonContent: {
+    paddingVertical: 8,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  secondaryButtonLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4caf50',
+  },
+  modalContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 25,
+    margin: 20,
+    borderRadius: 15,
+    maxHeight: '80%',
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 12,
+  },
+  treatmentName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#2e7d32',
+    marginBottom: 2,
+  },
+  treatmentDescription: {
+    fontSize: 12,
+    color: '#424242',
+    lineHeight: 16,
+  },
+  tableHeader: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+  },
+  modalTitle: {
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#2e7d32',
+    textAlign: 'center',
+  },
+  modalSectionTitle: {
+    marginBottom: 8,
+    color: '#2e7d32',
+    fontWeight: '600',
+  },
+});
