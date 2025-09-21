@@ -22,6 +22,7 @@ import PatientAppointmentScreen from './PatientAppointment';
 import PatientAppointmentViewScreen from './PatientAppointmentView';
 import PrescriptionPage from './PrescriptionPage';
 import PanchkarmaScreen from './PanchkarmaScreen';
+import YogaWellness from './YogaWellness';
 import { View, Text } from 'react-native';
 
 console.log('App.js loaded');
@@ -136,6 +137,7 @@ export default function App() {
                 initialParams={{ profile: storedProfile }} 
               />
               <Stack.Screen name="CalorieCounter" component={CalorieCounter} />
+              <Stack.Screen name="YogaWellness" component={YogaWellness} options={{ title: 'Yoga & Wellness' }} />
               <Stack.Screen name="NearbyDieticiansScreen" component={NearbyDieticiansScreen} />
               <Stack.Screen name="AddPatient" component={AddPatientScreen} />
               <Stack.Screen

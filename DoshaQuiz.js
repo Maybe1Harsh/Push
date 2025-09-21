@@ -200,7 +200,7 @@ export default function DoshaQuiz() {
               <>
                 <View style={{ alignItems: 'center', marginBottom: 20 }}>
                   <Text variant="headlineLarge" style={{ color: '#388e3c', fontWeight: 'bold', marginBottom: 8 }}>
-                    🌿 Dosha Quiz
+                    🌿 Know Your Dosha
                   </Text>
                   <Text style={{ color: '#6d4c41', fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
                      Discover your Ayurvedic mind-body constitution (Dosha) by answering a few simple questions.

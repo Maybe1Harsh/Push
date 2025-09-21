@@ -11,7 +11,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
 
   if (!doctorEmail) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f6fa' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#e8f5e8' }}>
         <Text style={{ color: '#d32f2f', fontSize: 18 }}>No doctor profile found. Please log in again.</Text>
       </View>
     );
@@ -466,11 +466,11 @@ export default function DoctorDashboardScreen({ route, navigation }) {
         contentContainerStyle={{
           flexGrow: 1,
           padding: 20,
-          backgroundColor: "#f9fafc",
+          backgroundColor: "#e8f5e8",
         }}
       >
       {/* Header */}
-      <Card style={{ marginBottom: 20, backgroundColor: "#1976d2" }}>
+      <Card style={{ marginBottom: 20, backgroundColor: "#4caf50" }}>
         <Card.Content>
           <Text
             variant="headlineMedium"
@@ -491,7 +491,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           onPress={handleLogout} 
           style={{ 
             borderColor: '#d32f2f',
-            backgroundColor: 'white'
+            backgroundColor: '#f1f8e9'
           }}
           textColor="#d32f2f"
           icon="logout"
@@ -523,7 +523,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           style={{
             flex: 1,
             marginLeft: 8,
-            backgroundColor: "#1976d2",
+            backgroundColor: "#4caf50",
             borderRadius: 10,
             paddingVertical: 5,
           }}
@@ -541,7 +541,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           style={{
             flex: 1,
             marginRight: 8,
-            backgroundColor: "#ff9800",
+            backgroundColor: "#4caf50",
             borderRadius: 10,
             paddingVertical: 5,
           }}
@@ -566,7 +566,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       </View>
 
       {/* Patients Section */}
-      <Card style={{ marginBottom: 20, borderRadius: 12 }}>
+      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
         <Card.Content>
           <Text
             variant="titleMedium"
@@ -578,7 +578,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           
           {patients.length === 0 ? (
             <View style={{ padding: 20, alignItems: 'center' }}>
-              <Text style={{ color: '#666', fontSize: 16 }}>
+              <Text style={{ color: '#000000', fontSize: 16 }}>
                 No patients found. Patients will appear here when they approve your consultation requests.
               </Text>
             </View>
@@ -587,7 +587,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               {/* Table Header */}
               <View style={{
                 flexDirection: 'row',
-                backgroundColor: '#f5f5f5',
+                backgroundColor: '#e8f5e8',
                 padding: 12,
                 borderRadius: 8,
                 marginBottom: 10
@@ -604,7 +604,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   <View style={{
                     flexDirection: 'row',
                     padding: 12,
-                    backgroundColor: index % 2 === 0 ? '#fafafa' : '#ffffff',
+                    backgroundColor: index % 2 === 0 ? '#f1f8e9' : '#ffffff',
                     alignItems: 'center'
                   }}>
                     {/* Patient Name */}
@@ -612,14 +612,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                       <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#333' }}>
                         {patient.name}
                       </Text>
-                      <Text style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+                      <Text style={{ fontSize: 12, color: '#000000', marginTop: 2 }}>
                         ID: {patient.id.slice(0, 8)}...
                       </Text>
                     </View>
 
                     {/* Email */}
                     <View style={{ flex: 2.5 }}>
-                      <Text style={{ fontSize: 14, color: '#1976d2' }}>
+                      <Text style={{ fontSize: 14, color: '#2e7d32' }}>
                         {patient.email}
                       </Text>
                     </View>
@@ -630,7 +630,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                         fontSize: 16, 
                         fontWeight: 'bold', 
                         color: '#333',
-                        backgroundColor: '#e3f2fd',
+                        backgroundColor: '#c8e6c9',
                         paddingHorizontal: 8,
                         paddingVertical: 4,
                         borderRadius: 12
@@ -650,7 +650,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                           alert(`Patient Details:\n\nName: ${patient.name}\nEmail: ${patient.email}\nAge: ${patient.age}\nDoctor: ${doctorEmail}`);
                         }}
                         style={{
-                          borderColor: '#1976d2',
+                          borderColor: '#4caf50',
                           borderRadius: 20
                         }}
                         labelStyle={{ fontSize: 10 }}
@@ -671,15 +671,15 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               <View style={{
                 marginTop: 15,
                 padding: 12,
-                backgroundColor: '#f0f7ff',
+                backgroundColor: '#e8f5e8',
                 borderRadius: 8,
                 borderLeftWidth: 4,
-                borderLeftColor: '#1976d2'
+                borderLeftColor: '#4caf50'
               }}>
-                <Text style={{ fontSize: 14, color: '#1976d2', fontWeight: 'bold' }}>
+                <Text style={{ fontSize: 14, color: '#2e7d32', fontWeight: 'bold' }}>
                   📊 Summary: {patients.length} total patient{patients.length !== 1 ? 's' : ''} under your care
                 </Text>
-                <Text style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
+                <Text style={{ fontSize: 12, color: '#000000', marginTop: 4 }}>
                   Age range: {Math.min(...patients.map(p => p.age))} - {Math.max(...patients.map(p => p.age))} years
                 </Text>
               </View>
@@ -689,7 +689,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       </Card>
 
       {/* Today's Schedule Section */}
-      <Card style={{ marginBottom: 20, borderRadius: 12 }}>
+      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
         <Card.Content>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <Text
@@ -740,7 +740,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
 
           {/* Date Selector */}
           <View style={{ 
-            backgroundColor: '#e3f2fd', 
+            backgroundColor: '#c8e6c9', 
             padding: 12, 
             borderRadius: 8, 
             marginBottom: 10,
@@ -749,8 +749,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             alignItems: 'center'
           }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: '#666', marginBottom: 2 }}>Viewing Schedule For:</Text>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1976d2' }}>
+              <Text style={{ fontSize: 12, color: '#000000', marginBottom: 2 }}>Viewing Schedule For:</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2e7d32' }}>
                 {formatDateForDisplay(selectedDate)}
               </Text>
             </View>
@@ -758,7 +758,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               mode="contained"
               onPress={() => setShowDatePicker(true)}
               compact
-              style={{ backgroundColor: '#1976d2' }}
+              style={{ backgroundColor: '#4caf50' }}
             >
               Change Date
             </Button>
@@ -800,7 +800,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           {/* Schedule Summary */}
           {todaySchedule.length > 0 && (
             <View style={{ 
-              backgroundColor: '#f5f5f5', 
+              backgroundColor: '#e8f5e8', 
               padding: 12, 
               borderRadius: 8, 
               marginBottom: 10,
@@ -811,19 +811,19 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 <Text style={{ fontWeight: 'bold', color: '#4caf50' }}>
                   {todaySchedule.filter(item => item.type === 'manual_schedule').length}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#666' }}>Available Slots</Text>
+                <Text style={{ fontSize: 12, color: '#000000' }}>Available Slots</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
                 <Text style={{ fontWeight: 'bold', color: '#ff9800' }}>
                   {todaySchedule.filter(item => item.type === 'appointment').length}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#666' }}>Appointments</Text>
+                <Text style={{ fontSize: 12, color: '#000000' }}>Appointments</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
                 <Text style={{ fontWeight: 'bold', color: '#2196f3' }}>
                   {todaySchedule.length}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#666' }}>Total Items</Text>
+                <Text style={{ fontSize: 12, color: '#000000' }}>Total Items</Text>
               </View>
             </View>
           )}
@@ -831,7 +831,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           <Divider style={{ marginBottom: 10 }} />
           {todaySchedule.length === 0 ? (
             <View style={{ alignItems: 'center', paddingVertical: 20 }}>
-              <Text style={{ color: '#666', marginBottom: 12, textAlign: 'center' }}>
+              <Text style={{ color: '#000000', marginBottom: 12, textAlign: 'center' }}>
                 No schedule found for {formatDateForDisplay(selectedDate).toLowerCase()}.
               </Text>
               <Button
@@ -844,7 +844,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     doctorName: doctorName
                   });
                 }}
-                style={{ backgroundColor: '#1976d2' }}
+                style={{ backgroundColor: '#4caf50' }}
               >
                 Add Schedule
               </Button>
@@ -903,13 +903,13 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                       </Text>
                       
                       {item.type === 'manual_schedule' && item.description && (
-                        <Text style={{ color: '#666', fontSize: 12 }}>
+                        <Text style={{ color: '#000000', fontSize: 12 }}>
                           {item.description}
                         </Text>
                       )}
                       
                       {item.type === 'appointment' && item.notes && (
-                        <Text style={{ color: '#666', fontSize: 12, fontStyle: 'italic' }}>
+                        <Text style={{ color: '#000000', fontSize: 12, fontStyle: 'italic' }}>
                           Notes: {item.notes}
                         </Text>
                       )}
@@ -938,7 +938,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       </Card>
 
       {/* Appointment Requests Section */}
-      <Card style={{ marginBottom: 20, borderRadius: 12 }}>
+      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
         <Card.Content>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <Text
@@ -964,7 +964,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           </View>
           <Divider style={{ marginBottom: 10 }} />
           {appointments.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: '#666', paddingVertical: 16 }}>
+            <Text style={{ textAlign: 'center', color: '#000000', paddingVertical: 16 }}>
               No pending appointment requests.
             </Text>
           ) : (
@@ -973,7 +973,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 key={app.id}
                 style={{
                   marginBottom: 12,
-                  backgroundColor: '#fff3e0',
+                  backgroundColor: '#c8e6c9',
                   borderRadius: 8
                 }}
               >
@@ -981,11 +981,11 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
                     Patient: {app.patient_email}
                   </Text>
-                  <Text style={{ color: '#666', marginBottom: 4 }}>
+                  <Text style={{ color: '#000000', marginBottom: 4 }}>
                     Requested: {new Date(app.requested_time).toLocaleString('en-IN')}
                   </Text>
                   {app.notes && (
-                    <Text style={{ color: '#666', fontStyle: 'italic', marginBottom: 8 }}>
+                    <Text style={{ color: '#000000', fontStyle: 'italic', marginBottom: 8 }}>
                       Notes: {app.notes}
                     </Text>
                   )}
@@ -1022,18 +1022,18 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           visible={showDatePicker} 
           onDismiss={() => setShowDatePicker(false)} 
           contentContainerStyle={{ 
-            backgroundColor: 'white', 
+            backgroundColor: '#f1f8e9', 
             padding: 20, 
             margin: 20, 
             borderRadius: 16,
             maxHeight: '80%'
           }}
         >
-          <Text variant="titleLarge" style={{ marginBottom: 16, color: '#1976d2', textAlign: 'center' }}>
+          <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32', textAlign: 'center' }}>
             Select Date for Schedule
           </Text>
           
-          <Text style={{ marginBottom: 16, color: '#666', textAlign: 'center' }}>
+          <Text style={{ marginBottom: 16, color: '#000000', textAlign: 'center' }}>
             Choose a date to view the schedule
           </Text>
           
@@ -1047,7 +1047,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 }}
                 style={{ 
                   marginBottom: 8,
-                  backgroundColor: selectedDate === option.value ? '#1976d2' : 'transparent'
+                  backgroundColor: selectedDate === option.value ? '#4caf50' : 'transparent'
                 }}
                 contentStyle={{ paddingVertical: 8 }}
               >

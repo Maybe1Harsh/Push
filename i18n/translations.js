@@ -46,7 +46,7 @@ Our platform bridges ancient wisdom with cutting-edge technology to provide pers
     dashYouHaveRequests: "You have pending requests from doctors:",
     commonApprove: "Approve",
     commonReject: "Reject",
-    dashPrakritiTitle: "Dosha Quiz",
+    dashPrakritiTitle: "Know Your Dosha",
     dashPrakritiSubtitle: "Find your Ayurvedic body type!",
     commonStart: "Start",
     dashNearbyReco: "Nearby Doctor Recommendation",

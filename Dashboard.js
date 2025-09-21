@@ -23,15 +23,109 @@ export default function DashboardScreen({ navigation, route }) {
 
   // Fetch functions remain the same as original
   const fetchAssignedDoctor = React.useCallback(async () => {
-    // ...existing code...
+    if (!profile?.email) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('patient_requests')
+        .select(`
+          doctor_email,
+          doctor:doctor_email (
+            name,
+            email,
+            specialization
+          )
+        `)
+        .eq('patient_email', profile.email)
+        .eq('status', 'approved')
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No assigned doctor found
+          setAssignedDoctor(null);
+        } else {
+          console.error('Error fetching assigned doctor:', error);
+        }
+        return;
+      }
+
+      setAssignedDoctor(data?.doctor || null);
+    } catch (error) {
+      console.error('Error in fetchAssignedDoctor:', error);
+    }
   }, [profile]);
 
   const fetchPendingRequests = React.useCallback(async () => {
-    // ...existing code...
+    if (!profile?.email) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('patient_requests')
+        .select(`
+          *,
+          doctor:doctor_email (
+            name,
+            email,
+            specialization
+          )
+        `)
+        .eq('patient_email', profile.email)
+        .eq('status', 'pending');
+
+      if (error) {
+        console.error('Error fetching pending requests:', error);
+        return;
+      }
+
+      setPendingRequests(data || []);
+      
+      // Check for requests needing consent
+      const needsConsent = data?.find(req => 
+        req.status === 'pending' && 
+        (!req.consent_status || req.consent_status === 'pending')
+      );
+      
+      if (needsConsent) {
+        setPendingApprovalRequest(needsConsent);
+        setConsentModalVisible(true);
+      }
+    } catch (error) {
+      console.error('Error in fetchPendingRequests:', error);
+    }
   }, [profile]);
 
   const fetchScheduledAppointments = React.useCallback(async () => {
-    // ...existing code...
+    if (!profile?.email) return;
+    
+    setLoadingAppointments(true);
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          doctor:doctor_email (
+            name,
+            email,
+            specialization
+          )
+        `)
+        .eq('patient_email', profile.email)
+        .eq('status', 'scheduled')
+        .gte('appointment_date', new Date().toISOString().split('T')[0])
+        .order('appointment_date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching scheduled appointments:', error);
+        return;
+      }
+
+      setScheduledAppointments(data || []);
+    } catch (error) {
+      console.error('Error in fetchScheduledAppointments:', error);
+    } finally {
+      setLoadingAppointments(false);
+    }
   }, [profile]);
 
   React.useEffect(() => {
@@ -96,19 +190,69 @@ export default function DashboardScreen({ navigation, route }) {
   };
 
   const handleApprovalAfterConsent = async (request, consentGiven) => {
-    // ...existing code...
+    // This function would be used in doctor dashboard for approving requests after consent
+    console.log('handleApprovalAfterConsent called:', request, consentGiven);
   };
 
   const handleReject = async (request) => {
-    // ...existing code...
+    // This function would be used in doctor dashboard for rejecting requests
+    console.log('handleReject called:', request);
   };
 
-  const handleConsentStatusChange = (accepted) => {
-    // ...existing code...
+  const handleConsentStatusChange = async (accepted) => {
+    if (!pendingApprovalRequest) return;
+    
+    try {
+      const { error } = await supabase
+        .from('patient_requests')
+        .update({ 
+          consent_status: accepted ? 'accepted' : 'rejected',
+          consent_updated_at: new Date().toISOString()
+        })
+        .eq('id', pendingApprovalRequest.id);
+
+      if (error) {
+        console.error('Error updating consent status:', error);
+        return;
+      }
+
+      // Close the modal and refresh data
+      setConsentModalVisible(false);
+      setPendingApprovalRequest(null);
+      
+      // Refresh pending requests to reflect the change
+      fetchPendingRequests();
+      
+    } catch (error) {
+      console.error('Error in handleConsentStatusChange:', error);
+    }
   };
 
   const handleLogout = async () => {
-    // ...existing code...
+    try {
+      // Clear any stored user data
+      await AsyncStorage.removeItem('userProfile');
+      await AsyncStorage.removeItem('userSession');
+      
+      // Sign out from Supabase if there's an active session
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+      }
+      
+      // Navigate to Landing page
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Landing' }],
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even if there's an error, still navigate to landing
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Landing' }],
+      });
+    }
   };
 
   React.useEffect(() => {
@@ -300,7 +444,7 @@ export default function DashboardScreen({ navigation, route }) {
                     <View style={[styles.featureIcon, { backgroundColor: '#e8f5e9' }]}>
                       <Leaf size={24} color="#388e3c" />
                     </View>
-                    <Text style={styles.featureTitle}>Dosha Quiz</Text>
+                    <Text style={styles.featureTitle}>Know Your Dosha</Text>
                     <Button
                       mode="outlined"
                       onPress={() => navigation.navigate('DoshaQuiz')}
@@ -349,6 +493,20 @@ export default function DashboardScreen({ navigation, route }) {
                       style={styles.featureButton}
                     >
                       Explore
+                    </Button>
+                  </View>
+
+                  <View style={styles.featureItem}>
+                    <View style={[styles.featureIcon, { backgroundColor: '#e8f5e9' }]}>
+                      <User size={24} color="#388e3c" />
+                    </View>
+                    <Text style={styles.featureTitle}>Yoga & Wellness</Text>
+                    <Button
+                      mode="outlined"
+                      onPress={() => navigation.navigate('YogaWellness')}
+                      style={styles.featureButton}
+                    >
+                      Practice
                     </Button>
                   </View>
                 </View>
@@ -427,7 +585,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cardDescription: {
-    color: '#666',
+    color: '#000000',
     fontSize: 14,
     marginBottom: 8,
   },

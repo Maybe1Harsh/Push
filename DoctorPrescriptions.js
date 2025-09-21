@@ -278,29 +278,29 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
 
   return (
     <PaperProvider>
-      <ScrollView style={{ flex: 1, backgroundColor: '#f3f6fa' }}>
+      <ScrollView style={{ flex: 1, backgroundColor: '#e8f5e8' }}>
         <View style={{ padding: 20 }}>
           <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#2e7d32', textAlign: 'center' }}>
             Write Prescriptions & Assign Diet Charts
           </Text>
 
           {patients.length === 0 ? (
-            <Card style={{ padding: 20, borderRadius: 16, backgroundColor: '#fff' }}>
-              <Text style={{ textAlign: 'center', color: '#666' }}>
+            <Card style={{ padding: 20, borderRadius: 16, backgroundColor: '#f1f8e9' }}>
+              <Text style={{ textAlign: 'center', color: '#000000' }}>
                 No patients assigned yet. Add patients to write prescriptions.
               </Text>
             </Card>
           ) : (
             patients.map((patient) => (
-              <Card key={patient.id} style={{ marginBottom: 15, borderRadius: 16, backgroundColor: '#fff' }}>
+              <Card key={patient.id} style={{ marginBottom: 15, borderRadius: 16, backgroundColor: '#f1f8e9' }}>
                 <Card.Content>
                   <Text variant="titleMedium" style={{ color: '#2e7d32', marginBottom: 8 }}>
                     {patient.name}
                   </Text>
-                  <Text style={{ color: '#666', marginBottom: 12 }}>
+                  <Text style={{ color: '#000000', marginBottom: 12 }}>
                     Email: {patient.email}
                   </Text>
-                  <Text style={{ color: '#666', marginBottom: 12 }}>
+                  <Text style={{ color: '#000000', marginBottom: 12 }}>
                     Age: {patient.age}
                   </Text>
                 </Card.Content>
@@ -315,7 +315,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                   <Button
                     mode="contained"
                     onPress={() => handleAssignDietChart(patient)}
-                    style={{ backgroundColor: '#2196f3' }}
+                    style={{ backgroundColor: '#4caf50' }}
                   >
                     Assign Diet Chart
                   </Button>
@@ -353,6 +353,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     onChangeText={(value) => updateFormField('patientName', value)}
                     mode="outlined"
                     style={styles.input}
+                    outlineColor="#c8e6c9"
+                    activeOutlineColor="#4caf50"
+                    contentStyle={{ backgroundColor: '#f1f8e9' }}
+                    textColor="#000000"
                   />
                   
                   <View style={styles.row}>
@@ -363,6 +367,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       mode="outlined"
                       style={[styles.input, styles.halfWidth]}
                       keyboardType="numeric"
+                      outlineColor="#c8e6c9"
+                      activeOutlineColor="#4caf50"
+                      contentStyle={{ backgroundColor: '#f1f8e9' }}
+                      textColor="#000000"
                     />
                     <TextInput
                       label="Weight (kg)"
@@ -371,6 +379,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       mode="outlined"
                       style={[styles.input, styles.halfWidth]}
                       keyboardType="numeric"
+                      outlineColor="#c8e6c9"
+                      activeOutlineColor="#4caf50"
+                      contentStyle={{ backgroundColor: '#f1f8e9' }}
+                      textColor="#000000"
                     />
                   </View>
                   
@@ -381,6 +393,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       onChangeText={(value) => updateFormField('date', value)}
                       mode="outlined"
                       style={[styles.input, styles.halfWidth]}
+                      outlineColor="#c8e6c9"
+                      activeOutlineColor="#4caf50"
+                      contentStyle={{ backgroundColor: '#f1f8e9' }}
+                      textColor="#000000"
                     />
                     <TextInput
                       label="Phone Number"
@@ -389,6 +405,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       mode="outlined"
                       style={[styles.input, styles.halfWidth]}
                       keyboardType="phone-pad"
+                      outlineColor="#c8e6c9"
+                      activeOutlineColor="#4caf50"
+                      contentStyle={{ backgroundColor: '#f1f8e9' }}
+                      textColor="#000000"
                     />
                   </View>
                 </Card.Content>
@@ -405,8 +425,9 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                   <View style={styles.pickerContainer}>
                     <Picker
                       selectedValue={prescriptionForm.naadi}
-                      style={styles.picker}
+                      style={[styles.picker, { color: '#000000' }]}
                       onValueChange={(value) => updateFormField('naadi', value)}
+                      itemStyle={{ color: '#000000' }}
                     >
                       <Picker.Item label="Select Naadi" value="" />
                       {naadiOptions.map((option, index) => (
@@ -424,8 +445,9 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       <View style={styles.pickerContainer}>
                         <Picker
                           selectedValue={prescriptionForm.rasa}
-                          style={styles.picker}
+                          style={[styles.picker, { color: '#000000' }]}
                           onValueChange={(value) => updateFormField('rasa', value)}
+                          itemStyle={{ color: '#000000' }}
                         >
                           <Picker.Item label="Select" value="" />
                           {dhaatuOptions.map((option, index) => (
@@ -440,8 +462,9 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       <View style={styles.pickerContainer}>
                         <Picker
                           selectedValue={prescriptionForm.rakta}
-                          style={styles.picker}
+                          style={[styles.picker, { color: '#000000' }]}
                           onValueChange={(value) => updateFormField('rakta', value)}
+                          itemStyle={{ color: '#000000' }}
                         >
                           <Picker.Item label="Select" value="" />
                           {dhaatuOptions.map((option, index) => (
@@ -461,8 +484,9 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       <View style={styles.pickerContainer}>
                         <Picker
                           selectedValue={prescriptionForm.vata}
-                          style={styles.picker}
+                          style={[styles.picker, { color: '#000000' }]}
                           onValueChange={(value) => updateFormField('vata', value)}
+                          itemStyle={{ color: '#000000' }}
                         >
                           <Picker.Item label="Select" value="" />
                           {doshaOptions.map((option, index) => (
@@ -477,8 +501,9 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       <View style={styles.pickerContainer}>
                         <Picker
                           selectedValue={prescriptionForm.pitta}
-                          style={styles.picker}
+                          style={[styles.picker, { color: '#000000' }]}
                           onValueChange={(value) => updateFormField('pitta', value)}
+                          itemStyle={{ color: '#000000' }}
                         >
                           <Picker.Item label="Select" value="" />
                           {doshaOptions.map((option, index) => (
@@ -493,8 +518,9 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       <View style={styles.pickerContainer}>
                         <Picker
                           selectedValue={prescriptionForm.kapha}
-                          style={styles.picker}
+                          style={[styles.picker, { color: '#000000' }]}
                           onValueChange={(value) => updateFormField('kapha', value)}
+                          itemStyle={{ color: '#000000' }}
                         >
                           <Picker.Item label="Select" value="" />
                           {doshaOptions.map((option, index) => (
@@ -514,6 +540,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     style={styles.input}
                     multiline
                     numberOfLines={2}
+                    outlineColor="#c8e6c9"
+                    activeOutlineColor="#4caf50"
+                    contentStyle={{ backgroundColor: '#f1f8e9' }}
+                    textColor="#000000"
                   />
 
                   <TextInput
@@ -524,6 +554,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     style={styles.input}
                     multiline
                     numberOfLines={3}
+                    outlineColor="#c8e6c9"
+                    activeOutlineColor="#4caf50"
+                    contentStyle={{ backgroundColor: '#80926cff' }}
+                    textColor="#000000"
                   />
 
                   <TextInput
@@ -534,6 +568,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     style={styles.input}
                     multiline
                     numberOfLines={4}
+                    outlineColor="#c8e6c9"
+                    activeOutlineColor="#4caf50"
+                    contentStyle={{ backgroundColor: '#f1f8e9' }}
+                    textColor="#000000"
                   />
                 </Card.Content>
               </Card>
@@ -553,6 +591,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     multiline
                     numberOfLines={6}
                     placeholder="Enter detailed treatment plan, medications, procedures, follow-up instructions..."
+                    outlineColor="#c8e6c9"
+                    activeOutlineColor="#4caf50"
+                    contentStyle={{ backgroundColor: '#f1f8e9' }}
+                    textColor="#000000"
                   />
                 </Card.Content>
               </Card>
@@ -571,6 +613,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     mode="outlined"
                     style={styles.input}
                     placeholder="Type to search medicines..."
+                    outlineColor="#c8e6c9"
+                    activeOutlineColor="#4caf50"
+                    contentStyle={{ backgroundColor: '#f1f8e9' }}
+                    textColor="#000000"
                   />
                   
                   {/* Medicine Selection Chips */}
@@ -598,11 +644,13 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       <Menu
                         visible={dosageMenuVisible}
                         onDismiss={() => setDosageMenuVisible(false)}
+                        contentStyle={{ backgroundColor: '#f1f8e9' }}
                         anchor={
                           <Button 
                             mode="outlined" 
                             onPress={() => setDosageMenuVisible(true)}
-                            style={styles.menuButton}
+                            style={[styles.menuButton, { borderColor: '#000000' }]}
+                            textColor="#739c7cff"
                           >
                             {dosage || 'Select Dosage'}
                           </Button>
@@ -615,7 +663,8 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                               setDosage(opt); 
                               setDosageMenuVisible(false); 
                             }} 
-                            title={opt} 
+                            title={opt}
+                            titleStyle={{ color: '#000000' }}
                           />
                         ))}
                       </Menu>
@@ -626,11 +675,13 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                       <Menu
                         visible={frequencyMenuVisible}
                         onDismiss={() => setFrequencyMenuVisible(false)}
+                        contentStyle={{ backgroundColor: '#f1f8e9' }}
                         anchor={
                           <Button 
                             mode="outlined" 
                             onPress={() => setFrequencyMenuVisible(true)}
-                            style={styles.menuButton}
+                            style={[styles.menuButton, { borderColor: '#000000' }]}
+                            textColor="#000000"
                           >
                             {frequency || 'Select Frequency'}
                           </Button>
@@ -643,7 +694,8 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                               setFrequency(opt); 
                               setFrequencyMenuVisible(false); 
                             }} 
-                            title={opt} 
+                            title={opt}
+                            titleStyle={{ color: '#000000' }}
                           />
                         ))}
                       </Menu>
@@ -654,7 +706,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     mode="contained" 
                     onPress={handleAddMedicine} 
                     disabled={!selectedMed || !dosage || !frequency || prescriptions.length >= 20}
-                    style={[styles.addMedicineButton, { backgroundColor: '#ff9800' }]}
+                    style={[styles.addMedicineButton, { backgroundColor: '#4caf50' }]}
                   >
                     Add Medicine
                   </Button>
@@ -694,6 +746,10 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                     multiline
                     numberOfLines={3}
                     placeholder="Enter additional advice, lifestyle recommendations, follow-up instructions..."
+                    outlineColor="#c8e6c9"
+                    activeOutlineColor="#4caf50"
+                    contentStyle={{ backgroundColor: '#f1f8e9' }}
+                    textColor="#000000"
                   />
                 </Card.Content>
               </Card>
@@ -704,6 +760,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                   mode="outlined"
                   onPress={() => setModalVisible(false)}
                   style={[styles.button, styles.cancelButton]}
+                  textColor="#000000"
                 >
                   Cancel
                 </Button>
@@ -724,7 +781,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
         {/* Diet Chart Modal */}
         <Portal>
           <Modal visible={dietModalVisible} onDismiss={() => setDietModalVisible(false)}
-            contentContainerStyle={{ backgroundColor: 'white', padding: 24, margin: 24, borderRadius: 16 }}>
+            contentContainerStyle={{ backgroundColor: '#f1f8e9', padding: 24, margin: 24, borderRadius: 16 }}>
             <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32' }}>
               Assign Diet Chart to {selectedPatient?.name}
             </Text>
@@ -737,12 +794,17 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
               mode="outlined"
               style={{ marginBottom: 16 }}
               placeholder="Enter diet chart instructions..."
+              outlineColor="#c8e6c9"
+              activeOutlineColor="#4caf50"
+              contentStyle={{ backgroundColor: '#f1f8e9' }}
+              textColor="#000000"
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Button
                 mode="outlined"
                 onPress={() => setDietModalVisible(false)}
-                style={{ flex: 1, marginRight: 8 }}
+                style={{ flex: 1, marginRight: 8, borderColor: '#000000' }}
+                textColor="#000000"
               >
                 Cancel
               </Button>
@@ -751,7 +813,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                 onPress={handleSaveDietChart}
                 loading={loading}
                 disabled={loading || !dietChartText.trim()}
-                style={{ flex: 1, marginLeft: 8, backgroundColor: '#2196f3' }}
+                style={{ flex: 1, marginLeft: 8, backgroundColor: '#4caf50' }}
               >
                 Assign Diet Chart
               </Button>
@@ -765,7 +827,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#f1f8e9',
     margin: 10,
     borderRadius: 16,
     maxHeight: '90%',
@@ -783,6 +845,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 12,
     elevation: 2,
+    backgroundColor: '#f1f8e9',
   },
   sectionTitle: {
     color: '#2e7d32',
@@ -793,14 +856,15 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
     fontWeight: '600',
-    color: '#1976d2',
+    color: '#2e7d32',
   },
   divider: {
     marginBottom: 16,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#c8e6c9',
   },
   input: {
     marginBottom: 12,
+    backgroundColor: '#f1f8e9',
   },
   row: {
     flexDirection: 'row',
@@ -816,18 +880,19 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#424242',
+    color: '#000000',
     marginBottom: 4,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#c8e6c9',
     borderRadius: 4,
     marginBottom: 12,
-    backgroundColor: '#fafafa',
+    backgroundColor: '#f1f8e9',
   },
   picker: {
     height: 50,
+    color: '#000000',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -839,7 +904,7 @@ const styles = StyleSheet.create({
     flex: 0.48,
   },
   cancelButton: {
-    borderColor: '#666',
+    borderColor: '#000000',
   },
   saveButton: {
     backgroundColor: '#4caf50',
@@ -854,19 +919,20 @@ const styles = StyleSheet.create({
   chip: {
     marginRight: 8,
     marginBottom: 6,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#e8f5e8',
   },
   selectedChip: {
     backgroundColor: '#4caf50',
   },
   chipText: {
-    color: '#666',
+    color: '#000000',
   },
   selectedChipText: {
     color: 'white',
   },
   menuButton: {
     marginBottom: 12,
+    borderColor: '#000000',
   },
   addMedicineButton: {
     marginTop: 12,
@@ -874,7 +940,7 @@ const styles = StyleSheet.create({
   },
   medicineCounter: {
     textAlign: 'center',
-    color: '#666',
+    color: '#000000',
     fontSize: 12,
     marginBottom: 16,
   },
@@ -885,7 +951,7 @@ const styles = StyleSheet.create({
   medicineItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#e8f5e8',
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
@@ -899,7 +965,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   medicineDetails: {
-    color: '#666',
+    color: '#000000',
     fontSize: 14,
     marginTop: 4,
   },
