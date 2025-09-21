@@ -21,41 +21,34 @@ export default function DashboardScreen({ navigation, route }) {
   const [consentModalVisible, setConsentModalVisible] = React.useState(false);
   const [pendingApprovalRequest, setPendingApprovalRequest] = React.useState(null);
 
-  // Fetch functions remain the same as original
+  // Fetch assigned doctor from the new patients → doctors relationship (from 1st dashboard)
   const fetchAssignedDoctor = React.useCallback(async () => {
     if (!profile?.email) return;
-    
+
     try {
+      console.log('Fetching assigned doctor for patient:', profile.email);
+
       const { data, error } = await supabase
-        .from('patient_requests')
-        .select(`
-          doctor_email,
-          doctor:doctor_email (
-            name,
-            email,
-            specialization
-          )
-        `)
-        .eq('patient_email', profile.email)
-        .eq('status', 'approved')
+        .from('patients')
+        .select('id, name, doctor:doctors(id, name, specialization, email)')
+        .eq('email', profile.email)
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No assigned doctor found
-          setAssignedDoctor(null);
-        } else {
-          console.error('Error fetching assigned doctor:', error);
-        }
+        console.error('Error fetching assigned doctor:', error.message);
+        setAssignedDoctor(null);
         return;
       }
 
-      setAssignedDoctor(data?.doctor || null);
-    } catch (error) {
-      console.error('Error in fetchAssignedDoctor:', error);
+      setAssignedDoctor(data?.doctor ?? null);
+      console.log('Assigned doctor:', data?.doctor);
+    } catch (err) {
+      console.error('Unexpected error fetching assigned doctor:', err);
+      setAssignedDoctor(null);
     }
   }, [profile]);
 
+  // Fetch pending requests (from 2nd dashboard)
   const fetchPendingRequests = React.useCallback(async () => {
     if (!profile?.email) return;
     
@@ -95,6 +88,7 @@ export default function DashboardScreen({ navigation, route }) {
     }
   }, [profile]);
 
+  // Fetch appointments (from 2nd dashboard)
   const fetchScheduledAppointments = React.useCallback(async () => {
     if (!profile?.email) return;
     
@@ -134,53 +128,34 @@ export default function DashboardScreen({ navigation, route }) {
     fetchScheduledAppointments();
   }, [fetchPendingRequests, fetchAssignedDoctor, fetchScheduledAppointments, profile]);
 
+  // Supabase real-time listeners (from 1st dashboard with modifications)
   React.useEffect(() => {
     if (!profile?.email) return;
 
-    const channel = supabase
+    const requestsChannel = supabase
       .channel('patient_requests_changes_' + profile.email)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'patient_requests',
-        },
-        (payload) => {
-          if (payload.new && payload.new.patient_email === profile.email) {
-            fetchPendingRequests();
-          } else if (payload.old && payload.old.patient_email === profile.email) {
-            fetchPendingRequests();
-          }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'patient_requests' }, payload => {
+        if (payload.new?.patient_email === profile.email || payload.old?.patient_email === profile.email) {
+          fetchPendingRequests();
+          fetchAssignedDoctor();
         }
-      )
+      })
       .subscribe();
 
     const appointmentsChannel = supabase
       .channel('patient_appointments_changes_' + profile.email)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'appointments',
-        },
-        (payload) => {
-          if (payload.new && payload.new.patient_email === profile.email) {
-            console.log('Appointment change detected for patient:', payload);
-            fetchScheduledAppointments();
-          } else if (payload.old && payload.old.patient_email === profile.email) {
-            fetchScheduledAppointments();
-          }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' }, payload => {
+        if (payload.new?.patient_email === profile.email || payload.old?.patient_email === profile.email) {
+          fetchScheduledAppointments();
         }
-      )
+      })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(requestsChannel);
       supabase.removeChannel(appointmentsChannel);
     };
-  }, [profile?.email, fetchPendingRequests, fetchScheduledAppointments]);
+  }, [profile?.email, fetchPendingRequests, fetchScheduledAppointments, fetchAssignedDoctor]);
 
   const handleApprove = async (request) => {
     if (!request) return;
@@ -189,14 +164,8 @@ export default function DashboardScreen({ navigation, route }) {
     setConsentModalVisible(true);
   };
 
-  const handleApprovalAfterConsent = async (request, consentGiven) => {
-    // This function would be used in doctor dashboard for approving requests after consent
-    console.log('handleApprovalAfterConsent called:', request, consentGiven);
-  };
-
   const handleReject = async (request) => {
-    // This function would be used in doctor dashboard for rejecting requests
-    console.log('handleReject called:', request);
+    console.log('Reject request:', request);
   };
 
   const handleConsentStatusChange = async (accepted) => {
@@ -216,12 +185,28 @@ export default function DashboardScreen({ navigation, route }) {
         return;
       }
 
+      // If consent was accepted, update the status to approved
+      if (accepted) {
+        const { error: approveError } = await supabase
+          .from('patient_requests')
+          .update({ 
+            status: 'approved',
+            approved_at: new Date().toISOString()
+          })
+          .eq('id', pendingApprovalRequest.id);
+
+        if (approveError) {
+          console.error('Error approving request:', approveError);
+        }
+      }
+
       // Close the modal and refresh data
       setConsentModalVisible(false);
       setPendingApprovalRequest(null);
       
-      // Refresh pending requests to reflect the change
+      // Refresh data to reflect the changes
       fetchPendingRequests();
+      fetchAssignedDoctor();
       
     } catch (error) {
       console.error('Error in handleConsentStatusChange:', error);
@@ -308,11 +293,12 @@ export default function DashboardScreen({ navigation, route }) {
                 {assignedDoctor ? (
                   <View style={styles.doctorContent}>
                     <Text style={styles.doctorName}>Dr. {assignedDoctor.name}</Text>
+                    <Text style={styles.doctorSpecialization}>{assignedDoctor.specialization}</Text>
                     <Text style={styles.doctorStatus}>You are under Dr. {assignedDoctor.name}'s care</Text>
                   </View>
                 ) : (
                   <View style={styles.emptyState}>
-                    <Text style={styles.emptyText}>No doctor assigned</Text>
+                    <Text style={styles.emptyText}>No doctor assigned yet</Text>
                     <Text style={styles.emptySubtext}>Approve a request to connect with a doctor</Text>
                   </View>
                 )}
@@ -407,6 +393,7 @@ export default function DashboardScreen({ navigation, route }) {
                   {pendingRequests.map((request) => (
                     <View key={request.id} style={styles.requestItem}>
                       <Text style={styles.requestText}>Dr. {request.doctor.name}</Text>
+                      <Text style={styles.requestSpecialization}>{request.doctor.specialization}</Text>
                       <View style={styles.requestActions}>
                         <Button
                           mode="contained"
@@ -618,6 +605,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 4,
   },
+  doctorSpecialization: {
+    color: '#666',
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginBottom: 4,
+  },
   doctorStatus: {
     color: '#666',
     fontSize: 14,
@@ -665,6 +658,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     color: '#333',
+    marginBottom: 4,
+  },
+  requestSpecialization: {
+    color: '#666',
+    fontSize: 14,
+    fontStyle: 'italic',
     marginBottom: 8,
   },
   requestActions: {
