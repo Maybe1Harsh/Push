@@ -490,10 +490,13 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           mode="outlined" 
           onPress={handleLogout} 
           style={{ 
-            borderColor: '#d32f2f',
-            backgroundColor: '#f1f8e9'
+            backgroundColor: 'transparent',
+            borderColor: '#4caf50',
+            borderRadius: 10,
+            paddingVertical: 2,
           }}
-          textColor="#d32f2f"
+          textColor="#4caf50"
+          labelStyle={{ fontSize: 14 }}
           icon="logout"
           compact
         >
@@ -509,7 +512,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           style={{
             flex: 1,
             marginRight: 8,
-            backgroundColor: "#388e3c",
+            backgroundColor: "#4caf50",
             borderRadius: 10,
             paddingVertical: 5,
           }}
@@ -700,28 +703,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             </Text>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <Button
-                mode="text"
-                onPress={() => {
-                  console.log('Debug appointments triggered');
-                  debugAppointments();
-                }}
-                compact
-                icon="bug"
-              >
-                Debug
-              </Button>
-              <Button
-                mode="text"
-                onPress={() => {
-                  console.log('Manual refresh triggered');
-                  fetchScheduleForDate();
-                }}
-                compact
-                icon="refresh"
-              >
-                Refresh
-              </Button>
-              <Button
                 mode="outlined"
                 onPress={() => {
                   console.log('Navigating to DoctorSchedule with params:', route.params);
@@ -731,6 +712,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     doctorName: doctorName
                   });
                 }}
+                style={{ borderColor: '#4caf50' }}
+                textColor="#4caf50"
                 compact
               >
                 Manage Schedule
@@ -775,7 +758,13 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               mode={selectedDate === new Date().toISOString().slice(0, 10) ? "contained" : "outlined"}
               onPress={() => handleDateChange(new Date().toISOString().slice(0, 10))}
               compact
-              style={{ flex: 1 }}
+              style={{ 
+                flex: 1,
+                ...(selectedDate === new Date().toISOString().slice(0, 10) 
+                  ? { backgroundColor: '#4caf50' } 
+                  : { borderColor: '#4caf50' })
+              }}
+              textColor={selectedDate === new Date().toISOString().slice(0, 10) ? undefined : "#4caf50"}
             >
               Today
             </Button>
@@ -783,7 +772,13 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               mode={selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? "contained" : "outlined"}
               onPress={() => handleDateChange(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10))}
               compact
-              style={{ flex: 1 }}
+              style={{ 
+                flex: 1,
+                ...(selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) 
+                  ? { backgroundColor: '#4caf50' } 
+                  : { borderColor: '#4caf50' })
+              }}
+              textColor={selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#4caf50"}
             >
               Tomorrow
             </Button>
@@ -791,7 +786,13 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               mode={selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? "contained" : "outlined"}
               onPress={() => handleDateChange(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10))}
               compact
-              style={{ flex: 1 }}
+              style={{ 
+                flex: 1,
+                ...(selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) 
+                  ? { backgroundColor: '#4caf50' } 
+                  : { borderColor: '#4caf50' })
+              }}
+              textColor={selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#4caf50"}
             >
               Day After
             </Button>
@@ -957,6 +958,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   doctorName: doctorName
                 });
               }}
+              style={{ borderColor: '#4caf50' }}
+              textColor="#4caf50"
               compact
             >
               View All
