@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CureVeda",
-    "slug": "cureveda",
+    "slug": "ayur_healthplix",
     "version": "1.0.0",
     "main": "App.js",
     "orientation": "portrait",
@@ -33,6 +33,7 @@
       "eas": {
         "projectId": "d784d516-311d-4b94-95ff-fe26a53f3050"
       }
-    }
+    },
+    "owner": "harsh2566"
   }
 }

@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { View, ScrollView } from 'react-native';
 import { Text, Button, Card, RadioButton, ProgressBar, Divider } from 'react-native-paper';
@@ -142,7 +141,7 @@ function getResult(scores) {
   return sorted[0];
 }
 
-export default function PrakritiGuesserScreen() {
+export default function DoshaQuiz() {
   const { t } = useTranslation();
   const [step, setStep] = React.useState('start'); // start | quiz | result
   const [current, setCurrent] = React.useState(0);
@@ -201,11 +200,11 @@ export default function PrakritiGuesserScreen() {
               <>
                 <View style={{ alignItems: 'center', marginBottom: 20 }}>
                   <Text variant="headlineLarge" style={{ color: '#388e3c', fontWeight: 'bold', marginBottom: 8 }}>
-                    🌿 {t.pgTitle}
+                    🌿 Dosha Quiz
                   </Text>
                   <Text style={{ color: '#6d4c41', fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
-                    {t.pgIntro}
-                  </Text>
+                     Discover your Ayurvedic mind-body constitution (Dosha) by answering a few simple questions.
+                 </Text>
                 </View>
                 <Button
                   mode="contained"
