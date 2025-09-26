@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, View, Dimensions } from "react-native";
+import { ScrollView, View, Dimensions, TouchableOpacity } from "react-native";
 import { Text, Card, Button, Divider, TextInput, Modal, Portal, Provider as PaperProvider } from "react-native-paper";
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,10 +12,79 @@ export default function DoctorDashboardScreen({ route, navigation }) {
   if (!doctorEmail) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#e8f5e8' }}>
-        <Text style={{ color: '#d32f2f', fontSize: 18 }}>No doctor profile found. Please log in again.</Text>
+        <Text style={{ color: '#000000', fontSize: 18 }}>No doctor profile found. Please log in again.</Text>
       </View>
     );
   }
+
+  // Diet Chart Templates
+  const dietTemplates = [
+    {
+      id: 1,
+      name: 'Vata Balancing Diet',
+      description: 'Light, warm, and nourishing foods for Vata constitution',
+      emoji: '🌿',
+      meals: {
+        breakfast: 'Garam doodh mein khajoor aur badam, daliya',
+        lunch: 'Moong dal khichdi ghee ke saath, paka hua sabzi, chawal',
+        dinner: 'Sabzi ka soup, chawal ya soft gehu ki roti',
+        snacks: 'Adrak wali chai, bhige hue kishmish, aam ya kele jaise meethay phal'
+      },
+      guidelines: 'Khaana garam aur paka hua ho. Thanda, kaccha khana na khayein. Ghee aur tel ka upyog karein.'
+    },
+    {
+      id: 2,
+      name: 'Pitta Pacifying Diet',
+      description: 'Cooling and calming foods for Pitta constitution',
+      emoji: '🧊',
+      meals: {
+        breakfast: 'Tarbooz, nashpati, anaar, ya saunf ke paani ke saath phal',
+        lunch: 'Basmati chawal, moong dal, kakdi, lauki, nariyal wali sabzi',
+        dinner: 'Halka khichdi dhaniya-pudina chutney ke saath, ya thandi sabzi ka soup',
+        snacks: 'Nariyal paani, meethay phal, gulab ya pudina wali chai'
+      },
+      guidelines: 'Thanda aur shant karne wala khaana khayein. Teekha aur mirch-masala kam karein.'
+    },
+    {
+      id: 3,
+      name: 'Kapha Reducing Diet',
+      description: 'Light, warm, and stimulating foods for Kapha constitution',
+      emoji: '🔥',
+      meals: {
+        breakfast: 'Adrak wali chai shahad ke saath, seb ya nashpati jaise halkay phal',
+        lunch: 'Jau ya bajre ki roti, karela, palak, ya dal',
+        dinner: 'Sabzi ka garam soup, kali mirch aur haldi ke saath',
+        snacks: 'Bhuna chana, tulsi wali chai, anar ya seb'
+      },
+      guidelines: 'Halka, garam khaana khayein. Tel, dahi, aur bhari khana na khayein. Teekha aur katu swad shamil karein.'
+    },
+    {
+      id: 4,
+      name: 'General Ayurvedic Diet',
+      description: 'Balanced diet suitable for all constitutions',
+      emoji: '⚖️',
+      meals: {
+        breakfast: 'Seasonal phal (seb, angoor), bhige hue badam, cardamom wala daliya',
+        lunch: 'Chawal, dal, roti, paka hua sabzi, salad nimbu ke saath',
+        dinner: 'Halka khichdi, sabzi ka soup',
+        snacks: 'Herbal chai (adrak, saunf, tulsi), phal, bhige hue nuts'
+      },
+      guidelines: 'Hamesha taza aur seasonal khana khayein. Chhe ras (meetha, khatta, lavan, katu, tikta, kashaya) shamil karein.'
+    },
+    {
+      id: 5,
+      name: 'Detox Diet',
+      description: 'Cleansing diet for body purification',
+      emoji: '🌱',
+      meals: {
+        breakfast: 'Garam nimbu paani shahad ke saath, papita ya seb',
+        lunch: 'Moong dal khichdi haldi aur jeera ke saath',
+        dinner: 'Sabzi ka saaf soup, kali mirch ke saath',
+        snacks: 'Triphala ka kadha, jeera-dhaniya-adrak ka pani, halkay phal'
+      },
+      guidelines: 'Packet aur bazaar ka khana na khayein. Zyada paani piyein. Safaai karne wali jadi-booti shamil karein.'
+    }
+  ];
 
   const [patients, setPatients] = useState([]);
   const [todaySchedule, setTodaySchedule] = useState([]);
@@ -23,6 +92,19 @@ export default function DoctorDashboardScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10)); // Default to today
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [prescriptionHistory, setPrescriptionHistory] = useState([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showDietChartModal, setShowDietChartModal] = useState(false);
+  const [dietSearchQuery, setDietSearchQuery] = useState('');
+
+  // Filter diet charts based on search query
+  const filteredDietTemplates = dietTemplates.filter(template => 
+    template.name.toLowerCase().includes(dietSearchQuery.toLowerCase()) ||
+    template.description.toLowerCase().includes(dietSearchQuery.toLowerCase())
+  );
 
   // Debug function to check appointments
   const debugAppointments = useCallback(async () => {
@@ -130,6 +212,32 @@ export default function DoctorDashboardScreen({ route, navigation }) {
     }
   }, [doctorEmail]);
 
+  // Fetch prescription history for a specific patient
+  const fetchPrescriptionHistory = useCallback(async (patientEmail) => {
+    try {
+      console.log('Fetching prescription history for:', patientEmail);
+      const { data, error } = await supabase
+        .from("prescriptions")
+        .select("*")
+        .eq("patient_email", patientEmail)
+        .eq("doctor_email", doctorEmail)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching prescription history:', error);
+        alert('Failed to fetch prescription history');
+        return;
+      }
+
+      console.log('Fetched prescription history:', data);
+      setPrescriptionHistory(data || []);
+      setShowHistoryModal(true);
+    } catch (err) {
+      console.error('Unexpected error fetching prescription history:', err);
+      alert('Failed to fetch prescription history');
+    }
+  }, [doctorEmail]);
+
   // Fetch schedule for a specific date (manual schedule + accepted appointments)
   const fetchScheduleForDate = useCallback(async (targetDate = null) => {
     try {
@@ -188,8 +296,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             ...slot,
             type: 'manual_schedule',
             display_time: `${slot.start_time} - ${slot.end_time}`,
-            title: 'Available Time',
-            status: slot.status || 'available'
+            title: 'Scheduled Time',
+            status: slot.status || 'scheduled'
           });
         });
       }
@@ -275,6 +383,18 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       fetchAppointments();
     }, [fetchPatients, fetchScheduleForDate, fetchAppointments])
   );
+
+  // Filter patients based on search query
+  React.useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredPatients(patients);
+    } else {
+      const filtered = patients.filter(patient =>
+        patient.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredPatients(filtered);
+    }
+  }, [patients, searchQuery]);
 
   // Real-time subscriptions for schedule updates
   React.useEffect(() => {
@@ -472,99 +592,63 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       {/* Header */}
       <Card style={{ marginBottom: 20, backgroundColor: "#4caf50" }}>
         <Card.Content>
-          <Text
-            variant="headlineMedium"
-            style={{ color: "white", fontWeight: "bold" }}
-          >
-            Welcome, Dr. {doctorName}
-          </Text>
-          <Text style={{ color: "white", marginTop: 5, fontSize: 16 }}>
-            Total patients in system: {patients.length}
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <View style={{ flex: 1 }}>
+              <Text
+                variant="headlineMedium"
+                style={{ color: "#000000", fontWeight: "bold" }}
+              >
+                Welcome, Dr. {doctorName}
+              </Text>
+              <Text style={{ color: "#000000", marginTop: 5, fontSize: 16 }}>
+                Total patients in system: {patients.length}
+              </Text>
+            </View>
+            
+            {/* Logout Button - Red Circle */}
+            <TouchableOpacity 
+              onPress={handleLogout}
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                backgroundColor: '#f44336',
+                justifyContent: 'center',
+                alignItems: 'center',
+                elevation: 3,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+              }}
+            >
+              <Text style={{
+                color: '#000000',
+                fontSize: 10,
+                fontWeight: 'bold',
+                textAlign: 'center'
+              }}>
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
         </Card.Content>
       </Card>
 
-      {/* Logout Button */}
-      <View style={{ alignItems: 'flex-end', marginBottom: 15 }}>
-        <Button 
-          mode="outlined" 
-          onPress={handleLogout} 
-          style={{ 
-            backgroundColor: 'transparent',
-            borderColor: '#4caf50',
-            borderRadius: 10,
-            paddingVertical: 2,
-          }}
-          textColor="#4caf50"
-          labelStyle={{ fontSize: 14 }}
-          icon="logout"
-          compact
-        >
-          Logout
-        </Button>
-      </View>
-
       {/* Action Buttons */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 20 }}>
         <Button
           mode="contained"
           onPress={() => navigation.navigate("AddPatient", { doctorEmail })}
           style={{
-            flex: 1,
-            marginRight: 8,
             backgroundColor: "#4caf50",
             borderRadius: 10,
             paddingVertical: 5,
+            paddingHorizontal: 20,
           }}
           labelStyle={{ fontSize: 14 }}
         >
           ➕ Add Patient
-        </Button>
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("DoctorPrescriptions", { profile: route.params?.profile })}
-          style={{
-            flex: 1,
-            marginLeft: 8,
-            backgroundColor: "#4caf50",
-            borderRadius: 10,
-            paddingVertical: 5,
-          }}
-          labelStyle={{ fontSize: 14 }}
-        >
-          📝 Prescriptions
-        </Button>
-      </View>
-      
-      {/* Second row of action buttons */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("DietChartTemplates", { profile: route.params?.profile })}
-          style={{
-            flex: 1,
-            marginRight: 8,
-            backgroundColor: "#4caf50",
-            borderRadius: 10,
-            paddingVertical: 5,
-          }}
-          labelStyle={{ fontSize: 14 }}
-        >
-          🍽️ Diet Charts
-        </Button>
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("PanchkarmaScreen", { profile: route.params?.profile })}
-          style={{
-            flex: 1,
-            marginLeft: 8,
-            backgroundColor: "#4caf50",
-            borderRadius: 10,
-            paddingVertical: 5,
-          }}
-          labelStyle={{ fontSize: 14 }}
-        >
-          🌿 Panchkarma
         </Button>
       </View>
 
@@ -577,6 +661,22 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           >
             👥 My Patients ({patients.length})
           </Text>
+          
+          {/* Search Box */}
+          <TextInput
+            mode="outlined"
+            placeholder="Search patients by name..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={{ 
+              marginBottom: 15, 
+              backgroundColor: '#ffffff',
+              fontSize: 16
+            }}
+            left={<TextInput.Icon icon="magnify" />}
+            right={searchQuery ? <TextInput.Icon icon="close" onPress={() => setSearchQuery('')} /> : null}
+          />
+          
           <Divider style={{ marginBottom: 15 }} />
           
           {patients.length === 0 ? (
@@ -587,90 +687,184 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             </View>
           ) : (
             <View>
-              {/* Table Header */}
-              <View style={{
-                flexDirection: 'row',
-                backgroundColor: '#e8f5e8',
-                padding: 12,
-                borderRadius: 8,
-                marginBottom: 10
-              }}>
-                <Text style={{ flex: 2, fontWeight: 'bold', fontSize: 14 }}>Patient Name</Text>
-                <Text style={{ flex: 2.5, fontWeight: 'bold', fontSize: 14 }}>Email</Text>
-                <Text style={{ flex: 1, fontWeight: 'bold', fontSize: 14, textAlign: 'center' }}>Age</Text>
-                <Text style={{ flex: 1, fontWeight: 'bold', fontSize: 14, textAlign: 'center' }}>Actions</Text>
+              {/* Patient List - Scrollable */}
+              <View style={{ maxHeight: 300 }}>
+                <ScrollView nestedScrollEnabled={true}>
+                  {filteredPatients.length === 0 ? (
+                    <View style={{ padding: 20, alignItems: 'center' }}>
+                      <Text style={{ color: '#000000', fontSize: 16 }}>
+                        No patients found matching "{searchQuery}"
+                      </Text>
+                    </View>
+                  ) : (
+                    filteredPatients.map((patient, index) => (
+                      <Card
+                        key={patient.id}
+                        style={{
+                          marginBottom: 8,
+                          backgroundColor: selectedPatient?.id === patient.id ? '#c8e6c9' : '#ffffff',
+                          borderRadius: 8,
+                          borderWidth: selectedPatient?.id === patient.id ? 2 : 1,
+                          borderColor: selectedPatient?.id === patient.id ? '#4caf50' : '#e0e0e0'
+                        }}
+                        onPress={() => setSelectedPatient(patient)}
+                      >
+                        <Card.Content style={{ paddingVertical: 12 }}>
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <View style={{ flex: 1 }}>
+                              <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                                {patient.name}
+                              </Text>
+                              <Text style={{ fontSize: 14, color: '#000000', marginTop: 2 }}>
+                                {patient.email}
+                              </Text>
+                              <Text style={{ fontSize: 12, color: '#000000', marginTop: 2 }}>
+                                Age: {patient.age} | ID: {patient.id.slice(0, 8)}...
+                              </Text>
+                            </View>
+                            {selectedPatient?.id === patient.id && (
+                              <View style={{ alignItems: 'center' }}>
+                                <Text style={{ fontSize: 20 }}>✓</Text>
+                                <Text style={{ fontSize: 10, color: '#000000', fontWeight: 'bold' }}>
+                                  SELECTED
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        </Card.Content>
+                      </Card>
+                    ))
+                  )}
+                </ScrollView>
               </View>
 
-              {/* Table Rows */}
-              {patients.map((patient, index) => (
-                <View key={patient.id}>
-                  <View style={{
-                    flexDirection: 'row',
-                    padding: 12,
-                    backgroundColor: index % 2 === 0 ? '#f1f8e9' : '#ffffff',
-                    alignItems: 'center'
-                  }}>
-                    {/* Patient Name */}
-                    <View style={{ flex: 2 }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#333' }}>
-                        {patient.name}
-                      </Text>
-                      <Text style={{ fontSize: 12, color: '#000000', marginTop: 2 }}>
-                        ID: {patient.id.slice(0, 8)}...
-                      </Text>
-                    </View>
-
-                    {/* Email */}
-                    <View style={{ flex: 2.5 }}>
-                      <Text style={{ fontSize: 14, color: '#2e7d32' }}>
-                        {patient.email}
-                      </Text>
-                    </View>
-
-                    {/* Age */}
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                      <Text style={{ 
-                        fontSize: 16, 
-                        fontWeight: 'bold', 
-                        color: '#333',
-                        backgroundColor: '#c8e6c9',
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                        borderRadius: 12
-                      }}>
-                        {patient.age}
-                      </Text>
-                    </View>
-
-                    {/* Actions */}
-                    <View style={{ flex: 1, alignItems: 'center' }}>
+              {/* Patient Actions - Show when patient is selected */}
+              {selectedPatient && (
+                <Card style={{ 
+                  marginTop: 15, 
+                  backgroundColor: '#e8f5e8',
+                  borderRadius: 12,
+                  borderLeftWidth: 4,
+                  borderLeftColor: '#4caf50'
+                }}>
+                  <Card.Content>
+                    <Text style={{ 
+                      fontSize: 16, 
+                      fontWeight: 'bold', 
+                      color: '#000000', 
+                      marginBottom: 15,
+                      textAlign: 'center'
+                    }}>
+                      🩺 Actions for {selectedPatient.name}
+                    </Text>
+                    
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+                      {/* Patient History Button */}
                       <Button
-                        mode="outlined"
-                        compact
+                        mode="contained"
                         onPress={() => {
-                          // Add action for viewing patient details
-                          console.log('View patient:', patient.name);
-                          alert(`Patient Details:\n\nName: ${patient.name}\nEmail: ${patient.email}\nAge: ${patient.age}\nDoctor: ${doctorEmail}`);
+                          fetchPrescriptionHistory(selectedPatient.email);
                         }}
-                        style={{
-                          borderColor: '#4caf50',
-                          borderRadius: 20
+                        style={{ 
+                          flex: 1,
+                          minWidth: '45%',
+                          backgroundColor: '#2196f3',
+                          borderRadius: 25
                         }}
-                        labelStyle={{ fontSize: 10 }}
+                        icon="history"
+                        contentStyle={{ paddingVertical: 8 }}
                       >
-                        View
+                        Prescription History
                       </Button>
                     </View>
-                  </View>
-                  
-                  {/* Divider between rows */}
-                  {index < patients.length - 1 && (
-                    <Divider style={{ marginVertical: 1 }} />
-                  )}
-                </View>
-              ))}
 
-              {/* Table Footer with summary */}
+                    {/* Send Prescription Button */}
+                    <Button
+                      mode="contained"
+                      onPress={() => {
+                        if (!selectedPatient) {
+                          alert('Please select a patient first');
+                          return;
+                        }
+                        navigation.navigate('PrescriptionPage', {
+                          profile: route.params?.profile,
+                          selectedPatient: selectedPatient
+                        });
+                      }}
+                      style={{ 
+                        marginTop: 10,
+                        backgroundColor: '#2196f3',
+                        borderRadius: 25
+                      }}
+                      textColor="#ffffff"
+                      icon="medical-bag"
+                    >
+                      Send Prescription
+                    </Button>
+
+                    {/* Send Diet Chart Button */}
+                    <Button
+                      mode="contained"
+                      onPress={() => {
+                        if (!selectedPatient) {
+                          alert('Please select a patient first');
+                          return;
+                        }
+                        setShowDietChartModal(true);
+                      }}
+                      style={{ 
+                        marginTop: 10,
+                        backgroundColor: '#ff9800',
+                        borderRadius: 25
+                      }}
+                      textColor="#ffffff"
+                      icon="food-apple"
+                    >
+                      Send Diet Chart
+                    </Button>
+
+                    {/* Send Panchkarma Button */}
+                    <Button
+                      mode="contained"
+                      onPress={() => {
+                        if (!selectedPatient) {
+                          alert('Please select a patient first');
+                          return;
+                        }
+                        navigation.navigate('PanchkarmaScreen', {
+                          profile: route.params?.profile,
+                          selectedPatient: selectedPatient
+                        });
+                      }}
+                      style={{ 
+                        marginTop: 10,
+                        backgroundColor: '#4caf50',
+                        borderRadius: 25
+                      }}
+                      textColor="#ffffff"
+                      icon="spa"
+                    >
+                      Send Panchkarma
+                    </Button>
+
+                    {/* Clear Selection Button */}
+                    <Button
+                      mode="outlined"
+                      onPress={() => setSelectedPatient(null)}
+                      style={{ 
+                        marginTop: 10,
+                        borderColor: '#4caf50'
+                      }}
+                      textColor="#000000"
+                      compact
+                    >
+                      Clear Selection
+                    </Button>
+                  </Card.Content>
+                </Card>
+              )}
+
+              {/* Summary Footer */}
               <View style={{
                 marginTop: 15,
                 padding: 12,
@@ -679,12 +873,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 borderLeftWidth: 4,
                 borderLeftColor: '#4caf50'
               }}>
-                <Text style={{ fontSize: 14, color: '#2e7d32', fontWeight: 'bold' }}>
-                  📊 Summary: {patients.length} total patient{patients.length !== 1 ? 's' : ''} under your care
+                <Text style={{ fontSize: 14, color: '#000000', fontWeight: 'bold' }}>
+                  📊 Summary: {filteredPatients.length} of {patients.length} patient{patients.length !== 1 ? 's' : ''} shown
                 </Text>
-                <Text style={{ fontSize: 12, color: '#000000', marginTop: 4 }}>
-                  Age range: {Math.min(...patients.map(p => p.age))} - {Math.max(...patients.map(p => p.age))} years
-                </Text>
+                {searchQuery && (
+                  <Text style={{ fontSize: 12, color: '#000000', marginTop: 4 }}>
+                    Filtered by: "{searchQuery}"
+                  </Text>
+                )}
               </View>
             </View>
           )}
@@ -733,7 +929,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           }}>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 12, color: '#000000', marginBottom: 2 }}>Viewing Schedule For:</Text>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2e7d32' }}>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000000' }}>
                 {formatDateForDisplay(selectedDate)}
               </Text>
             </View>
@@ -764,7 +960,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   ? { backgroundColor: '#4caf50' } 
                   : { borderColor: '#4caf50' })
               }}
-              textColor={selectedDate === new Date().toISOString().slice(0, 10) ? undefined : "#4caf50"}
+              textColor={selectedDate === new Date().toISOString().slice(0, 10) ? undefined : "#000000"}
             >
               Today
             </Button>
@@ -778,7 +974,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   ? { backgroundColor: '#4caf50' } 
                   : { borderColor: '#4caf50' })
               }}
-              textColor={selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#4caf50"}
+              textColor={selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#000000"}
             >
               Tomorrow
             </Button>
@@ -792,7 +988,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   ? { backgroundColor: '#4caf50' } 
                   : { borderColor: '#4caf50' })
               }}
-              textColor={selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#4caf50"}
+              textColor={selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#000000"}
             >
               Day After
             </Button>
@@ -809,19 +1005,19 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               justifyContent: 'space-around'
             }}>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: '#4caf50' }}>
+                <Text style={{ fontWeight: 'bold', color: '#000000' }}>
                   {todaySchedule.filter(item => item.type === 'manual_schedule').length}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#000000' }}>Available Slots</Text>
+                <Text style={{ fontSize: 12, color: '#000000' }}>Scheduled Slots</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: '#ff9800' }}>
+                <Text style={{ fontWeight: 'bold', color: '#000000' }}>
                   {todaySchedule.filter(item => item.type === 'appointment').length}
                 </Text>
                 <Text style={{ fontSize: 12, color: '#000000' }}>Appointments</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: '#2196f3' }}>
+                <Text style={{ fontWeight: 'bold', color: '#000000' }}>
                   {todaySchedule.length}
                 </Text>
                 <Text style={{ fontSize: 12, color: '#000000' }}>Total Items</Text>
@@ -858,15 +1054,15 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   marginBottom: 8,
                   backgroundColor: item.type === 'appointment' 
                     ? '#fff3e0' 
-                    : item.status === 'available' 
-                      ? '#e8f5e8' 
+                    : item.status === 'scheduled' 
+                      ? '#ffebee' 
                       : '#f3e5f5',
                   borderRadius: 8,
                   borderLeftWidth: 4,
                   borderLeftColor: item.type === 'appointment' 
                     ? '#ff9800' 
-                    : item.status === 'available' 
-                      ? '#4caf50' 
+                    : item.status === 'scheduled' 
+                      ? '#f44336' 
                       : '#9c27b0'
                 }}
               >
@@ -882,7 +1078,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                           paddingHorizontal: 8,
                           paddingVertical: 2,
                           borderRadius: 12,
-                          backgroundColor: item.type === 'appointment' ? '#ff9800' : '#4caf50'
+                          backgroundColor: item.type === 'appointment' ? '#ff9800' : '#f44336'
                         }}>
                           <Text style={{ 
                             color: 'white', 
@@ -890,7 +1086,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                             fontWeight: 'bold',
                             textTransform: 'uppercase'
                           }}>
-                            {item.type === 'appointment' ? 'APPOINTMENT' : 'AVAILABLE'}
+                            {item.type === 'appointment' ? 'APPOINTMENT' : 'SCHEDULED'}
                           </Text>
                         </View>
                       </View>
@@ -920,14 +1116,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                       <Text style={{ 
                         color: item.type === 'appointment' 
                           ? '#f57c00' 
-                          : item.status === 'available' 
-                            ? '#2e7d32' 
+                          : item.status === 'scheduled' 
+                            ? '#d32f2f' 
                             : '#7b1fa2',
                         fontWeight: 'bold',
                         textTransform: 'capitalize',
                         fontSize: 12
                       }}>
-                        {item.type === 'appointment' ? 'Booked' : item.status}
+                        {item.type === 'appointment' ? 'Booked' : 'Scheduled'}
                       </Text>
                     </View>
                   </View>
@@ -938,40 +1134,36 @@ export default function DoctorDashboardScreen({ route, navigation }) {
         </Card.Content>
       </Card>
 
-      {/* Appointment Requests Section */}
-      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
-        <Card.Content>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <Text
-              variant="titleMedium"
-              style={{ fontWeight: "bold" }}
-            >
-              📋 Appointment Requests ({appointments.length})
-            </Text>
-            <Button
-              mode="outlined"
-              onPress={() => {
-                console.log('Navigating to DoctorSchedule with params:', route.params);
-                navigation.navigate("DoctorSchedule", { 
-                  profile: route.params?.profile,
-                  doctorEmail: doctorEmail,
-                  doctorName: doctorName
-                });
-              }}
-              style={{ borderColor: '#4caf50' }}
-              textColor="#4caf50"
-              compact
-            >
-              View All
-            </Button>
-          </View>
-          <Divider style={{ marginBottom: 10 }} />
-          {appointments.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: '#000000', paddingVertical: 16 }}>
-              No pending appointment requests.
-            </Text>
-          ) : (
-            appointments.map((app) => (
+      {/* Appointment Requests Section - Only show when there are pending requests */}
+      {appointments.length > 0 && (
+        <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
+          <Card.Content>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <Text
+                variant="titleMedium"
+                style={{ fontWeight: "bold" }}
+              >
+                📋 New Appointment Requests ({appointments.length})
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={() => {
+                  console.log('Navigating to DoctorSchedule with params:', route.params);
+                  navigation.navigate("DoctorSchedule", { 
+                    profile: route.params?.profile,
+                    doctorEmail: doctorEmail,
+                    doctorName: doctorName
+                  });
+                }}
+                style={{ borderColor: '#4caf50' }}
+                textColor="#4caf50"
+                compact
+              >
+                View All
+              </Button>
+            </View>
+            <Divider style={{ marginBottom: 10 }} />
+            {appointments.map((app) => (
               <Card
                 key={app.id}
                 style={{
@@ -1014,10 +1206,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   </Button>
                 </Card.Actions>
               </Card>
-            ))
-          )}
-        </Card.Content>
-      </Card>
+            ))}
+          </Card.Content>
+        </Card>
+      )}
       
       {/* Date Picker Modal */}
       <Portal>
@@ -1066,6 +1258,282 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           >
             Cancel
           </Button>
+        </Modal>
+      </Portal>
+
+      {/* Prescription History Modal */}
+      <Portal>
+        <Modal 
+          visible={showHistoryModal} 
+          onDismiss={() => setShowHistoryModal(false)}
+          contentContainerStyle={{
+            backgroundColor: '#f1f8e9',
+            margin: 20,
+            borderRadius: 16,
+            maxHeight: '80%'
+          }}
+        >
+          <ScrollView style={{ padding: 20 }}>
+            <Text variant="headlineSmall" style={{ 
+              color: '#000000', 
+              textAlign: 'center', 
+              marginBottom: 20,
+              fontWeight: 'bold'
+            }}>
+              📋 Prescription History
+            </Text>
+            
+            {selectedPatient && (
+              <Card style={{ 
+                marginBottom: 20, 
+                backgroundColor: '#e8f5e8',
+                borderRadius: 12
+              }}>
+                <Card.Content>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                    Patient: {selectedPatient.name}
+                  </Text>
+                  <Text style={{ color: '#000000', marginTop: 4 }}>
+                    Email: {selectedPatient.email} | Age: {selectedPatient.age}
+                  </Text>
+                </Card.Content>
+              </Card>
+            )}
+
+            {prescriptionHistory.length === 0 ? (
+              <Card style={{ 
+                padding: 20, 
+                backgroundColor: '#ffffff',
+                borderRadius: 12,
+                alignItems: 'center'
+              }}>
+                <Text style={{ color: '#666', fontSize: 16, textAlign: 'center' }}>
+                  No prescription history found for this patient.
+                </Text>
+                <Text style={{ color: '#999', fontSize: 14, textAlign: 'center', marginTop: 8 }}>
+                  Previous prescriptions will appear here once you write them.
+                </Text>
+              </Card>
+            ) : (
+              prescriptionHistory.map((prescription, index) => (
+                <Card key={prescription.id || index} style={{
+                  marginBottom: 15,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 12,
+                  borderLeftWidth: 4,
+                  borderLeftColor: '#4caf50'
+                }}>
+                  <Card.Content>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                        Prescription #{prescriptionHistory.length - index}
+                      </Text>
+                      <Text style={{ color: '#000000', fontSize: 12 }}>
+                        {new Date(prescription.created_at).toLocaleDateString('en-IN', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </Text>
+                    </View>
+                    
+                    {/* Medicines */}
+                    {prescription.medicines && prescription.medicines.length > 0 && (
+                      <View style={{ marginBottom: 10 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#000000', marginBottom: 5 }}>
+                          💊 Medicines:
+                        </Text>
+                        {prescription.medicines.map((medicine, medIndex) => (
+                          <Text key={medIndex} style={{ 
+                            color: '#000000', 
+                            fontSize: 14, 
+                            marginBottom: 3,
+                            paddingLeft: 10
+                          }}>
+                            • {medicine.medicine} - {medicine.dosage} ({medicine.frequency})
+                          </Text>
+                        ))}
+                      </View>
+                    )}
+                    
+                    {/* Advice */}
+                    {prescription.advice && (
+                      <View>
+                        <Text style={{ fontWeight: 'bold', color: '#000000', marginBottom: 5 }}>
+                          📝 Advice:
+                        </Text>
+                        <Text style={{ color: '#000000', fontSize: 14, lineHeight: 20 }}>
+                          {prescription.advice}
+                        </Text>
+                      </View>
+                    )}
+                    
+                    {/* Prescription Data (if available) */}
+                    {prescription.prescription_data && (
+                      <View style={{ marginTop: 10 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#000000', marginBottom: 5 }}>
+                          🩺 Assessment Details:
+                        </Text>
+                        <Text style={{ color: '#000000', fontSize: 12 }}>
+                          Ayurvedic assessment data recorded
+                        </Text>
+                      </View>
+                    )}
+                  </Card.Content>
+                </Card>
+              ))
+            )}
+
+            <Button
+              mode="contained"
+              onPress={() => setShowHistoryModal(false)}
+              style={{ 
+                marginTop: 20,
+                backgroundColor: '#4caf50',
+                borderRadius: 25
+              }}
+            >
+              Close
+            </Button>
+          </ScrollView>
+        </Modal>
+      </Portal>
+
+      {/* Diet Chart Selection Modal */}
+      <Portal>
+        <Modal
+          visible={showDietChartModal}
+          onDismiss={() => {
+            setShowDietChartModal(false);
+            setDietSearchQuery('');
+          }}
+          contentContainerStyle={{
+            backgroundColor: 'white',
+            padding: 20,
+            margin: 20,
+            borderRadius: 15,
+            maxHeight: '80%'
+          }}
+        >
+          <ScrollView>
+            <Text style={{ 
+              fontSize: 24, 
+              fontWeight: 'bold', 
+              color: '#000000', 
+              textAlign: 'center',
+              marginBottom: 10
+            }}>
+              🍽️ Send Diet Chart
+            </Text>
+            
+            <Text style={{ 
+              fontSize: 16, 
+              color: '#000000', 
+              textAlign: 'center',
+              marginBottom: 20
+            }}>
+              Sending to: {selectedPatient?.name}
+            </Text>
+
+            {/* Search Box */}
+            <TextInput
+              placeholder="Search diet charts..."
+              value={dietSearchQuery}
+              onChangeText={setDietSearchQuery}
+              mode="outlined"
+              style={{ marginBottom: 15 }}
+              textColor="#000000"
+              left={<TextInput.Icon icon="magnify" />}
+              right={
+                dietSearchQuery ? (
+                  <TextInput.Icon 
+                    icon="close" 
+                    onPress={() => setDietSearchQuery('')}
+                  />
+                ) : null
+              }
+            />
+
+            {/* Diet Chart Options */}
+            {filteredDietTemplates.length === 0 ? (
+              <Text style={{ 
+                color: '#666', 
+                textAlign: 'center', 
+                marginVertical: 20,
+                fontSize: 16
+              }}>
+                No diet charts found matching "{dietSearchQuery}"
+              </Text>
+            ) : (
+              filteredDietTemplates.map((template) => (
+                <Card key={template.id} style={{ marginBottom: 15 }}>
+                  <Card.Content style={{ padding: 15 }}>
+                    <Text style={{ 
+                      fontSize: 20, 
+                      fontWeight: 'bold', 
+                      color: '#000000',
+                      marginBottom: 5
+                    }}>
+                      {template.emoji} {template.name}
+                    </Text>
+                    <Text style={{ 
+                      fontSize: 14, 
+                      color: '#666',
+                      marginBottom: 10
+                    }}>
+                      {template.description}
+                    </Text>
+                    
+                    {/* Sample meals preview */}
+                    <Text style={{ 
+                      fontSize: 12, 
+                      color: '#333',
+                      marginBottom: 10,
+                      fontStyle: 'italic'
+                    }}>
+                      Breakfast: {template.meals.breakfast.substring(0, 50)}...
+                    </Text>
+                    
+                    <Button
+                      mode="contained"
+                      onPress={() => {
+                        navigation.navigate('CustomizeDietChart', {
+                          profile: route.params?.profile,
+                          selectedPatient: selectedPatient,
+                          template: template,
+                          doctorEmail: route.params?.profile?.email
+                        });
+                        setShowDietChartModal(false);
+                        setDietSearchQuery('');
+                      }}
+                      style={{
+                        backgroundColor: '#4caf50',
+                        borderRadius: 25
+                      }}
+                    >
+                      Send This Diet Chart
+                    </Button>
+                  </Card.Content>
+                </Card>
+              ))
+            )}
+
+            <Button
+              mode="outlined"
+              onPress={() => {
+                setShowDietChartModal(false);
+                setDietSearchQuery('');
+              }}
+              style={{
+                marginTop: 20,
+                borderRadius: 25
+              }}
+            >
+              Cancel
+            </Button>
+          </ScrollView>
         </Modal>
       </Portal>
     </ScrollView>

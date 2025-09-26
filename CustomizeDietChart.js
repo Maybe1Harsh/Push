@@ -36,6 +36,33 @@ export default function CustomizeDietChartScreen({ navigation, route }) {
     }
 
     if (!params || !template || !template.meals) {
+      // Check if we have a pre-selected patient but no template
+      if (params.selectedPatient && !template) {
+        return (
+          <PaperProvider>
+            <LinearGradient
+              colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+              style={styles.gradient}
+            >
+              <View style={styles.centerContainer}>
+                <Text variant="headlineMedium" style={styles.errorTitle}>
+                  No template selected
+                </Text>
+                <Text style={styles.errorSubtitle}>
+                  Please select a diet chart template first or go through the templates screen.
+                </Text>
+                <Button mode="contained" style={styles.primaryButton} onPress={() => navigation?.navigate('DietChartTemplates', params)}>
+                  Choose Template
+                </Button>
+                <Button mode="outlined" style={[styles.primaryButton, {marginTop: 10}]} onPress={() => navigation?.goBack && navigation.goBack()}>
+                  Go Back
+                </Button>
+              </View>
+            </LinearGradient>
+          </PaperProvider>
+        );
+      }
+      
       return (
         <PaperProvider>
           <LinearGradient
@@ -59,7 +86,7 @@ export default function CustomizeDietChartScreen({ navigation, route }) {
     }
 
     const [patients, setPatients] = useState([]);
-    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [selectedPatient, setSelectedPatient] = useState(params.selectedPatient || null);
     const [customizedDiet, setCustomizedDiet] = useState({
       breakfast: template.meals.breakfast,
       lunch: template.meals.lunch,
@@ -73,6 +100,12 @@ export default function CustomizeDietChartScreen({ navigation, route }) {
 
     useEffect(() => {
       fetchPatients();
+      
+      // If a patient was pre-selected from dashboard, show modal directly
+      if (params.selectedPatient && template) {
+        console.log('Pre-selected patient from dashboard:', params.selectedPatient);
+        setModalVisible(true);
+      }
     }, [doctorEmail]);
 
     const fetchPatients = async () => {
@@ -164,6 +197,11 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
               <Text style={styles.subtitle}>
                 Template: {template.name}
               </Text>
+              {params.selectedPatient && (
+                <Text style={[styles.subtitle, { color: '#4caf50', fontWeight: 'bold' }]}>
+                  For: {params.selectedPatient.name}
+                </Text>
+              )}
             </View>
             
             <Card style={styles.card}>
@@ -251,7 +289,31 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
               👤 Assign to Patient:
             </Text>
             
-            {patients.length === 0 ? (
+            {/* Show pre-selected patient if available */}
+            {params.selectedPatient ? (
+              <Card style={[styles.card, { borderColor: '#4caf50', borderWidth: 2 }]}>
+                <Card.Content>
+                  <Text variant="titleMedium" style={[styles.patientName, { color: '#4caf50' }]}>
+                    ✓ {params.selectedPatient.name} (Pre-selected)
+                  </Text>
+                  <Text style={styles.bodyText}>
+                    Email: {params.selectedPatient.email}
+                  </Text>
+                  <Text style={styles.bodyText}>
+                    Age: {params.selectedPatient.age}
+                  </Text>
+                </Card.Content>
+                <Card.Actions>
+                  <Button 
+                    mode="contained" 
+                    onPress={() => handleAssignDiet(params.selectedPatient)}
+                    style={[styles.primaryButton, { backgroundColor: '#4caf50' }]}
+                  >
+                    Assign Diet Chart to {params.selectedPatient.name}
+                  </Button>
+                </Card.Actions>
+              </Card>
+            ) : patients.length === 0 ? (
               <Card style={styles.card}>
                 <Card.Content style={styles.emptyCardContent}>
                   <Text style={styles.emptyTitle}>

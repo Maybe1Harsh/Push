@@ -81,13 +81,31 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
   const urineOptions = ['Normal', 'Scanty', 'Excessive', 'Burning'];
   const sweatOptions = ['Normal', 'Excessive', 'Scanty', 'Absent'];
 
-  // Diet chart states
-  const [dietChartText, setDietChartText] = useState('');
-  const [dietModalVisible, setDietModalVisible] = useState(false);
-
   useEffect(() => {
     fetchPatients();
   }, [doctorEmail]);
+
+  // Auto-select patient if passed from dashboard
+  useEffect(() => {
+    const preselectedPatient = route.params?.selectedPatient;
+    if (preselectedPatient && patients.length > 0) {
+      console.log('Auto-selecting patient from dashboard:', preselectedPatient);
+      setSelectedPatient(preselectedPatient);
+      
+      // Auto-populate the prescription form with patient details
+      setPrescriptionForm({
+        ...prescriptionForm,
+        patientName: preselectedPatient.name,
+        age: preselectedPatient.age?.toString() || '',
+        phoneNo: preselectedPatient.phone || '',
+        date: new Date().toISOString().split('T')[0]
+      });
+      
+      // Automatically open the prescription modal for the selected patient
+      setModalVisible(true);
+      console.log('Auto-opening prescription modal for:', preselectedPatient.name);
+    }
+  }, [route.params?.selectedPatient, patients]);
 
   const fetchPatients = async () => {
     if (!doctorEmail) {
@@ -229,48 +247,12 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
       setOtherAdvice('');
       setSelectedPatient(null);
       alert('Prescription saved successfully!');
+      
+      // Navigate back to dashboard after successful save
+      navigation.goBack();
     } catch (error) {
       console.error('Unexpected error saving prescription:', error);
       alert(`Failed to save prescription: ${error.message || 'Unknown error'}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Diet chart handlers
-  const handleAssignDietChart = (patient) => {
-    setSelectedPatient(patient);
-    setDietChartText('');
-    setDietModalVisible(true);
-  };
-
-  const handleSaveDietChart = async () => {
-    if (!dietChartText.trim() || !selectedPatient) return;
-
-    setLoading(true);
-    try {
-      const payload = {
-        doctor_email: doctorEmail,
-        patient_email: selectedPatient.email,
-        diet_chart_text: dietChartText.trim(),
-        created_at: new Date().toISOString()
-      };
-      console.log('Diet chart payload:', payload);
-      const { error } = await supabase
-        .from('diet_charts')
-        .insert([payload]);
-      if (error) {
-        console.error('Supabase diet chart insert error:', error);
-        alert(`Failed to assign diet chart: ${JSON.stringify(error)}`);
-        return;
-      }
-      setDietModalVisible(false);
-      setDietChartText('');
-      setSelectedPatient(null);
-      alert('Diet chart assigned successfully!');
-    } catch (error) {
-      console.error('Unexpected error saving diet chart:', error);
-      alert(`Failed to assign diet chart: ${error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -281,7 +263,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
       <ScrollView style={{ flex: 1, backgroundColor: '#e8f5e8' }}>
         <View style={{ padding: 20 }}>
           <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#2e7d32', textAlign: 'center' }}>
-            Write Prescriptions & Assign Diet Charts
+            Write Prescriptions
           </Text>
 
           {patients.length === 0 ? (
@@ -308,16 +290,9 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
                   <Button
                     mode="contained"
                     onPress={() => handleWritePrescription(patient)}
-                    style={{ backgroundColor: '#4caf50', marginRight: 8 }}
-                  >
-                    Write Prescription
-                  </Button>
-                  <Button
-                    mode="contained"
-                    onPress={() => handleAssignDietChart(patient)}
                     style={{ backgroundColor: '#4caf50' }}
                   >
-                    Assign Diet Chart
+                    Write Prescription
                   </Button>
                 </Card.Actions>
               </Card>
@@ -340,6 +315,11 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
               <Text variant="headlineSmall" style={styles.modalTitle}>
                 Ayurvedic Prescription for {selectedPatient?.name || 'Unknown Patient'}
               </Text>
+              {route.params?.selectedPatient && (
+                <Text style={{ textAlign: 'center', color: '#4caf50', fontSize: 12, fontStyle: 'italic', marginBottom: 10 }}>
+                  ✓ Patient selected from dashboard
+                </Text>
+              )}
 
               {/* Patient Details Section */}
               <Card style={styles.sectionCard}>
@@ -778,48 +758,6 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
           </Modal>
         </Portal>
 
-        {/* Diet Chart Modal */}
-        <Portal>
-          <Modal visible={dietModalVisible} onDismiss={() => setDietModalVisible(false)}
-            contentContainerStyle={{ backgroundColor: '#f1f8e9', padding: 24, margin: 24, borderRadius: 16 }}>
-            <Text variant="titleLarge" style={{ marginBottom: 16, color: '#2e7d32' }}>
-              Assign Diet Chart to {selectedPatient?.name}
-            </Text>
-            <TextInput
-              label="Diet Chart Details"
-              value={dietChartText}
-              onChangeText={setDietChartText}
-              multiline
-              numberOfLines={8}
-              mode="outlined"
-              style={{ marginBottom: 16 }}
-              placeholder="Enter diet chart instructions..."
-              outlineColor="#c8e6c9"
-              activeOutlineColor="#4caf50"
-              contentStyle={{ backgroundColor: '#f1f8e9' }}
-              textColor="#000000"
-            />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Button
-                mode="outlined"
-                onPress={() => setDietModalVisible(false)}
-                style={{ flex: 1, marginRight: 8, borderColor: '#000000' }}
-                textColor="#000000"
-              >
-                Cancel
-              </Button>
-              <Button
-                mode="contained"
-                onPress={handleSaveDietChart}
-                loading={loading}
-                disabled={loading || !dietChartText.trim()}
-                style={{ flex: 1, marginLeft: 8, backgroundColor: '#4caf50' }}
-              >
-                Assign Diet Chart
-              </Button>
-            </View>
-          </Modal>
-        </Portal>
       </ScrollView>
     </PaperProvider>
   );

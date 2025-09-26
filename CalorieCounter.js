@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, ScrollView, Alert, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text, Card, Button, Modal, Portal, Divider, IconButton, TextInput, Menu, Chip } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
@@ -1484,7 +1484,7 @@ export default function CalorieCounter({ navigation }) {
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     top: 20,

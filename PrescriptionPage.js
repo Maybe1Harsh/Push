@@ -18,9 +18,12 @@ export default function PrescriptionPage({ route }) {
   const doctorEmail = doctorProfile.email || '';
   const doctorName = doctorProfile.name || 'Doctor';
   const doctorClinic = doctorProfile.clinic || 'Clinic';
+  
+  // Get pre-selected patient from dashboard
+  const preSelectedPatient = route?.params?.selectedPatient || null;
 
   const [patients, setPatients] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(preSelectedPatient);
   const [patientMenuVisible, setPatientMenuVisible] = useState(false);
   const [fetchDebug, setFetchDebug] = useState({ doctorEmail: '', error: '', data: null });
 
@@ -118,53 +121,42 @@ export default function PrescriptionPage({ route }) {
         <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{doctorName}</Text>
         <Text style={{ color: '#388e3c', marginBottom: 4 }}>{doctorClinic}</Text>
         <Divider style={{ marginVertical: 6 }} />
-        {/* Patient selection */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <Text style={{ marginRight: 8 }}>Patient:</Text>
-          <View style={{ position: 'relative', flex: 1 }}>
-            <Menu
-              visible={patientMenuVisible}
-              onDismiss={() => setPatientMenuVisible(false)}
-              anchor={
-                <Button mode="outlined" onPress={() => setPatientMenuVisible(true)}>
-                  {selectedPatient ? selectedPatient.name : 'Select Patient'}
-                </Button>
-              }
-              style={{ width: 220 }}
-            >
-              {patients.length === 0 ? (
-                <Menu.Item title="No patients" disabled />
-              ) : (
-                patients.map((pat) => (
-                  <Menu.Item
-                    key={pat.id}
-                    onPress={() => {
-                      setSelectedPatient(pat);
-                      setPatientMenuVisible(false);
-                    }}
-                    title={pat.name}
-                  />
-                ))
-              )}
-            </Menu>
+        
+        {/* Only show selected patient info - no selection mechanism */}
+        {selectedPatient ? (
+          <View style={{ 
+            flexDirection: 'row', 
+            alignItems: 'center', 
+            marginBottom: 8,
+            backgroundColor: '#e8f5e8',
+            padding: 10,
+            borderRadius: 8,
+            borderLeftWidth: 4,
+            borderLeftColor: '#4caf50'
+          }}>
+            <Text style={{ marginRight: 8, fontWeight: 'bold' }}>Patient:</Text>
+            <Text style={{ flex: 1, fontSize: 16, color: '#000000' }}>
+              {selectedPatient.name} ({selectedPatient.email})
+            </Text>
           </View>
-        </View>
-        {/* Always show all patients as a selectable list below the dropdown */}
-        {patients.length > 0 && (
-          <View style={{ marginTop: 8 }}>
-            <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>All Patients:</Text>
-            {patients.map((pat) => (
-              <Button
-                key={pat.id}
-                mode={selectedPatient && selectedPatient.id === pat.id ? "contained" : "outlined"}
-                style={{ marginBottom: 4 }}
-                onPress={() => setSelectedPatient(pat)}
-              >
-                {pat.name} ({pat.email})
-              </Button>
-            ))}
+        ) : (
+          <View style={{ 
+            backgroundColor: '#ffebee',
+            padding: 10,
+            borderRadius: 8,
+            borderLeftWidth: 4,
+            borderLeftColor: '#f44336',
+            marginBottom: 8
+          }}>
+            <Text style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+              No patient selected. Please select a patient from the dashboard first.
+            </Text>
           </View>
         )}
+        
+        {/* Remove the patient selection list entirely */}
+        {/* Remove the patient selection list entirely */}
+        
         {selectedPatient && (
           <>
             <Text>Age: {selectedPatient.age} | Gender: {selectedPatient.gender}</Text>

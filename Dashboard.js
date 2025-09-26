@@ -55,10 +55,16 @@ export default function DashboardScreen({ navigation, route }) {
     try {
       const { data, error } = await supabase
         .from('patient_requests')
-        .select('*')
-       .eq('patient_email', profile.email)
-       .eq('status', 'pending');
-
+        .select(`
+          *,
+          doctor:doctor_email (
+            name,
+            email,
+            specialization
+          )
+        `)
+        .eq('patient_email', profile.email)
+        .eq('status', 'pending');
 
       if (error) {
         console.error('Error fetching pending requests:', error);
@@ -163,58 +169,49 @@ export default function DashboardScreen({ navigation, route }) {
   };
 
   const handleConsentStatusChange = async (accepted) => {
-  if (!pendingApprovalRequest) return;
-
-  try {
-    // 1️⃣ Update consent status
-    const { error: consentError } = await supabase
-      .from('patient_requests')
-      .update({
-        consent_status: accepted ? 'accepted' : 'rejected',
-        consent_updated_at: new Date().toISOString()
-      })
-      .eq('id', pendingApprovalRequest.id);
-
-    if (consentError) {
-      console.error('Error updating consent status:', consentError);
-      return;
-    }
-
-    // 2️⃣ If accepted, approve request & assign doctor
-    if (accepted) {
-      // Approve the request
-      const { error: approveError } = await supabase
+    if (!pendingApprovalRequest) return;
+    
+    try {
+      const { error } = await supabase
         .from('patient_requests')
-        .update({
-          status: 'approved',
-          approved_at: new Date().toISOString()
+        .update({ 
+          consent_status: accepted ? 'accepted' : 'rejected',
+          consent_updated_at: new Date().toISOString()
         })
         .eq('id', pendingApprovalRequest.id);
 
-      if (approveError) console.error('Error approving request:', approveError);
+      if (error) {
+        console.error('Error updating consent status:', error);
+        return;
+      }
 
-      // **Assign doctor automatically to patient**
-      const { error: assignError } = await supabase
-        .from('patients')
-        .update({
-          doctor_id: pendingApprovalRequest.doctor_uuid // Make sure doctor_uuid is in the request
-        })
-        .eq('email', pendingApprovalRequest.patient_email);
+      // If consent was accepted, update the status to approved
+      if (accepted) {
+        const { error: approveError } = await supabase
+          .from('patient_requests')
+          .update({ 
+            status: 'approved',
+            approved_at: new Date().toISOString()
+          })
+          .eq('id', pendingApprovalRequest.id);
 
-      if (assignError) console.error('Error assigning doctor:', assignError);
+        if (approveError) {
+          console.error('Error approving request:', approveError);
+        }
+      }
+
+      // Close the modal and refresh data
+      setConsentModalVisible(false);
+      setPendingApprovalRequest(null);
+      
+      // Refresh data to reflect the changes
+      fetchPendingRequests();
+      fetchAssignedDoctor();
+      
+    } catch (error) {
+      console.error('Error in handleConsentStatusChange:', error);
     }
-
-    // 3️⃣ Close modal and refresh data
-    setConsentModalVisible(false);
-    setPendingApprovalRequest(null);
-    fetchPendingRequests();
-    fetchAssignedDoctor();
-
-  } catch (error) {
-    console.error('Error in handleConsentStatusChange:', error);
-  }
-};
-
+  };
 
   const handleLogout = async () => {
     try {
@@ -395,9 +392,8 @@ export default function DashboardScreen({ navigation, route }) {
 
                   {pendingRequests.map((request) => (
                     <View key={request.id} style={styles.requestItem}>
-                      <Text style={styles.requestText}>Dr. {request.doctor_email}</Text>
-                      <Text style={styles.requestSpecialization}>Awaiting your approval</Text>
-
+                      <Text style={styles.requestText}>Dr. {request.doctor.name}</Text>
+                      <Text style={styles.requestSpecialization}>{request.doctor.specialization}</Text>
                       <View style={styles.requestActions}>
                         <Button
                           mode="contained"
@@ -516,7 +512,7 @@ export default function DashboardScreen({ navigation, route }) {
               pendingApprovalRequest
                 ? {
                     email: pendingApprovalRequest.doctor_email,
-                    name: pendingApprovalRequest.doctor_email,
+                    name: pendingApprovalRequest.doctor.name,
                   }
                 : null
             }

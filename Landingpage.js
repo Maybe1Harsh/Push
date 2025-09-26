@@ -1,135 +1,284 @@
-import React from 'react';
-import { View, Image, ImageBackground, ScrollView, StyleSheet, Dimensions } from 'react-native';
-import { Button, Text, Card, Divider } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, Dimensions, StyleSheet, Platform, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { Button, Text, TextInput, Card, RadioButton } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from './hooks/useTranslation';
+import { supabase } from './supabaseClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
+const carouselSlides = [
+  {
+    title: "CureVeda",
+    subtitle: "Doctor-Patient Ayurvedic Platform",
+    icon: "🌿",
+    description: "Streamlined platform for Ayurvedic practitioners to manage patients, prescriptions, and treatments efficiently."
+  },
+  {
+    title: "Digital Prescriptions & Diet Charts",
+    subtitle: "Create and send prescriptions instantly",
+    icon: "📝",
+    description: "Generate customized Ayurvedic prescriptions and diet charts for your patients with just a few taps."
+  },
+  {
+    title: "Secure Cloud Storage",
+    subtitle: "All patient data safely stored",
+    icon: "🔒",
+    description: "Patient records, prescriptions, and treatment plans securely stored in the cloud with encrypted protection."
+  },
+  {
+    title: "Appointment Scheduling",
+    subtitle: "Manage your calendar efficiently",
+    icon: "📅",
+    description: "Book appointments, set availability, and manage your daily schedule with intuitive calendar tools."
+  }
+];
+
 export default function LandingScreen({ navigation }) {
   const { t, language, setLanguage } = useTranslation();
-  const features = [
-    {
-      title: t.prakritiTitle || "🌿 Personalized Prakriti Assessment",
-      description: t.prakritiDesc || "Discover your unique Ayurvedic constitution and get personalized health recommendations"
-    },
-    {
-      title: t.consultTitle || "🏥 Expert Consultations",
-      description: t.consultDesc || "Connect with certified Ayurvedic doctors and nutritionists for professional guidance"
-    },
-    {
-      title: t.remedyTitle || "💊 Natural Remedies Database",
-      description: t.remedyDesc || "Access thousands of time-tested Ayurvedic remedies for common health issues"
-    },
-    {
-      title: t.nutritionTitle || "🍽️ Nutrition Tracking",
-      description: t.nutritionDesc || "Monitor your daily nutrition intake with Ayurvedic dietary principles"
+  const [activePage, setActivePage] = useState(0);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [address, setAddress] = useState('');
+  const [role, setRole] = useState('patient');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [showLogin, setShowLogin] = useState(false); // Show/hide login form in landing page
+
+  // Auto-advance carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActivePage((prev) => (prev + 1) % carouselSlides.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Function to handle login
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setMessage(t.pleaseEnterEmailPassword || 'Please enter email and password.');
+      return;
     }
-  ];
+    setLoading(true);
+    setMessage('');
+    
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setLoading(false);
+      setMessage(error.message);
+      return;
+    }
+
+    const { data: profileData, error: profileError } = await supabase
+      .from('Profiles')
+      .select('*')
+      .eq('email', email)
+      .single();
+    
+    setLoading(false);
+
+    if (profileError || !profileData) {
+      setMessage(t.profileNotFound || 'Profile not found.');
+      return;
+    }
+
+    setMessage(t.loginSuccess || 'Login successful!');
+    await AsyncStorage.setItem('profile', JSON.stringify(profileData));
+
+    // Navigate after successful login
+    setTimeout(() => {
+      if (profileData.Role === 'doctor') {
+        navigation.replace('DoctorDashboard', { profile: profileData });
+      } else {
+        navigation.replace('Dashboard', { profile: profileData });
+      }
+    }, 1000);
+  };
+
+  // Function to handle sign up navigation
+  const handleSignUpNavigation = () => {
+    navigation.navigate('Login'); // Navigate to Login screen which handles both login and signup
+  };
+
+  // Toggle login form visibility
+  const toggleLoginForm = () => {
+    setShowLogin(!showLogin);
+    setMessage('');
+    setEmail('');
+    setPassword('');
+  };
 
   return (
-    <LinearGradient
-      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
-      style={styles.gradient}
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Language Toggle */}
-        <View style={styles.languageToggle}>
-          <Button
-            mode={language === 'en' ? 'contained' : 'outlined'}
-            onPress={() => setLanguage('en')}
-            style={{ marginRight: 10 }}
-          >
-            English
-          </Button>
-          <Button
-            mode={language === 'hi' ? 'contained' : 'outlined'}
-            onPress={() => setLanguage('hi')}
-          >
-            हिन्दी
-          </Button>
-        </View>
-        {/* Header Section */}
-        <View style={styles.headerSection}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoEmoji}>🌿</Text>
-          </View>
-          <Text variant="headlineLarge" style={styles.title}>
-            CureVeda
-          </Text>
-          <Text style={styles.subtitle}>
-            {t.subtitle || "Ancient Wisdom • Modern Technology • Personalized Care"}
-          </Text>
-        </View>
-
-        {/* About Section */}
-        <Card style={styles.aboutCard}>
-          <Card.Content>
-            <Text variant="headlineSmall" style={styles.sectionTitle}>
-              {t.aboutAyurveda || "About Ayurveda"}
-            </Text>
-            <Text style={styles.aboutText}>
-              {t.aboutText || `Ayurveda, the 5000-year-old "Science of Life", offers holistic solutions for modern health challenges. 
-              Our platform bridges ancient wisdom with cutting-edge technology to provide personalized healthcare solutions.`}
-            </Text>
-          </Card.Content>
-        </Card>
-
-        {/* Features Section */}
-        <View style={styles.featuresSection}>
-          <Text variant="headlineSmall" style={styles.sectionTitle}>
-            {t.whatWeOffer || "What We Offer"}
-          </Text>
-          {features.map((feature, index) => (
-            <Card key={index} style={styles.featureCard}>
-              <Card.Content>
-                <Text variant="titleMedium" style={styles.featureTitle}>
-                  {feature.title}
-                </Text>
-                <Text style={styles.featureDescription}>
-                  {feature.description}
-                </Text>
-              </Card.Content>
-            </Card>
-          ))}
-        </View>
-
-        {/* Benefits Section */}
-        <Card style={styles.benefitsCard}>
-          <Card.Content>
-            <Text variant="headlineSmall" style={styles.sectionTitle}>
-              {t.whyChoose || "Why Choose CureVeda?"}
-            </Text>
-            <View style={styles.benefitsList}>
-              <Text style={styles.benefitItem}>{t.benefit1 || "✅ Personalized health assessments"}</Text>
-              <Text style={styles.benefitItem}>{t.benefit2 || "✅ Evidence-based natural remedies"}</Text>
-              <Text style={styles.benefitItem}>{t.benefit3 || "✅ Expert medical consultations"}</Text>
-              <Text style={styles.benefitItem}>{t.benefit4 || "✅ Comprehensive lifestyle guidance"}</Text>
-              <Text style={styles.benefitItem}>{t.benefit5 || "✅ Track your wellness journey"}</Text>
+      <LinearGradient
+        colors={['#2e7d32', '#1b5e20', '#0d3b13']}
+        style={styles.gradient}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Main Landing Page */}
+          <View style={styles.mainContainer}>
+            {/* Top Half: Carousel Section */}
+            <View style={styles.carouselContainer}>
+              {/* Simple Slide Display */}
+              <View style={styles.slide}>
+                <View style={styles.slideContent}>
+                  <Text style={styles.slideIcon}>{carouselSlides[activePage].icon}</Text>
+                  <Text variant="headlineLarge" style={styles.slideTitle}>{carouselSlides[activePage].title}</Text>
+                  <Text style={styles.slideSubtitle}>{carouselSlides[activePage].subtitle}</Text>
+                  <Text style={styles.slideDescription}>{carouselSlides[activePage].description}</Text>
+                </View>
+              </View>
+              
+              {/* Page Indicators */}
+              <View style={styles.indicatorContainer}>
+                {carouselSlides.map((_, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setActivePage(index)}
+                    style={[
+                      styles.indicator,
+                      activePage === index ? styles.activeIndicator : styles.inactiveIndicator
+                    ]}
+                  />
+                ))}
+              </View>
             </View>
-          </Card.Content>
-        </Card>
 
-        {/* CTA Section */}
-        <View style={styles.ctaSection}>
-          <Text style={styles.ctaText}>
-            {t.readyToBegin || "Ready to begin your wellness journey?"}
-          </Text>
-          <Button
-            mode="contained"
-            onPress={() => navigation.navigate('Login')}
-            style={styles.getStartedButton}
-            labelStyle={styles.buttonLabel}
-            contentStyle={styles.buttonContent}
-          >
-            {t.getStarted || "Get Started"}
-          </Button>
-          <Text style={styles.footerText}>
-            {t.joinThousands || "Join thousands who trust CureVeda for their wellness needs"}
-          </Text>
-        </View>
-      </ScrollView>
-    </LinearGradient>
+            {/* Bottom Half: Login/Signup Section */}
+            <View style={styles.bottomSection}>
+              <View style={styles.bottomContent}>
+                {/* Language Toggle */}
+                <View style={styles.languageToggle}>
+                  <Button
+                    mode={language === 'en' ? 'contained' : 'outlined'}
+                    onPress={() => setLanguage('en')}
+                    style={styles.languageButton}
+                    compact
+                    labelStyle={styles.languageButtonLabel}
+                  >
+                    English
+                  </Button>
+                  <Button
+                    mode={language === 'hi' ? 'contained' : 'outlined'}
+                    onPress={() => setLanguage('hi')}
+                    style={styles.languageButton}
+                    compact
+                    labelStyle={styles.languageButtonLabel}
+                  >
+                    हिन्दी
+                  </Button>
+                </View>
+
+                {/* App Logo/Name */}
+                <View style={styles.appBrand}>
+                  <Text style={styles.appIcon}>🌿</Text>
+                  <Text variant="headlineSmall" style={styles.appName}>CureVeda</Text>
+                  <Text style={styles.appTagline}>Ayurvedic Practice Management</Text>
+                </View>
+
+                {/* Login Form (Visible when showLogin is true) */}
+                {showLogin ? (
+                  <Card style={styles.loginCard}>
+                    <Card.Content>
+                      <Text variant="titleMedium" style={styles.formTitle}>
+                        {t.welcomeBack || 'Welcome Back'}
+                      </Text>
+                      
+                      <TextInput
+                        label={t.email || 'Email'}
+                        value={email}
+                        onChangeText={setEmail}
+                        mode="outlined"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        style={styles.input}
+                        left={<TextInput.Icon icon="email" />}
+                      />
+                      
+                      <TextInput
+                        label={t.password || 'Password'}
+                        value={password}
+                        onChangeText={setPassword}
+                        mode="outlined"
+                        secureTextEntry
+                        style={styles.input}
+                        left={<TextInput.Icon icon="lock" />}
+                      />
+                      
+                      <Button
+                        mode="contained"
+                        loading={loading}
+                        disabled={loading}
+                        onPress={handleLogin}
+                        style={styles.loginActionButton}
+                        labelStyle={styles.buttonLabel}
+                        icon="login"
+                      >
+                        {t.signIn || 'Sign In'}
+                      </Button>
+                      
+                      <Button
+                        mode="text"
+                        onPress={toggleLoginForm}
+                        style={styles.cancelButton}
+                        labelStyle={styles.cancelButtonLabel}
+                      >
+                        Cancel
+                      </Button>
+                      
+                      {message ? (
+                        <Text style={[
+                          styles.messageText,
+                          message.includes('successful') ? styles.successMessage : styles.errorMessage
+                        ]}>
+                          {message}
+                        </Text>
+                      ) : null}
+                    </Card.Content>
+                  </Card>
+                ) : (
+                  /* Action Buttons (Visible when login form is hidden) */
+                  <View style={styles.actionButtons}>
+                    <Button
+                      mode="contained"
+                      onPress={toggleLoginForm}
+                      style={[styles.actionButton, styles.loginButton]}
+                      labelStyle={styles.buttonLabel}
+                      icon="login"
+                    >
+                      {t.login || 'Login'}
+                    </Button>
+                    <Button
+                      mode="outlined"
+                      onPress={handleSignUpNavigation}
+                      style={[styles.actionButton, styles.signupButton]}
+                      labelStyle={[styles.buttonLabel, styles.signupButtonLabel]}
+                      icon="account-plus"
+                    >
+                      {t.signUp || 'Sign Up'}
+                    </Button>
+                  </View>
+                )}
+
+                <Text style={styles.footerText}>
+                  Designed exclusively for Ayurvedic practitioners
+                </Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </LinearGradient>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -140,136 +289,201 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  scrollContainer: {
-    flexGrow: 1,
-    paddingBottom: 30,
+  mainContainer: {
+    flex: 1,
+  },
+  carouselContainer: {
+    flex: 1,
+    backgroundColor: '#e8f5e8',
+  },
+  pagerView: {
+    flex: 1,
+  },
+  slide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  slideContent: {
+    alignItems: 'center',
+    maxWidth: 320,
+    width: '100%',
+  },
+  slideIcon: {
+    fontSize: height < 700 ? 40 : 50,
+    marginBottom: 15,
+  },
+  slideTitle: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+    fontSize: height < 700 ? 20 : 24,
+    lineHeight: height < 700 ? 26 : 30,
+  },
+  slideSubtitle: {
+    color: '#4caf50',
+    fontSize: height < 700 ? 14 : 16,
+    textAlign: 'center',
+    marginBottom: 12,
+    fontWeight: '600',
+    lineHeight: height < 700 ? 18 : 22,
+  },
+  slideDescription: {
+    fontSize: height < 700 ? 12 : 14,
+    color: '#666666',
+    textAlign: 'center',
+    lineHeight: height < 700 ? 16 : 20,
+  },
+  indicatorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingBottom: 15,
+    backgroundColor: '#e8f5e8',
+  },
+  indicator: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginHorizontal: 3,
+  },
+  activeIndicator: {
+    backgroundColor: '#4caf50',
+    width: 16,
+  },
+  inactiveIndicator: {
+    backgroundColor: '#c8e6c9',
+  },
+  bottomSection: {
+    height: height * 0.4,
+    minHeight: 300,
+    paddingHorizontal: 20,
+  },
+  bottomContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    maxWidth: 400,
+    alignSelf: 'center',
+    width: '100%',
   },
   languageToggle: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
     marginBottom: 10,
   },
-  headerSection: {
-    alignItems: 'center',
-    paddingVertical: 50,
-    paddingHorizontal: 20,
+  languageButton: {
+    marginHorizontal: 4,
+    borderRadius: 12,
+    minWidth: 70,
   },
-  logoContainer: {
-    width: 100,
-    height: 100,
-    backgroundColor: '#ffffff',
-    borderRadius: 50,
-    justifyContent: 'center',
+  languageButtonLabel: {
+    fontSize: 11,
+  },
+  appBrand: {
     alignItems: 'center',
     marginBottom: 20,
+  },
+  appIcon: {
+    fontSize: height < 700 ? 28 : 35,
+    marginBottom: 6,
+  },
+  appName: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: height < 700 ? 16 : 20,
+    marginBottom: 2,
+  },
+  appTagline: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: height < 700 ? 12 : 14,
+    textAlign: 'center',
+  },
+  loginCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    padding: 15,
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
   },
-  logoEmoji: {
-    fontSize: 40,
-  },
-  title: {
+  formTitle: {
+    textAlign: 'center',
     color: '#2e7d32',
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  subtitle: {
-    color: '#4caf50',
-    fontSize: 16,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  aboutCard: {
-    marginHorizontal: 20,
     marginBottom: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 15,
-  },
-  sectionTitle: {
-    color: '#2e7d32',
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  aboutText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#424242',
-    textAlign: 'center',
-  },
-  featuresSection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  featureCard: {
-    marginBottom: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 12,
-  },
-  featureTitle: {
-    color: '#2e7d32',
-    marginBottom: 8,
-    fontWeight: '600',
-  },
-  featureDescription: {
-    fontSize: 14,
-    color: '#666666',
-    lineHeight: 20,
-  },
-  benefitsCard: {
-    marginHorizontal: 20,
-    marginBottom: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 15,
-  },
-  benefitsList: {
-    marginTop: 10,
-  },
-  benefitItem: {
-    fontSize: 16,
-    color: '#424242',
-    marginBottom: 8,
-    paddingLeft: 10,
-  },
-  ctaSection: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  ctaText: {
     fontSize: 18,
-    color: '#2e7d32',
-    textAlign: 'center',
-    marginBottom: 25,
-    fontWeight: '600',
   },
-  getStartedButton: {
+  input: {
+    marginBottom: 12,
+    backgroundColor: '#ffffff',
+  },
+  actionButtons: {
+    gap: 10,
+    marginBottom: 15,
+  },
+  actionButton: {
+    borderRadius: 20,
+    paddingVertical: 2,
+    height: 44,
+    justifyContent: 'center',
+  },
+  loginActionButton: {
     backgroundColor: '#4caf50',
-    borderRadius: 25,
-    marginBottom: 20,
-    shadowColor: '#4caf50',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    borderRadius: 20,
+    marginTop: 5,
+    marginBottom: 5,
+    height: 44,
+    justifyContent: 'center',
   },
-  buttonContent: {
-    paddingVertical: 8,
-    paddingHorizontal: 30,
+  loginButton: {
+    backgroundColor: '#4caf50',
+  },
+  signupButton: {
+    borderColor: 'white',
+    borderWidth: 1.5,
+    backgroundColor: 'transparent',
   },
   buttonLabel: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
-    color: '#ffffff',
+  },
+  signupButtonLabel: {
+    color: 'white',
+  },
+  cancelButton: {
+    marginTop: 5,
+  },
+  cancelButtonLabel: {
+    color: '#4caf50',
+    fontSize: 13,
   },
   footerText: {
-    fontSize: 14,
-    color: '#666666',
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
+    fontSize: 11,
     fontStyle: 'italic',
+  },
+  messageText: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontSize: 13,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  errorMessage: {
+    color: '#d32f2f',
+    backgroundColor: '#ffebee',
+  },
+  successMessage: {
+    color: '#2e7d32',
+    backgroundColor: '#e8f5e9',
   },
 });

@@ -114,8 +114,11 @@ export default function PanchkarmaScreen({ route, navigation }) {
   const doctorEmail = route.params?.profile?.email || "";
   const doctorName = route.params?.profile?.name || "Doctor";
   
+  // Get pre-selected patient from dashboard
+  const preSelectedPatient = route?.params?.selectedPatient || null;
+  
   const [patients, setPatients] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(preSelectedPatient);
   const [selectedTreatments, setSelectedTreatments] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [prescriptionNotes, setPrescriptionNotes] = useState('');
@@ -412,34 +415,40 @@ export default function PanchkarmaScreen({ route, navigation }) {
               Create Panchkarma Prescription
             </Text>
 
-            {/* Patient Selection */}
+            {/* Patient Selection - Only show selected patient info */}
             <Text variant="titleMedium" style={styles.modalSectionTitle}>
-              Select Patient:
+              Patient:
             </Text>
-            <TextInput
-              mode="outlined"
-              placeholder="Search patients..."
-              value={patientSearchQuery}
-              onChangeText={setPatientSearchQuery}
-              style={{ marginBottom: 12 }}
-              left={<TextInput.Icon icon="magnify" />}
-            />
-            {filteredPatients.map(patient => (
-              <List.Item
-                key={patient.id}
-                title={patient.name}
-                description={patient.email}
-                left={props => <List.Icon {...props} icon="account" />}
-                right={props => selectedPatient?.id === patient.id ? 
-                  <List.Icon {...props} icon="check" color="#4caf50" /> : null}
-                onPress={() => setSelectedPatient(patient)}
-                style={{
-                  backgroundColor: selectedPatient?.id === patient.id ? '#e8f5e8' : 'transparent',
-                  marginBottom: 4,
-                  borderRadius: 8
-                }}
-              />
-            ))}
+            {selectedPatient ? (
+              <View style={{ 
+                backgroundColor: '#e8f5e8',
+                padding: 12,
+                borderRadius: 8,
+                borderLeftWidth: 4,
+                borderLeftColor: '#4caf50',
+                marginBottom: 16
+              }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                  {selectedPatient.name}
+                </Text>
+                <Text style={{ color: '#666', fontSize: 14 }}>
+                  {selectedPatient.email}
+                </Text>
+              </View>
+            ) : (
+              <View style={{ 
+                backgroundColor: '#ffebee',
+                padding: 12,
+                borderRadius: 8,
+                borderLeftWidth: 4,
+                borderLeftColor: '#f44336',
+                marginBottom: 16
+              }}>
+                <Text style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+                  No patient selected. Please select a patient from the dashboard first.
+                </Text>
+              </View>
+            )}
 
             <Divider style={{ marginVertical: 16 }} />
 
