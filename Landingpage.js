@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Dimensions, StyleSheet, Platform, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Dimensions, StyleSheet, Platform, ScrollView, TouchableOpacity, KeyboardAvoidingView, Animated, Easing } from 'react-native';
 import { Button, Text, TextInput, Card, RadioButton } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from './hooks/useTranslation';
@@ -38,6 +38,7 @@ const carouselSlides = [
 export default function LandingScreen({ navigation }) {
   const { t, language, setLanguage } = useTranslation();
   const [activePage, setActivePage] = useState(0);
+  const [PagerView, setPagerView] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -47,14 +48,47 @@ export default function LandingScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showLogin, setShowLogin] = useState(false); // Show/hide login form in landing page
+  const loginHeight = useRef(new Animated.Value(0)).current; // Animated height for login section
+  const bottomSectionTranslateY = useRef(new Animated.Value(0)).current; // Animated translateY for green section
+  const topSectionHeight = useRef(new Animated.Value(height * 0.6)).current; // Animated height for the top section
 
-  // Auto-advance carousel
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActivePage((prev) => (prev + 1) % carouselSlides.length);
-    }, 4000);
-    return () => clearInterval(interval);
+    if (Platform.OS !== 'web') {
+      import('react-native-pager-view').then((module) => {
+        setPagerView(() => module.default);
+      });
+    }
   }, []);
+
+  useEffect(() => {
+    // Animate the height of the login section with smoother easing
+    Animated.timing(loginHeight, {
+      toValue: showLogin ? 300 : 0, // Expand to 300px when visible, collapse to 0px when hidden
+      duration: 300, // Duration of the animation in milliseconds
+      easing: Easing.out(Easing.ease), // Add easing for smooth transition
+      useNativeDriver: false, // Use native driver for layout animations
+    }).start();
+  }, [showLogin]);
+
+  useEffect(() => {
+    // Animate the green section with smoother easing
+    Animated.timing(bottomSectionTranslateY, {
+      toValue: showLogin ? -200 : 0, // Move up by 200px when visible, reset to 0px when hidden
+      duration: 300, // Duration of the animation in milliseconds
+      easing: Easing.out(Easing.ease), // Add easing for smooth transition
+      useNativeDriver: true, // Use native driver for performance
+    }).start();
+  }, [showLogin]);
+
+  useEffect(() => {
+    // Animate the top section height and position the logo dynamically
+    Animated.timing(topSectionHeight, {
+      toValue: showLogin ? height * 0.5 : height * 0.6, // Adjust height to center the logo
+      duration: 300, // Duration of the animation in milliseconds
+      easing: Easing.out(Easing.ease), // Add easing for smooth transition
+      useNativeDriver: false, // Use native driver for layout animations
+    }).start();
+  }, [showLogin]);
 
   // Function to handle login
   const handleLogin = async () => {
@@ -101,7 +135,7 @@ export default function LandingScreen({ navigation }) {
 
   // Function to handle sign up navigation
   const handleSignUpNavigation = () => {
-    navigation.navigate('Login'); // Navigate to Login screen which handles both login and signup
+    navigation.navigate('SignUp'); // Ensure the 'SignUp' screen is registered in the navigation stack
   };
 
   // Toggle login form visibility
@@ -124,27 +158,64 @@ export default function LandingScreen({ navigation }) {
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
+          scrollEnabled={!showLogin} // Disable scrolling when login form is visible
         >
           {/* Main Landing Page */}
-          <View style={styles.mainContainer}>
+          <Animated.View style={[styles.topSection, { height: topSectionHeight }]}>
             {/* Top Half: Carousel Section */}
             <View style={styles.carouselContainer}>
-              {/* Simple Slide Display */}
-              <View style={styles.slide}>
-                <View style={styles.slideContent}>
-                  <Text style={styles.slideIcon}>{carouselSlides[activePage].icon}</Text>
-                  <Text variant="headlineLarge" style={styles.slideTitle}>{carouselSlides[activePage].title}</Text>
-                  <Text style={styles.slideSubtitle}>{carouselSlides[activePage].subtitle}</Text>
-                  <Text style={styles.slideDescription}>{carouselSlides[activePage].description}</Text>
-                </View>
-              </View>
+              {/* Ensure the carousel remains static */}
+              {Platform.OS === 'web' ? (
+                <ScrollView
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  scrollEnabled={!showLogin} // Disable carousel scrolling during login
+                  onScroll={(event) => {
+                    const page = Math.round(event.nativeEvent.contentOffset.x / width);
+                    setActivePage(page);
+                  }}
+                  scrollEventThrottle={16}
+                >
+                  {carouselSlides.map((slide, index) => (
+                    <View key={index} style={[styles.slide, { width }]}
+                    >
+                      <View style={styles.slideContent}>
+                        <Text style={styles.slideIcon}>{slide.icon}</Text>
+                        <Text variant="headlineLarge" style={styles.slideTitle}>{slide.title}</Text>
+                        <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
+                        <Text style={styles.slideDescription}>{slide.description}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </ScrollView>
+              ) : (
+                PagerView && (
+                  <PagerView
+                    style={styles.pagerView}
+                    initialPage={0}
+                    scrollEnabled={!showLogin} // Disable PagerView scrolling during login
+                    onPageSelected={(e) => setActivePage(e.nativeEvent.position)}
+                  >
+                    {carouselSlides.map((slide, index) => (
+                      <View key={index} style={styles.slide}>
+                        <View style={styles.slideContent}>
+                          <Text style={styles.slideIcon}>{slide.icon}</Text>
+                          <Text variant="headlineLarge" style={styles.slideTitle}>{slide.title}</Text>
+                          <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
+                          <Text style={styles.slideDescription}>{slide.description}</Text>
+                        </View>
+                      </View>
+                    ))}
+                  </PagerView>
+                )
+              )}
               
               {/* Page Indicators */}
               <View style={styles.indicatorContainer}>
                 {carouselSlides.map((_, index) => (
-                  <TouchableOpacity
+                  <View
                     key={index}
-                    onPress={() => setActivePage(index)}
                     style={[
                       styles.indicator,
                       activePage === index ? styles.activeIndicator : styles.inactiveIndicator
@@ -153,129 +224,131 @@ export default function LandingScreen({ navigation }) {
                 ))}
               </View>
             </View>
+          </Animated.View>
 
-            {/* Bottom Half: Login/Signup Section */}
-            <View style={styles.bottomSection}>
-              <View style={styles.bottomContent}>
-                {/* Language Toggle */}
-                <View style={styles.languageToggle}>
-                  <Button
-                    mode={language === 'en' ? 'contained' : 'outlined'}
-                    onPress={() => setLanguage('en')}
-                    style={styles.languageButton}
-                    compact
-                    labelStyle={styles.languageButtonLabel}
-                  >
-                    English
-                  </Button>
-                  <Button
-                    mode={language === 'hi' ? 'contained' : 'outlined'}
-                    onPress={() => setLanguage('hi')}
-                    style={styles.languageButton}
-                    compact
-                    labelStyle={styles.languageButtonLabel}
-                  >
-                    हिन्दी
-                  </Button>
-                </View>
+          {/* Bottom Half: Login/Signup Section */}
+          <Animated.View style={[styles.bottomSection, { transform: [{ translateY: bottomSectionTranslateY }] }]}>
+            <View style={styles.bottomContent}>
+              {/* Language Toggle */}
+              <View style={styles.languageToggle}>
+                <Button
+                  mode={language === 'en' ? 'contained' : 'outlined'}
+                  onPress={() => setLanguage('en')}
+                  style={styles.languageButton}
+                  compact
+                  labelStyle={styles.languageButtonLabel}
+                >
+                  English
+                </Button>
+                <Button
+                  mode={language === 'hi' ? 'contained' : 'outlined'}
+                  onPress={() => setLanguage('hi')}
+                  style={styles.languageButton}
+                  compact
+                  labelStyle={styles.languageButtonLabel}
+                >
+                  हिन्दी
+                </Button>
+              </View>
 
-                {/* App Logo/Name */}
-                <View style={styles.appBrand}>
-                  <Text style={styles.appIcon}>🌿</Text>
-                  <Text variant="headlineSmall" style={styles.appName}>CureVeda</Text>
-                  <Text style={styles.appTagline}>Ayurvedic Practice Management</Text>
-                </View>
+              {/* App Logo/Name */}
+              <View style={[styles.appBrand, showLogin && styles.appBrandCentered]}>
+                <Text style={styles.appIcon}>🌿</Text>
+                <Text variant="headlineSmall" style={styles.appName}>CureVeda</Text>
+                <Text style={styles.appTagline}>Ayurvedic Practice Management</Text>
+              </View>
 
-                {/* Login Form (Visible when showLogin is true) */}
-                {showLogin ? (
-                  <Card style={styles.loginCard}>
-                    <Card.Content>
-                      <Text variant="titleMedium" style={styles.formTitle}>
-                        {t.welcomeBack || 'Welcome Back'}
-                      </Text>
-                      
-                      <TextInput
-                        label={t.email || 'Email'}
-                        value={email}
-                        onChangeText={setEmail}
-                        mode="outlined"
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        style={styles.input}
-                        left={<TextInput.Icon icon="email" />}
-                      />
-                      
-                      <TextInput
-                        label={t.password || 'Password'}
-                        value={password}
-                        onChangeText={setPassword}
-                        mode="outlined"
-                        secureTextEntry
-                        style={styles.input}
-                        left={<TextInput.Icon icon="lock" />}
-                      />
-                      
-                      <Button
-                        mode="contained"
-                        loading={loading}
-                        disabled={loading}
-                        onPress={handleLogin}
-                        style={styles.loginActionButton}
-                        labelStyle={styles.buttonLabel}
-                        icon="login"
-                      >
-                        {t.signIn || 'Sign In'}
-                      </Button>
-                      
-                      <Button
-                        mode="text"
-                        onPress={toggleLoginForm}
-                        style={styles.cancelButton}
-                        labelStyle={styles.cancelButtonLabel}
-                      >
-                        Cancel
-                      </Button>
-                      
-                      {message ? (
-                        <Text style={[
-                          styles.messageText,
-                          message.includes('successful') ? styles.successMessage : styles.errorMessage
-                        ]}>
-                          {message}
-                        </Text>
-                      ) : null}
-                    </Card.Content>
-                  </Card>
-                ) : (
-                  /* Action Buttons (Visible when login form is hidden) */
-                  <View style={styles.actionButtons}>
+              {/* Login Form */}
+              {showLogin && (
+                <Card style={styles.loginCard}>
+                  <Card.Content>
+                    <Text variant="titleMedium" style={styles.formTitle}>
+                      {t.welcomeBack || 'Welcome Back'}
+                    </Text>
+                    
+                    <TextInput
+                      label={t.email || 'Email'}
+                      value={email}
+                      onChangeText={setEmail}
+                      mode="outlined"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      style={styles.input}
+                      left={<TextInput.Icon icon="email" />}
+                    />
+                    
+                    <TextInput
+                      label={t.password || 'Password'}
+                      value={password}
+                      onChangeText={setPassword}
+                      mode="outlined"
+                      secureTextEntry
+                      style={styles.input}
+                      left={<TextInput.Icon icon="lock" />}
+                    />
+                    
                     <Button
                       mode="contained"
-                      onPress={toggleLoginForm}
-                      style={[styles.actionButton, styles.loginButton]}
+                      loading={loading}
+                      disabled={loading}
+                      onPress={handleLogin}
+                      style={styles.loginActionButton}
                       labelStyle={styles.buttonLabel}
                       icon="login"
                     >
-                      {t.login || 'Login'}
+                      {t.signIn || 'Log In'}
                     </Button>
+                    
                     <Button
-                      mode="outlined"
-                      onPress={handleSignUpNavigation}
-                      style={[styles.actionButton, styles.signupButton]}
-                      labelStyle={[styles.buttonLabel, styles.signupButtonLabel]}
-                      icon="account-plus"
+                      mode="text"
+                      onPress={toggleLoginForm}
+                      style={styles.cancelButton}
+                      labelStyle={styles.cancelButtonLabel}
                     >
-                      {t.signUp || 'Sign Up'}
+                      Cancel
                     </Button>
-                  </View>
-                )}
+                    
+                    {message ? (
+                      <Text style={[
+                        styles.messageText,
+                        message.includes('successful') ? styles.successMessage : styles.errorMessage
+                      ]}>
+                        {message}
+                      </Text>
+                    ) : null}
+                  </Card.Content>
+                </Card>
+              )}
 
-                <Text style={styles.footerText}>
-                  Designed exclusively for Ayurvedic practitioners
-                </Text>
-              </View>
+              {/* Action Buttons */}
+              {!showLogin && (
+                <View style={styles.actionButtons}>
+                  <Button
+                    mode="contained"
+                    onPress={toggleLoginForm}
+                    style={[styles.actionButton, styles.loginButton]}
+                    labelStyle={styles.buttonLabel}
+                    icon="login"
+                  >
+                    {t.login || 'Login'}
+                  </Button>
+                  <Button
+                    mode="outlined"
+                    onPress={handleSignUpNavigation}
+                    style={[styles.actionButton, styles.signupButton]}
+                    labelStyle={[styles.buttonLabel, styles.signupButtonLabel]}
+                    icon="account-plus"
+                  >
+                    {t.signUp || 'Sign Up'}
+                  </Button>
+                </View>
+              )}
+
+              <Text style={styles.footerText}>
+                Designed exclusively for Ayurvedic practitioners
+              </Text>
             </View>
-          </View>
+          </Animated.View>
         </ScrollView>
       </LinearGradient>
     </KeyboardAvoidingView>
@@ -357,10 +430,17 @@ const styles = StyleSheet.create({
   inactiveIndicator: {
     backgroundColor: '#c8e6c9',
   },
+  topSection: {
+    height: height * 0.6,
+    minHeight: 400,
+    paddingHorizontal: 20,
+    backgroundColor: '#e8f5e8',
+  },
   bottomSection: {
     height: height * 0.4,
     minHeight: 300,
     paddingHorizontal: 20,
+    backgroundColor: '#0d3b13', // Ensure the green section is visually distinct
   },
   bottomContent: {
     flex: 1,
@@ -386,6 +466,9 @@ const styles = StyleSheet.create({
   appBrand: {
     alignItems: 'center',
     marginBottom: 20,
+  },
+  appBrandCentered: {
+    marginTop: -50, // Move the logo slightly up when login form is visible
   },
   appIcon: {
     fontSize: height < 700 ? 28 : 35,
@@ -485,5 +568,9 @@ const styles = StyleSheet.create({
   successMessage: {
     color: '#2e7d32',
     backgroundColor: '#e8f5e9',
+  },
+  animatedLoginContainer: {
+    overflow: 'hidden', // Ensure the content is clipped to the animated height
+    marginBottom: 15,
   },
 });
