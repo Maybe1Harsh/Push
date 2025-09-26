@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, View, Alert, StyleSheet } from 'react-native';
+import { ScrollView, View, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, Card, Button, Divider, DataTable, Modal, Portal, TextInput, List, Chip } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowLeft } from 'lucide-react-native';
 import { supabase } from './supabaseClient';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -266,6 +267,9 @@ export default function PanchkarmaScreen({ route, navigation }) {
       colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
       style={styles.gradient}
     >
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <ArrowLeft size={28} color="#333" />
+      </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Header */}
       <View style={styles.headerSection}>
@@ -516,6 +520,13 @@ export default function PanchkarmaScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
+  },
   gradient: {
     flex: 1,
   },

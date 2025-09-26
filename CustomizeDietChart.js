@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, Card, Button, TextInput, Portal, Modal, Provider as PaperProvider } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowLeft } from 'lucide-react-native';
 import { supabase } from './supabaseClient';
 import { useTranslation } from './hooks/useTranslation';
 
@@ -148,6 +149,9 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
           colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
           style={styles.gradient}
         >
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <ArrowLeft size={28} color="#333" />
+          </TouchableOpacity>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             {/* Header Section */}
             <View style={styles.headerSection}>
@@ -338,6 +342,13 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
+  },
   gradient: {
     flex: 1,
   },

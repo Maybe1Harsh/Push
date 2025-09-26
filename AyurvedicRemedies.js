@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { ScrollView, View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { ScrollView, View, StyleSheet, TouchableWithoutFeedback, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { Text, Button, Card, Portal, Modal, Provider as PaperProvider } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowLeft } from 'lucide-react-native';
 import { useTranslation } from './hooks/useTranslation';
 
 const healthIssues = {
@@ -129,213 +131,537 @@ const healthIssues = {
 
 
 
-export default function AyurvedicRemedies() {
+const { width: screenWidth } = Dimensions.get('window');
+
+export default function AyurvedicRemedies({ navigation }) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const cardAnimations = useRef({});
+  const modalAnimation = useRef(new Animated.Value(0)).current;
+  const headerAnimation = useRef(new Animated.Value(0)).current;
+
+  // Initialize animations for cards
+  React.useEffect(() => {
+    Object.keys(healthIssues).forEach((issue, index) => {
+      cardAnimations.current[issue] = {
+        scale: new Animated.Value(1),
+        opacity: new Animated.Value(0),
+        translateY: new Animated.Value(50),
+      };
+    });
+
+    // Animate header
+    Animated.timing(headerAnimation, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+
+    // Stagger card animations
+    Object.keys(healthIssues).forEach((issue, index) => {
+      Animated.sequence([
+        Animated.delay(index * 100),
+        Animated.parallel([
+          Animated.timing(cardAnimations.current[issue].opacity, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(cardAnimations.current[issue].translateY, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    });
+  }, []);
 
   // Function to remove emojis and keep only the text
   const removeEmojis = (text) => {
     return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
   };
 
-  // Function to clean text content (remedies and avoid text)
+  // Function to clean text content (remedies and avoid text) - Keep emojis for better readability
   const cleanTextContent = (text) => {
-    return text.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+    // Instead of removing all emojis, let's keep them for better visual appeal
+    return text || 'No information available';
+  };
+
+  // Function to format remedies text with better styling
+  const formatRemedies = (text) => {
+    if (!text) return 'No remedies available';
+    
+    // Split by numbers to create bullet points
+    const items = text.split(/\d+\.\s/).filter(item => item.trim().length > 0);
+    return items.map((item, index) => `• ${item.trim()}`).join('\n\n');
   };
 
   const handleSelect = (issueKey) => {
+    // Animate card press
+    Animated.sequence([
+      Animated.timing(cardAnimations.current[issueKey].scale, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cardAnimations.current[issueKey].scale, {
+        toValue: 1.05,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
     setSelected(issueKey);
     setModalVisible(true);
+    
+    // Animate modal appearance
+    Animated.spring(modalAnimation, {
+      toValue: 1,
+      tension: 100,
+      friction: 8,
+      useNativeDriver: true,
+    }).start();
   };
 
   const hideModal = () => {
-    setModalVisible(false);
-    setSelected(null);
+    Animated.timing(modalAnimation, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setModalVisible(false);
+      setSelected(null);
+    });
+
+    // Reset card scale
+    if (selected && cardAnimations.current[selected]) {
+      Animated.timing(cardAnimations.current[selected].scale, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const AnimatedCard = ({ issue, data, onPress }) => {
+    const animation = cardAnimations.current[issue];
+    if (!animation) return null;
+
+    return (
+      <Animated.View
+        style={[
+          {
+            opacity: animation.opacity,
+            transform: [
+              { translateY: animation.translateY },
+              { scale: animation.scale },
+            ],
+          },
+        ]}
+      >
+        <TouchableWithoutFeedback onPress={onPress}>
+          <LinearGradient
+            colors={[data.color, '#ffffff', data.color]}
+            style={[
+              styles.card,
+              {
+                borderLeftColor: data.iconColor,
+                shadowColor: data.iconColor,
+              },
+              selected === issue && styles.cardSelected,
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <View style={styles.cardContent}>
+              <View style={[styles.iconContainer, { backgroundColor: data.iconColor }]}>
+                <Text style={styles.cardEmoji}>{issue.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu)?.[0] || '🌿'}</Text>
+              </View>
+              <Text style={styles.cardTitle}>{removeEmojis(issue)}</Text>
+              <View style={styles.cardIndicator} />
+            </View>
+          </LinearGradient>
+        </TouchableWithoutFeedback>
+      </Animated.View>
+    );
   };
 
   return (
     <PaperProvider>
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={true}>
-            <Text style={styles.header}>{t.remTitle}</Text>
-            <View style={styles.grid}>
-              {Object.keys(healthIssues).map((issue) => (
-                <Card
-                  key={issue}
-                  style={[
-                    styles.card,
-                    { 
-                      backgroundColor: healthIssues[issue].color,
-                      borderLeftColor: healthIssues[issue].iconColor,
-                      shadowColor: healthIssues[issue].iconColor,
-                    },
-                    selected === issue && styles.cardSelected
-                  ]}
-                  onPress={() => handleSelect(issue)}
-                >
-                  <Card.Title 
-                    title={removeEmojis(issue)} 
-                    titleStyle={{ 
-                      fontSize: 14, 
-                      textAlign: 'center',
-                      color: '#424242',
-                      fontWeight: '700',
-                      lineHeight: 18,
-                    }} 
-                  />
-                </Card>
-              ))}
+      <LinearGradient
+        colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+        style={styles.gradient}
+      >
+        {/* Back Button */}
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => navigation.goBack()}
+        >
+          <ArrowLeft size={28} color="#333" />
+        </TouchableOpacity>
+
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+          {/* Header Section with Animation */}
+          <Animated.View
+            style={[
+              styles.headerSection,
+              {
+                opacity: headerAnimation,
+                transform: [
+                  {
+                    translateY: headerAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [-50, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <View style={styles.logoContainer}>
+              <Text style={styles.logoEmoji}>🌿</Text>
             </View>
-            {/* Disclaimer (subtle, visible once per screen) */}
-            <Text style={{ 
-              fontSize: 12, 
-              color: '#424242', 
-              textAlign: 'center', 
-              marginVertical: 15, 
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
-              padding: 10,
-              borderRadius: 8,
-              fontStyle: 'italic',
-            }}>
-              {t.remDisclaimer}
+            <Text style={styles.header}>{t.remTitle || 'Ayurvedic Remedies'}</Text>
+            <Text style={styles.subtitle}>Natural healing solutions for common health issues</Text>
+          </Animated.View>
+
+          {/* Cards Grid */}
+          <View style={styles.grid}>
+            {Object.keys(healthIssues).map((issue) => (
+              <AnimatedCard
+                key={issue}
+                issue={issue}
+                data={healthIssues[issue]}
+                onPress={() => handleSelect(issue)}
+              />
+            ))}
+          </View>
+
+          {/* Disclaimer */}
+          <View style={styles.disclaimerContainer}>
+            <Text style={styles.disclaimer}>
+              {t.remDisclaimer || 'These remedies are for informational purposes only. Consult healthcare professionals for serious conditions.'}
             </Text>
-            <Portal>
-              {/* Existing Modal for health issues */}
-              <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={styles.modal}>
+          </View>
+
+          {/* Enhanced Modal */}
+          <Portal>
+            <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={styles.modalContainer}>
+              <Animated.View
+                style={[
+                  styles.modal,
+                  {
+                    opacity: modalAnimation,
+                    transform: [
+                      {
+                        scale: modalAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.8, 1],
+                        }),
+                      },
+                      {
+                        translateY: modalAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [50, 0],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
                 {selected && (
-                  <ScrollView style={{ maxHeight: 500 }} showsVerticalScrollIndicator={true}>
-                    <Text style={styles.modalTitle}>{removeEmojis(selected)}</Text>
-                    <Text style={styles.modalExplanation}>{healthIssues[selected].explanation}</Text>
-                    <Text style={styles.modalSection}>{t.remRemedies}</Text>
-                    <Text style={styles.modalText}>{cleanTextContent(healthIssues[selected].remedies)}</Text>
-                    <Text style={styles.modalSection}>{t.remAvoid}</Text>
-                    <Text style={styles.modalText}>{cleanTextContent(healthIssues[selected].avoid)}</Text>
-                    <Button 
-                      mode="contained" 
-                      onPress={hideModal} 
-                      style={{ 
-                        marginTop: 15,
-                        backgroundColor: '#4caf50',
-                        borderRadius: 15,
-                        elevation: 3,
-                      }}
-                      contentStyle={{ paddingVertical: 5 }}
+                  <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+                    <LinearGradient
+                      colors={[healthIssues[selected].color, '#ffffff']}
+                      style={styles.modalHeader}
                     >
-                      {t.commonClose}
-                    </Button>
+                      <View style={[styles.modalIconContainer, { backgroundColor: healthIssues[selected].iconColor }]}>
+                        <Text style={styles.modalEmoji}>
+                          {selected.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu)?.[0] || '🌿'}
+                        </Text>
+                      </View>
+                      <Text style={styles.modalTitle}>{removeEmojis(selected)}</Text>
+                    </LinearGradient>
+                    
+                    <View style={styles.modalContent}>
+                      <Text style={styles.modalExplanation}>{healthIssues[selected].explanation}</Text>
+                      
+                      <View style={styles.sectionContainer}>
+                        <Text style={styles.modalSection}>✨ {t.remRemedies || 'Recommended Remedies'}</Text>
+                        <View style={styles.remediesContainer}>
+                          <Text style={styles.modalText}>{formatRemedies(healthIssues[selected].remedies)}</Text>
+                        </View>
+                      </View>
+                      
+                      <View style={styles.sectionContainer}>
+                        <Text style={styles.modalSection}>⚠️ {t.remAvoid || 'Things to Avoid'}</Text>
+                        <View style={styles.avoidContainer}>
+                          <Text style={styles.modalText}>{formatRemedies(healthIssues[selected].avoid)}</Text>
+                        </View>
+                      </View>
+                      
+                      <TouchableWithoutFeedback onPress={hideModal}>
+                        <LinearGradient
+                          colors={['#4caf50', '#66bb6a']}
+                          style={styles.closeButton}
+                        >
+                          <Text style={styles.closeButtonText}>{t.commonClose || 'Close'}</Text>
+                        </LinearGradient>
+                      </TouchableWithoutFeedback>
+                    </View>
                   </ScrollView>
                 )}
-              </Modal>
-            </Portal>
-          </ScrollView>
+              </Animated.View>
+            </Modal>
+          </Portal>
+        </ScrollView>
+      </LinearGradient>
     </PaperProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flexGrow: 1,
-    padding: 20,
-    backgroundColor: 'transparent',
+    paddingBottom: 20,
+  },
+  headerSection: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  logoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 50,
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logoEmoji: {
+    fontSize: 35,
   },
   header: {
-    marginBottom: 30,
-    color: '#1b5e20',
-    alignSelf: 'center',
-    fontSize: 32,
+    fontSize: 28,
+    color: '#2e7d32',
     fontWeight: 'bold',
-    textShadowColor: 'rgba(27, 94, 32, 0.3)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
-    letterSpacing: 1,
+    textAlign: 'center',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#424242',
+    textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 20,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    paddingHorizontal: 10,
   },
   card: {
-    width: 165,
-    height: 100,
+    width: (screenWidth - 60) / 2,
+    height: 140,
     margin: 8,
     borderRadius: 20,
+    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    borderLeftWidth: 4,
+    overflow: 'hidden',
+  },
+  cardContent: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    elevation: 6,
-    shadowOffset: { width: 0, height: 3 },
+    padding: 15,
+  },
+  iconContainer: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 5,
-    borderLeftWidth: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  cardEmoji: {
+    fontSize: 22,
+    color: '#fff',
+  },
+  cardTitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#2e7d32',
+    fontWeight: '700',
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  cardIndicator: {
+    width: 30,
+    height: 3,
+    backgroundColor: 'rgba(46, 125, 50, 0.3)',
+    borderRadius: 2,
   },
   cardSelected: {
+    elevation: 12,
+    shadowOpacity: 0.4,
     borderWidth: 2,
-    borderColor: '#1b5e20',
-    elevation: 8,
-    transform: [{ scale: 1.02 }],
-    shadowOpacity: 0.3,
+    borderColor: '#2e7d32',
   },
-  image: {
-    width: 70,
-    height: 50,
-    borderRadius: 10,
-    marginBottom: 6,
+  disclaimerContainer: {
+    marginTop: 30,
+    marginHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 15,
+    padding: 15,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  disclaimer: {
+    fontSize: 12,
+    color: '#424242',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    lineHeight: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modal: {
     backgroundColor: '#ffffff',
-    padding: 30,
     margin: 20,
     borderRadius: 25,
-    borderWidth: 3,
-    borderColor: '#4caf50',
-    elevation: 10,
+    overflow: 'hidden',
     shadowColor: '#4caf50',
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
-    shadowRadius: 10,
+    shadowRadius: 16,
+    elevation: 12,
+    maxHeight: '85%',
+  },
+  modalScroll: {
+    flex: 1,
+  },
+  modalHeader: {
+    alignItems: 'center',
+    paddingVertical: 25,
+    paddingHorizontal: 20,
+  },
+  modalIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  modalEmoji: {
+    fontSize: 30,
+    color: '#fff',
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 15,
     color: '#2e7d32',
     textAlign: 'center',
   },
+  modalContent: {
+    padding: 20,
+  },
   modalExplanation: {
-    fontStyle: 'italic',
-    color: '#424242',
-    marginBottom: 15,
-    textAlign: 'center',
     fontSize: 16,
-    backgroundColor: '#f8fdf8',
-    padding: 12,
+    color: '#424242',
+    marginBottom: 20,
+    textAlign: 'center',
+    backgroundColor: 'rgba(232, 245, 232, 0.5)',
+    padding: 15,
+    borderRadius: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4caf50',
+    lineHeight: 22,
+  },
+  sectionContainer: {
+    marginBottom: 20,
+  },
+  remediesContainer: {
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
     borderRadius: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#81c784',
-    lineHeight: 20,
+    padding: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4caf50',
+  },
+  avoidContainer: {
+    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f44336',
   },
   modalSection: {
     fontWeight: 'bold',
     color: '#2e7d32',
-    marginBottom: 8,
-    marginTop: 15,
+    marginBottom: 12,
     fontSize: 18,
   },
   modalText: {
-    marginBottom: 15,
     color: '#424242',
-    textAlign: 'left',
     fontSize: 15,
-    lineHeight: 22,
-    backgroundColor: '#fafafa',
-    padding: 12,
-    borderRadius: 10,
-    borderLeftWidth: 3,
-    borderLeftColor: '#66bb6a',
-    borderWidth: 1,
-    borderColor: 'rgba(102, 187, 106, 0.2)',
+    lineHeight: 24,
+  },
+  closeButton: {
+    borderRadius: 25,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    alignItems: 'center',
+    marginTop: 10,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  closeButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
   },
 });

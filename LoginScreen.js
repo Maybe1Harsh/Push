@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { TextInput, Button, Text, RadioButton, Card } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowLeft } from 'lucide-react-native';
 import { supabase } from './supabaseClient';
 import { useTranslation } from './hooks/useTranslation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -98,9 +99,17 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={loginStyles.container}>
       <LinearGradient
-        colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+        colors={['#b3e8beff', '#323c0bff', '#2a3d09ff']}
         style={loginStyles.gradient}
       >
+        {/* Back Button */}
+        <TouchableOpacity 
+          style={loginStyles.backButton} 
+          onPress={() => navigation.goBack()}
+        >
+          <ArrowLeft size={28} color="#333" />
+        </TouchableOpacity>
+
         <ScrollView contentContainerStyle={loginStyles.scrollContainer}>
           <View style={loginStyles.headerSection}>
             <View style={loginStyles.logoContainer}>
@@ -231,6 +240,13 @@ const loginStyles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
   },
   scrollContainer: {
     flexGrow: 1,

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { Text, Card, Button, Modal, Portal, Divider, IconButton, TextInput, Menu, Chip } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { ArrowLeft } from 'lucide-react-native';
 import { supabase } from './supabaseClient';
 
 const storageKey = 'calorieCounterData';
@@ -123,7 +124,7 @@ const localFoodsDatabase = [
   }
 ];
 
-export default function CalorieCounter() {
+export default function CalorieCounter({ navigation }) {
   // Personal info for BMR calculation
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
@@ -590,6 +591,14 @@ export default function CalorieCounter() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#e8f5e8' }}>
+      {/* Back Button */}
+      <TouchableOpacity 
+        style={styles.backButton} 
+        onPress={() => navigation.goBack()}
+      >
+        <ArrowLeft size={28} color="#333" />
+      </TouchableOpacity>
+
       <ScrollView 
         contentContainerStyle={{ padding: 16, paddingBottom: 32, flexGrow: 1 }}
       >
@@ -1474,3 +1483,13 @@ export default function CalorieCounter() {
     </View>
   );
 }
+
+const styles = {
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
+  },
+});

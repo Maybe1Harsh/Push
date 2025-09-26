@@ -96,62 +96,107 @@ export default function App() {
         <LanguageProvider initial="en">
           <NavigationContainer>
             <Stack.Navigator initialRouteName={storedProfile ? getInitialRouteName(storedProfile) : 'Landing'}>
-              <Stack.Screen name="Landing" component={LandingScreen} />
-              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen 
+                name="Landing" 
+                component={LandingScreen} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="Login" 
+                component={LoginScreen} 
+                options={{ headerShown: false }}
+              />
               <Stack.Screen 
                 name="Dashboard" 
                 component={DashboardScreen} 
                 initialParams={{ profile: storedProfile }} 
+                options={{ headerShown: false }}
               />
               <Stack.Screen 
                 name="DoctorDashboard" 
                 component={DoctorDashboardScreen} 
                 initialParams={{ profile: storedProfile }} 
+                options={{ headerShown: false }}
               />
               <Stack.Screen 
                 name="DoctorPrescriptions" 
                 component={DoctorPrescriptions} 
                 initialParams={{ profile: storedProfile }} 
+                options={{ headerShown: false }}
               />
               <Stack.Screen 
                 name="DoctorSchedule" 
                 component={DoctorSchedule} 
                 initialParams={{ profile: storedProfile }} 
-                options={{ title: 'Manage Schedule' }} 
+                options={{ headerShown: false }}
               />
-              <Stack.Screen name="DietChartTemplates" component={DietChartTemplates} />
+              <Stack.Screen 
+                name="DietChartTemplates" 
+                component={DietChartTemplates} 
+                options={{ headerShown: false }}
+              />
               <Stack.Screen 
                 name="CustomizeDietChart" 
                 component={CustomizeDietChart} 
                 initialParams={{ profile: storedProfile }} 
+                options={{ headerShown: false }}
               />
               <Stack.Screen 
                 name="PanchkarmaScreen" 
                 component={PanchkarmaScreen} 
-                options={{ title: 'Panchkarma Treatments' }} 
+                options={{ headerShown: false }}
               />
-              <Stack.Screen name="AyurvedicRemedies" component={AyurvedicRemediesScreen} />
+              <Stack.Screen 
+                name="AyurvedicRemedies" 
+                component={AyurvedicRemediesScreen} 
+                options={{ headerShown: false }}
+              />
               <Stack.Screen 
                 name="PatientPrescriptions" 
                 component={PatientPrescriptionsScreen} 
                 initialParams={{ profile: storedProfile }} 
+                options={{ headerShown: false }}
               />
-              <Stack.Screen name="CalorieCounter" component={CalorieCounter} />
-              <Stack.Screen name="YogaWellness" component={YogaWellness} options={{ title: 'Yoga & Wellness' }} />
-              <Stack.Screen name="NearbyDieticiansScreen" component={NearbyDieticiansScreen} />
-              <Stack.Screen name="AddPatient" component={AddPatientScreen} />
+              <Stack.Screen 
+                name="CalorieCounter" 
+                component={CalorieCounter} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="YogaWellness" 
+                component={YogaWellness} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="NearbyDieticiansScreen" 
+                component={NearbyDieticiansScreen} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="AddPatient" 
+                component={AddPatientScreen} 
+                options={{ headerShown: false }}
+              />
               <Stack.Screen
                 name="PatientAppointment"
                 component={PatientAppointmentScreen}
-                options={{ title: 'Request Appointment' }}
+                options={{ headerShown: false }}
               />
               <Stack.Screen
                 name="PatientAppointmentsView"
                 component={PatientAppointmentViewScreen}
-                options={{ title: 'Your Appointments' }}
+                options={{ headerShown: false }}
               />
-              <Stack.Screen name="PrescriptionPage" component={PrescriptionPage} />
-              <Stack.Screen name="DoshaQuiz" component={DoshaQuiz} />
+              <Stack.Screen 
+                name="PrescriptionPage" 
+                component={PrescriptionPage} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="DoshaQuiz" 
+                component={DoshaQuiz} 
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </LanguageProvider>

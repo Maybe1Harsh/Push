@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Card, Button } from 'react-native-paper';
+import { ArrowLeft } from 'lucide-react-native';
 
 export default function NearbyDieticiansScreen({ navigation }) {
   const dieticians = [
@@ -47,7 +48,11 @@ export default function NearbyDieticiansScreen({ navigation }) {
   const sortedDieticians = [...dieticians].sort((a, b) => b.rating - a.rating);
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#f3f6fa' }}>
+    <View style={{ flex: 1 }}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <ArrowLeft size={28} color="#333" />
+      </TouchableOpacity>
+      <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#f3f6fa' }}>
       <Card style={{ marginBottom: 20, borderRadius: 16 }}>
         <Card.Title title="CureVeda Dieticians Nearby" />
         <Card.Content>
@@ -102,5 +107,16 @@ export default function NearbyDieticiansScreen({ navigation }) {
         </Card.Actions>
       </Card>
     </ScrollView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
+  },
+});

@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, Button, Card, RadioButton, ProgressBar, Divider } from 'react-native-paper';
+import { ArrowLeft } from 'lucide-react-native';
 import { useTranslation } from './hooks/useTranslation';
 
 const quizData = [
@@ -141,7 +142,7 @@ function getResult(scores) {
   return sorted[0];
 }
 
-export default function DoshaQuiz() {
+export default function DoshaQuiz({ navigation }) {
   const { t } = useTranslation();
   const [step, setStep] = React.useState('start'); // start | quiz | result
   const [current, setCurrent] = React.useState(0);
@@ -177,6 +178,9 @@ export default function DoshaQuiz() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f3f6fa' }}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <ArrowLeft size={28} color="#333" />
+      </TouchableOpacity>
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', minHeight: 600 }}>
           <Card
@@ -312,3 +316,13 @@ export default function DoshaQuiz() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1000,
+    padding: 8,
+  },
+});
