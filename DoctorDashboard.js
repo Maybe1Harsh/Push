@@ -602,14 +602,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               </Text>
             </View>
             
-            {/* Logout Button - Professional Blue Circle */}
+            {/* Logout Button - Professional Dark Green Circle */}
             <TouchableOpacity 
               onPress={handleLogout}
               style={{
                 width: 60,
                 height: 60,
                 borderRadius: 30,
-                backgroundColor: '#1565c0',
+                backgroundColor: '#2e7d32',
                 justifyContent: 'center',
                 alignItems: 'center',
                 elevation: 3,
@@ -1075,6 +1075,27 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                       Send Diet Chart
                     </Button>
 
+                    {/* Print Button */}
+                    <Button
+                      mode="outlined"
+                      onPress={() => {
+                        if (!selectedPatient) {
+                          alert('Please select a patient first');
+                          return;
+                        }
+                        alert('Print functionality will be implemented soon!');
+                      }}
+                      style={{ 
+                        marginTop: 10,
+                        borderColor: '#2e7d32',
+                        borderRadius: 25
+                      }}
+                      textColor="#2e7d32"
+                      icon="printer"
+                    >
+                      Print Prescription
+                    </Button>
+
                     {/* Send Panchkarma Button */}
                     <Button
                       mode="contained"
@@ -1402,6 +1423,23 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             >
               Close
             </Button>
+
+            {/* Print Button */}
+            <Button
+              mode="outlined"
+              onPress={() => {
+                alert('Print functionality will be implemented soon!');
+              }}
+              style={{
+                marginTop: 10,
+                borderColor: '#2e7d32',
+                borderRadius: 25
+              }}
+              textColor="#2e7d32"
+              icon="printer"
+            >
+              Print Prescription History
+            </Button>
           </ScrollView>
         </Modal>
       </Portal>
@@ -1537,6 +1575,23 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               }}
             >
               Cancel
+            </Button>
+
+            {/* Print Button */}
+            <Button
+              mode="outlined"
+              onPress={() => {
+                alert('Print functionality will be implemented soon!');
+              }}
+              style={{
+                marginTop: 10,
+                borderColor: '#2e7d32',
+                borderRadius: 25
+              }}
+              textColor="#2e7d32"
+              icon="printer"
+            >
+              Print Diet Chart
             </Button>
           </ScrollView>
         </Modal>
