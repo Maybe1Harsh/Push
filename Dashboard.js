@@ -337,10 +337,8 @@ export default function DashboardScreen({ navigation, route }) {
 
   // Slideshow render function for individual feature cards
   const renderSlide = ({ item }) => (
-    <TouchableOpacity 
+    <View 
       style={[styles.slide, { width: width - 64 }]} // Adjusted for proper spacing
-      onPress={item.onPress}
-      activeOpacity={0.8}
     >
       <View style={styles.slideContent}>
         {/* Category Badge */}
@@ -365,13 +363,8 @@ export default function DashboardScreen({ navigation, route }) {
           <Text style={styles.slideSubtitle}>{item.subtitle}</Text>
           <Text style={styles.slideDescription}>{item.description}</Text>
         </View>
-        
-        {/* Action Button */}
-        <View style={styles.slideAction}>
-          <Text style={styles.slideActionText}>Tap to explore →</Text>
-        </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   React.useEffect(() => {
@@ -647,6 +640,42 @@ export default function DashboardScreen({ navigation, route }) {
                       }}
                     />
                   ))}
+                </View>
+
+                {/* All Features List */}
+                <View style={styles.featuresListSection}>
+                  <View style={styles.featuresHeader}>
+                    <View style={styles.categoryIconBadge}>
+                      <Text style={styles.categoryEmoji}>🎯</Text>
+                    </View>
+                    <Text style={styles.categoryTitle}>Explore All Features</Text>
+                  </View>
+                  <Text style={styles.featuresSubtitle}>Choose any feature to get started with your wellness journey</Text>
+                  
+                  <View style={styles.featuresGrid}>
+                    {wellnessFeatures.map((feature, index) => (
+                      <TouchableOpacity
+                        key={feature.id}
+                        style={styles.featureListItem}
+                        onPress={feature.onPress}
+                        activeOpacity={0.7}
+                      >
+                        <View style={styles.featureListIcon}>
+                          <Text style={styles.featureListEmoji}>{feature.emoji}</Text>
+                        </View>
+                        <View style={styles.featureListContent}>
+                          <Text style={styles.featureListTitle}>{feature.title}</Text>
+                          <Text style={styles.featureListSubtitle}>{feature.subtitle}</Text>
+                          <View style={styles.featureListCategory}>
+                            <Text style={styles.featureListCategoryText}>{feature.category}</Text>
+                          </View>
+                        </View>
+                        <View style={styles.featureListArrow}>
+                          <Text style={styles.featureListArrowText}>→</Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 </View>
 
                 {/* Quick Access */}
@@ -1191,6 +1220,90 @@ const styles = StyleSheet.create({
     color: '#2e7d32',
     fontSize: 12,
     fontWeight: '600',
+  },
+  featuresListSection: {
+    marginTop: 24,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f8f0',
+  },
+  featuresHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    justifyContent: 'center',
+  },
+  featuresSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+    fontStyle: 'italic',
+  },
+  featuresGrid: {
+    gap: 12,
+  },
+  featureListItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fff8',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+    elevation: 2,
+    shadowColor: '#2e7d32',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: '#e8f5e8',
+  },
+  featureListIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#e8f5e8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  featureListEmoji: {
+    fontSize: 18,
+  },
+  featureListContent: {
+    flex: 1,
+  },
+  featureListTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    marginBottom: 2,
+  },
+  featureListSubtitle: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 4,
+  },
+  featureListCategory: {
+    alignSelf: 'flex-start',
+  },
+  featureListCategoryText: {
+    fontSize: 11,
+    color: '#4caf50',
+    fontWeight: '600',
+    backgroundColor: '#e8f5e8',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  featureListArrow: {
+    marginLeft: 8,
+  },
+  featureListArrowText: {
+    fontSize: 16,
+    color: '#4caf50',
+    fontWeight: 'bold',
   },
   errorContainer: {
     flex: 1,
