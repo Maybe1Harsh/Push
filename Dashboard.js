@@ -602,11 +602,43 @@ export default function DashboardScreen({ navigation, route }) {
                   snapToInterval={width - 48 + 16} // slide width + margin
                   snapToAlignment="start"
                   decelerationRate="fast"
+                  onScroll={(event) => {
+                    const slideWidth = width - 48 + 16; // slide width + margin
+                    const slideIndex = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
+                    // Ensure slideIndex is within bounds
+                    const validSlideIndex = Math.max(0, Math.min(slideIndex, wellnessFeatures.length - 1));
+                    if (validSlideIndex !== currentSlide) {
+                      setCurrentSlide(validSlideIndex);
+                    }
+                  }}
                   onMomentumScrollEnd={(event) => {
                     const slideWidth = width - 48 + 16; // slide width + margin
                     const slideIndex = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
-                    setCurrentSlide(slideIndex);
+                    
+                    // Handle infinite scroll wrapping
+                    if (slideIndex >= wellnessFeatures.length) {
+                      // If scrolled past last slide, wrap to first slide
+                      setTimeout(() => {
+                        slideshowRef.current?.scrollToOffset({ offset: 0, animated: true });
+                        setCurrentSlide(0);
+                      }, 100);
+                    } else if (slideIndex < 0) {
+                      // If scrolled before first slide, wrap to last slide
+                      const lastSlideOffset = (wellnessFeatures.length - 1) * slideWidth;
+                      setTimeout(() => {
+                        slideshowRef.current?.scrollToOffset({ offset: lastSlideOffset, animated: true });
+                        setCurrentSlide(wellnessFeatures.length - 1);
+                      }, 100);
+                    } else {
+                      // Normal slide update
+                      const validSlideIndex = Math.max(0, Math.min(slideIndex, wellnessFeatures.length - 1));
+                      setCurrentSlide(validSlideIndex);
+                    }
                   }}
+                  onScrollBeginDrag={() => {
+                    // User started manual scrolling - this ensures onScroll is properly triggered
+                  }}
+                  scrollEventThrottle={16}
                   onScrollToIndexFailed={(info) => {
                     console.log('Scroll to index failed:', info);
                     // Fallback: scroll to offset
