@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
-import { Text, Button, Card, Portal, Modal, Provider as PaperProvider } from 'react-native-paper';
+import { Text, Button, Card, Portal, Modal, Provider as PaperProvider, IconButton } from 'react-native-paper';
 import { useTranslation } from './hooks/useTranslation';
 import YogaPoses from './YogaPoses';
 import MeditationBreathing from './MeditationBreathing';
@@ -11,6 +11,18 @@ const YogaWellness = ({ navigation }) => {
 
   const renderMainView = () => (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Back Button */}
+      <View style={styles.backButtonContainer}>
+        <IconButton
+          icon="arrow-left"
+          iconColor="#2e7d32"
+          size={24}
+          onPress={() => navigation?.goBack()}
+          style={styles.backButton}
+        />
+        <Text style={styles.backButtonText}>Back to Dashboard</Text>
+      </View>
+      
       <Text style={styles.header}>🧘‍♀️ Yoga & Wellness</Text>
       <Text style={styles.subtitle}>Transform your mind and body through ancient practices</Text>
       
@@ -126,6 +138,21 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#e8f5e8',
+  },
+  backButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  backButton: {
+    margin: 0,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    marginLeft: 4,
   },
   header: {
     fontSize: 32,
