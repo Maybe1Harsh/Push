@@ -162,7 +162,7 @@ export default function DashboardScreen({ navigation, route }) {
           isScrolling.current = false;
         }
       }
-    }, 4000); // Change slide every 4 seconds
+    }, 3000); // Change slide every 3 seconds
 
     return () => clearInterval(interval);
   }, [currentSlide, actualSlideIndex, originalWellnessFeatures.length, width]);
@@ -678,24 +678,24 @@ export default function DashboardScreen({ navigation, route }) {
                     setActualSlideIndex(newActualIndex);
                     
                     // Handle infinite scroll repositioning with improved logic
-                    const shouldReposition = slideIndex < originalLength || slideIndex >= originalLength * 2;
+                    const shouldReposition = slideIndex <= 1 || slideIndex >= (originalLength * 2) - 1;
                     
                     if (shouldReposition && !repositioning.current) {
                       repositioning.current = true;
                       autoScrollEnabled.current = false;
                       
                       let targetIndex;
-                      if (slideIndex < originalLength) {
-                        // If in first set (set1), jump to middle set (set2) equivalent
+                      if (slideIndex <= 1) {
+                        // If near or at the beginning of first set, jump to middle set equivalent
                         targetIndex = slideIndex + originalLength;
                       } else {
-                        // If in third set (set3), jump to middle set (set2) equivalent
+                        // If near or at the end of third set, jump to middle set equivalent
                         targetIndex = slideIndex - originalLength;
                       }
                       
                       const targetOffset = targetIndex * slideWidth;
                       
-                      // Perform invisible jump after a short delay
+                      // Perform invisible jump with minimal delay
                       setTimeout(() => {
                         if (slideshowRef.current && repositioning.current) {
                           slideshowRef.current.scrollToOffset({ 
@@ -708,9 +708,9 @@ export default function DashboardScreen({ navigation, route }) {
                           setTimeout(() => {
                             repositioning.current = false;
                             autoScrollEnabled.current = true;
-                          }, 100);
+                          }, 50);
                         }
-                      }, 50);
+                      }, 30);
                     }
                   }}
                   onScrollBeginDrag={() => {
@@ -738,44 +738,7 @@ export default function DashboardScreen({ navigation, route }) {
                   style={styles.slideshow}
                 />
 
-                {/* Pagination Dots */}
-                <View style={styles.paginationContainer}>
-                  {originalWellnessFeatures.map((_, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.paginationDot,
-                        actualSlideIndex === index && styles.activePaginationDot
-                      ]}
-                      onPress={() => {
-                        try {
-                          if (originalWellnessFeatures.length === 0 || repositioning.current) return;
-                          
-                          const slideWidth = width - 48 + 16;
-                          // Navigate to middle set (set2) equivalent
-                          const targetIndex = originalWellnessFeatures.length + index;
-                          const offset = targetIndex * slideWidth;
-                          
-                          autoScrollEnabled.current = false;
-                          isScrolling.current = true;
-                          
-                          slideshowRef.current?.scrollToOffset({ offset, animated: true });
-                          setCurrentSlide(targetIndex);
-                          setActualSlideIndex(index);
-                          
-                          setTimeout(() => {
-                            isScrolling.current = false;
-                            autoScrollEnabled.current = true;
-                          }, 400);
-                        } catch (error) {
-                          console.log('Manual scroll error:', error);
-                          isScrolling.current = false;
-                          autoScrollEnabled.current = true;
-                        }
-                      }}
-                    />
-                  ))}
-                </View>
+
 
                 {/* All Features List */}
                 <View style={styles.featuresListSection}>
@@ -1207,25 +1170,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#c8e6c9',
-    marginHorizontal: 4,
-  },
-  activePaginationDot: {
-    backgroundColor: '#4caf50',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
+
   categoryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
