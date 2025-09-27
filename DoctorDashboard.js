@@ -602,14 +602,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               </Text>
             </View>
             
-            {/* Logout Button - Professional Dark Green Circle */}
+            {/* Logout Button - Professional Blue Circle */}
             <TouchableOpacity 
               onPress={handleLogout}
               style={{
                 width: 60,
                 height: 60,
                 borderRadius: 30,
-                backgroundColor: '#2e7d32',
+                backgroundColor: '#1565c0',
                 justifyContent: 'center',
                 alignItems: 'center',
                 elevation: 3,
@@ -934,14 +934,9 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             </View>
           ) : (
             <View>
-              {/* Patient List - Scrollable only when no patient selected */}
+              {/* Patient List - Scrollable */}
               <View style={{ maxHeight: 300 }}>
-                <ScrollView 
-                  showsVerticalScrollIndicator={true}
-                  persistentScrollbar={true}
-                  keyboardShouldPersistTaps="handled"
-                  scrollEnabled={!selectedPatient}
-                >
+                <ScrollView nestedScrollEnabled={true}>
                   {filteredPatients.length === 0 ? (
                     <View style={{ padding: 20, alignItems: 'center' }}>
                       <Text style={{ color: '#000000', fontSize: 16 }}>
@@ -1073,27 +1068,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                       icon="food-apple"
                     >
                       Send Diet Chart
-                    </Button>
-
-                    {/* Print Button */}
-                    <Button
-                      mode="outlined"
-                      onPress={() => {
-                        if (!selectedPatient) {
-                          alert('Please select a patient first');
-                          return;
-                        }
-                        alert('Print functionality will be implemented soon!');
-                      }}
-                      style={{ 
-                        marginTop: 10,
-                        borderColor: '#2e7d32',
-                        borderRadius: 25
-                      }}
-                      textColor="#2e7d32"
-                      icon="printer"
-                    >
-                      Print Prescription
                     </Button>
 
                     {/* Send Panchkarma Button */}
@@ -1423,23 +1397,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             >
               Close
             </Button>
-
-            {/* Print Button */}
-            <Button
-              mode="outlined"
-              onPress={() => {
-                alert('Print functionality will be implemented soon!');
-              }}
-              style={{
-                marginTop: 10,
-                borderColor: '#2e7d32',
-                borderRadius: 25
-              }}
-              textColor="#2e7d32"
-              icon="printer"
-            >
-              Print Prescription History
-            </Button>
           </ScrollView>
         </Modal>
       </Portal>
@@ -1575,23 +1532,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               }}
             >
               Cancel
-            </Button>
-
-            {/* Print Button */}
-            <Button
-              mode="outlined"
-              onPress={() => {
-                alert('Print functionality will be implemented soon!');
-              }}
-              style={{
-                marginTop: 10,
-                borderColor: '#2e7d32',
-                borderRadius: 25
-              }}
-              textColor="#2e7d32"
-              icon="printer"
-            >
-              Print Diet Chart
             </Button>
           </ScrollView>
         </Modal>
