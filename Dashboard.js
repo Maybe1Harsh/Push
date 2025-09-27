@@ -81,14 +81,14 @@ export default function DashboardScreen({ navigation, route }) {
     },
     {
       id: 6,
-      title: 'Wellness Tips',
-      subtitle: 'Daily Guidance',
-      description: 'Get personalized lifestyle recommendations for optimal health and wellbeing',
-      category: 'Lifestyle',
-      emoji: '💡',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center',
-      onPress: () => {},
-      style: 'lifestyleIconStyle'
+      title: 'VIRUDHA AHAR',
+      subtitle: 'Incompatible Foods',
+      description: 'Learn about incompatible food combinations in Ayurveda for better digestion',
+      category: 'Ayurvedic Wisdom',
+      emoji: '🚫🍽️',
+      image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop&crop=center',
+      onPress: () => navigation.navigate('ViruddhaAhara'),
+      style: 'foodCombinationIconStyle'
     }
   ];
 
