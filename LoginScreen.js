@@ -7,7 +7,7 @@ import { supabase } from './supabaseClient';
 import { useTranslation } from './hooks/useTranslation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, route }) {
   const { t } = useTranslation();
   const [role, setRole] = React.useState('patient');
   const [loading, setLoading] = React.useState(false);
@@ -17,7 +17,16 @@ export default function LoginScreen({ navigation }) {
   const [age, setAge] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [message, setMessage] = React.useState('');
-  const [isRegister, setIsRegister] = React.useState(false);
+  const [isRegister, setIsRegister] = React.useState(route?.params?.isRegister || false);
+
+  // Debug log to confirm parameter received and update state
+  React.useEffect(() => {
+    console.log('LoginScreen loaded with params:', route?.params);
+    console.log('isRegister state:', route?.params?.isRegister);
+    if (route?.params?.isRegister !== undefined) {
+      setIsRegister(route.params.isRegister);
+    }
+  }, [route?.params]);
 
   const handleLogin = async () => {
     console.log('Login button clicked');
