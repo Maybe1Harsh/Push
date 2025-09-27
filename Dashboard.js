@@ -418,7 +418,7 @@ export default function DashboardScreen({ navigation, route }) {
                   >
                     <Text style={styles.logoutIcon}>🚪</Text>
                     <Text style={styles.logoutText}>
-                      Logout
+                      Sign Out
                     </Text>
                   </TouchableOpacity>
                 </View>
