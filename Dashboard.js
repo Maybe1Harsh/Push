@@ -110,7 +110,7 @@ export default function DashboardScreen({ navigation, route }) {
     return infiniteData;
   }, []);
 
-  // Initialize slideshow to middle set for infinite scroll
+  // Initialize slideshow to middle set for infinite scroll with safety checks
   React.useEffect(() => {
     if (slideshowRef.current && originalWellnessFeatures.length > 0) {
       // Start at the middle set (set2)
@@ -124,6 +124,7 @@ export default function DashboardScreen({ navigation, route }) {
           slideshowRef.current.scrollToOffset({ offset: initialOffset, animated: false });
           setCurrentSlide(initialIndex);
           setActualSlideIndex(0);
+          repositioning.current = false;
           autoScrollEnabled.current = true;
         }
       }, 200);
@@ -132,7 +133,29 @@ export default function DashboardScreen({ navigation, route }) {
     }
   }, [originalWellnessFeatures.length, width]);
 
-  // Auto-scroll functionality for infinite scroll
+  // Safety mechanism to prevent infinite scroll from getting stuck
+  React.useEffect(() => {
+    const safetyCheck = setInterval(() => {
+      if (autoScrollEnabled.current && !isScrolling.current && !repositioning.current) {
+        const originalLength = originalWellnessFeatures.length;
+        // If we're at the very edges, reset to middle
+        if (currentSlide < 1 || currentSlide >= originalLength * 3 - 1) {
+          const safeIndex = originalLength + (actualSlideIndex || 0);
+          const slideWidth = width - 48 + 16;
+          const safeOffset = safeIndex * slideWidth;
+          
+          if (slideshowRef.current) {
+            slideshowRef.current.scrollToOffset({ offset: safeOffset, animated: false });
+            setCurrentSlide(safeIndex);
+          }
+        }
+      }
+    }, 1000); // Check every second
+
+    return () => clearInterval(safetyCheck);
+  }, [currentSlide, actualSlideIndex, originalWellnessFeatures.length, width]);
+
+  // Auto-scroll functionality for truly infinite scroll
   React.useEffect(() => {
     const interval = setInterval(() => {
       if (slideshowRef.current && 
@@ -142,7 +165,13 @@ export default function DashboardScreen({ navigation, route }) {
           originalWellnessFeatures.length > 0) {
         
         const nextActualIndex = (actualSlideIndex + 1) % originalWellnessFeatures.length;
-        const nextSlideIndex = currentSlide + 1;
+        let nextSlideIndex = currentSlide + 1;
+        
+        // Ensure we stay within safe bounds of the triple array
+        const maxIndex = originalWellnessFeatures.length * 3 - 1;
+        if (nextSlideIndex > maxIndex) {
+          nextSlideIndex = originalWellnessFeatures.length; // Reset to middle set
+        }
         
         try {
           const slideWidth = width - 48 + 16;
@@ -156,10 +185,14 @@ export default function DashboardScreen({ navigation, route }) {
           // Re-enable after animation
           setTimeout(() => {
             isScrolling.current = false;
-          }, 400);
+          }, 300);
         } catch (error) {
           console.log('Auto-scroll error:', error);
           isScrolling.current = false;
+          // Reset to safe position on error
+          const safeIndex = originalWellnessFeatures.length;
+          setCurrentSlide(safeIndex);
+          setActualSlideIndex(0);
         }
       }
     }, 3000); // Change slide every 3 seconds
@@ -677,26 +710,26 @@ export default function DashboardScreen({ navigation, route }) {
                     const newActualIndex = slideIndex % originalLength;
                     setActualSlideIndex(newActualIndex);
                     
-                    // Handle infinite scroll repositioning with improved logic
-                    const shouldReposition = slideIndex <= 1 || slideIndex >= (originalLength * 2) - 1;
+                    // Handle infinite scroll repositioning - trigger before reaching boundaries
+                    const shouldReposition = slideIndex <= 2 || slideIndex >= (originalLength * 2) - 2;
                     
                     if (shouldReposition && !repositioning.current) {
                       repositioning.current = true;
                       autoScrollEnabled.current = false;
                       
                       let targetIndex;
-                      if (slideIndex <= 1) {
-                        // If near or at the beginning of first set, jump to middle set equivalent
+                      if (slideIndex <= 2) {
+                        // If near beginning of first set, jump to middle set equivalent
                         targetIndex = slideIndex + originalLength;
                       } else {
-                        // If near or at the end of third set, jump to middle set equivalent
+                        // If near end of third set, jump to middle set equivalent
                         targetIndex = slideIndex - originalLength;
                       }
                       
                       const targetOffset = targetIndex * slideWidth;
                       
-                      // Perform invisible jump with minimal delay
-                      setTimeout(() => {
+                      // Perform invisible jump immediately after momentum ends
+                      requestAnimationFrame(() => {
                         if (slideshowRef.current && repositioning.current) {
                           slideshowRef.current.scrollToOffset({ 
                             offset: targetOffset, 
@@ -704,13 +737,17 @@ export default function DashboardScreen({ navigation, route }) {
                           });
                           setCurrentSlide(targetIndex);
                           
-                          // Re-enable auto-scroll after repositioning
-                          setTimeout(() => {
-                            repositioning.current = false;
-                            autoScrollEnabled.current = true;
-                          }, 50);
+                          // Ensure actualSlideIndex stays correct
+                          const correctedActualIndex = targetIndex % originalLength;
+                          if (correctedActualIndex !== actualSlideIndex) {
+                            setActualSlideIndex(correctedActualIndex);
+                          }
+                          
+                          // Re-enable auto-scroll immediately
+                          repositioning.current = false;
+                          autoScrollEnabled.current = true;
                         }
-                      }, 30);
+                      });
                     }
                   }}
                   onScrollBeginDrag={() => {
