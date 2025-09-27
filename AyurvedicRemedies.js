@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ScrollView, View, StyleSheet, TouchableWithoutFeedback, Animated, Dimensions, TouchableOpacity } from 'react-native';
-import { Text, Button, Card, Portal, Modal, Provider as PaperProvider } from 'react-native-paper';
+import { Text, Button, Card, Portal, Modal } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { useTranslation } from './hooks/useTranslation';
@@ -134,6 +134,7 @@ const healthIssues = {
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function AyurvedicRemedies({ navigation }) {
+  console.log('AyurvedicRemedies component loaded');
   const { t } = useTranslation();
   const [selected, setSelected] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -289,11 +290,10 @@ export default function AyurvedicRemedies({ navigation }) {
   };
 
   return (
-    <PaperProvider>
-      <LinearGradient
-        colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
-        style={styles.gradient}
-      >
+    <LinearGradient
+      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
+      style={styles.gradient}
+    >
         {/* Back Button */}
         <TouchableOpacity 
           style={styles.backButton} 
@@ -418,7 +418,6 @@ export default function AyurvedicRemedies({ navigation }) {
           </Portal>
         </ScrollView>
       </LinearGradient>
-    </PaperProvider>
   );
 }
 
