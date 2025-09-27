@@ -4,7 +4,7 @@ import { Card, Text, Divider, Button, IconButton, ActivityIndicator } from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from './supabaseClient';
 
-export default function PatientPrescriptionScreen({ route }) {
+export default function PatientPrescriptionScreen({ route, navigation }) {
   // Get patient details from navigation params
   const patientProfile = route?.params?.profile || {};
   const patientEmail = patientProfile.email || '';
