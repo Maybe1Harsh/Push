@@ -635,21 +635,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       </Card>
 
       {/* Action Buttons */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 20 }}>
-        <Button
-          mode="contained"
-          onPress={() => navigation.navigate("AddPatient", { doctorEmail })}
-          style={{
-            backgroundColor: "#4caf50",
-            borderRadius: 10,
-            paddingVertical: 5,
-            paddingHorizontal: 20,
-          }}
-          labelStyle={{ fontSize: 14 }}
-        >
-          ➕ Add Patient
-        </Button>
-      </View>
 
       {/* Today's Schedule Section */}
       <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
@@ -901,12 +886,28 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       {/* Patients Section */}
       <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
         <Card.Content>
-          <Text
-            variant="titleMedium"
-            style={{ fontWeight: "bold", marginBottom: 15 }}
-          >
-            👥 My Patients ({patients.length})
-          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: "bold" }}
+            >
+              👥 My Patients ({patients.length})
+            </Text>
+            <Button
+              mode="contained"
+              onPress={() => navigation.navigate("AddPatient", { doctorEmail })}
+              style={{
+                backgroundColor: "#4caf50",
+                borderRadius: 10,
+                paddingVertical: 5,
+                paddingHorizontal: 15,
+              }}
+              labelStyle={{ fontSize: 12 }}
+              compact
+            >
+              ➕ Add Patient
+            </Button>
+          </View>
           
           {/* Search Box */}
           <TextInput
@@ -933,9 +934,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             </View>
           ) : (
             <View>
-              {/* Patient List - Scrollable */}
+              {/* Patient List - Scrollable only when no patient selected */}
               <View style={{ maxHeight: 300 }}>
-                <ScrollView nestedScrollEnabled={true}>
+                <ScrollView 
+                  showsVerticalScrollIndicator={true}
+                  persistentScrollbar={true}
+                  keyboardShouldPersistTaps="handled"
+                  scrollEnabled={!selectedPatient}
+                >
                   {filteredPatients.length === 0 ? (
                     <View style={{ padding: 20, alignItems: 'center' }}>
                       <Text style={{ color: '#000000', fontSize: 16 }}>
