@@ -38,6 +38,14 @@ const dashboardItems = [
     icon: '🧘‍♀️',
     color: ['#7b1fa2', '#ba68c8'],
     navigation: 'YogaWellness'
+  },
+  {
+    id: 5,
+    title: 'Food Guidelines',
+    subtitle: 'Viruddha Ahara',
+    icon: '🚫🍽️',
+    color: ['#f57c00', '#ffb74d'],
+    navigation: 'ViruddhaAhara'
   }
 ];
 

@@ -23,6 +23,7 @@ import PatientAppointmentViewScreen from './PatientAppointmentView';
 import PrescriptionPage from './PrescriptionPage';
 import PanchkarmaScreen from './PanchkarmaScreen';
 import YogaWellness from './YogaWellness';
+import ViruddhaAhara from './ViruddhaAhara';
 import { View, Text } from 'react-native';
 
 console.log('App.js loaded');
@@ -195,6 +196,11 @@ export default function App() {
               <Stack.Screen 
                 name="DoshaQuiz" 
                 component={DoshaQuiz} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="ViruddhaAhara" 
+                component={ViruddhaAhara} 
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>

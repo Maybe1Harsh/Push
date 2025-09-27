@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, RefreshControl, StyleSheet } from 'react-native';
-import { Card, Text, Divider, Button, ActivityIndicator, Chip, SegmentedButtons } from 'react-native-paper';
+import { Card, Text, Divider, Button, ActivityIndicator, Chip, SegmentedButtons, IconButton } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from './supabaseClient';
 
-export default function PatientPrescriptions({ route }) {
+export default function PatientPrescriptions({ route, navigation }) {
   // Debug print
   console.log('PatientPrescriptions route.params:', route?.params);
 
@@ -370,6 +370,18 @@ export default function PatientPrescriptions({ route }) {
         contentContainerStyle={styles.scrollContainer}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#4caf50']} />}
       >
+      {/* Back Button */}
+      <View style={styles.backButtonContainer}>
+        <IconButton
+          icon="arrow-left"
+          iconColor="#2e7d32"
+          size={24}
+          onPress={() => navigation?.goBack()}
+          style={styles.backButton}
+        />
+        <Text style={styles.backButtonText}>Back</Text>
+      </View>
+
       {/* Header Section */}
       <View style={styles.headerSection}>
         <View style={styles.logoContainer}>
@@ -738,6 +750,22 @@ const styles = StyleSheet.create({
   statusChip: {
     backgroundColor: 'rgba(76, 175, 80, 0.1)',
     borderColor: '#4caf50',
+  },
+  backButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+  backButton: {
+    margin: 0,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    marginLeft: 4,
   },
   treatmentCard: {
     marginBottom: 12,

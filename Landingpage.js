@@ -331,7 +331,7 @@ export default function LandingScreen({ navigation }) {
                     labelStyle={styles.buttonLabel}
                     icon="login"
                   >
-                    {t.login || 'Login'}
+                    {t.login || 'Sign In'}
                   </Button>
                   <Button
                     mode="outlined"
