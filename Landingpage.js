@@ -135,7 +135,8 @@ export default function LandingScreen({ navigation }) {
 
   // Function to handle sign up navigation
   const handleSignUpNavigation = () => {
-    navigation.navigate('SignUp'); // Ensure the 'SignUp' screen is registered in the navigation stack
+    console.log('Navigating to Login screen with isRegister: true');
+    navigation.navigate('Login', { isRegister: true }); // Navigate to Login screen with registration mode
   };
 
   // Toggle login form visibility
