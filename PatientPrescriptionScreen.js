@@ -88,6 +88,18 @@ export default function PatientPrescriptionScreen({ route }) {
         contentContainerStyle={styles.scrollContainer}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#4caf50']} />}
       >
+        {/* Back Button */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingHorizontal: 16 }}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#2e7d32"
+            size={24}
+            onPress={() => navigation?.goBack()}
+            style={{ margin: 0 }}
+          />
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2e7d32' }}>Back</Text>
+        </View>
+        
         {/* Header Section */}
         <View style={styles.headerSection}>
           <View style={styles.logoContainer}>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, ScrollView, Alert } from "react-native";
-import { Text, Card, Button, TextInput, Snackbar } from "react-native-paper";
+import { Text, Card, Button, TextInput, Snackbar, IconButton } from "react-native-paper";
 import { supabase } from "./supabaseClient";
 
 export default function AddPatientScreen({ route, navigation }) {
@@ -124,6 +124,18 @@ export default function AddPatientScreen({ route, navigation }) {
         backgroundColor: "#f9fafc",
       }}
     >
+      {/* Back Button */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+        <IconButton
+          icon="arrow-left"
+          iconColor="#1976d2"
+          size={24}
+          onPress={() => navigation.goBack()}
+          style={{ margin: 0 }}
+        />
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1976d2' }}>Back</Text>
+      </View>
+      
       {/* Header */}
       <Card style={{ marginBottom: 20, backgroundColor: "#1976d2" }}>
         <Card.Content>

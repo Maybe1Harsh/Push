@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
-import { Text, Card, Button, Provider as PaperProvider } from 'react-native-paper';
+import { Text, Card, Button, Provider as PaperProvider, IconButton } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from './hooks/useTranslation';
 
@@ -88,6 +88,18 @@ export default function DietChartTemplatesScreen({ navigation, route }) {
         style={styles.gradient}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {/* Back Button */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <IconButton
+              icon="arrow-left"
+              iconColor="#2e7d32"
+              size={24}
+              onPress={() => navigation.goBack()}
+              style={{ margin: 0 }}
+            />
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2e7d32' }}>Back</Text>
+          </View>
+          
           {/* Header Section */}
           <View style={styles.headerSection}>
             <View style={styles.logoContainer}>

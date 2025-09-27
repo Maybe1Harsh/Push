@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
-import { Card, Text, TextInput, Button, Chip, IconButton, Divider, Menu } from 'react-native-paper';
+import { View, ScrollView, StyleSheet, Alert } from 'react-native';
+import { Card, Text, TextInput, Button, Chip, IconButton, Divider, Menu, Modal, Portal, RadioButton, PaperProvider } from 'react-native-paper';
 import { supabase } from './supabaseClient';
 
 const medicineList = [
@@ -12,7 +12,7 @@ const frequencyOptions = [
   'Once daily', 'Twice daily', 'Thrice daily', 'After lunch', 'Before dinner', 'After breakfast', 'At bedtime'
 ];
 
-export default function PrescriptionPage({ route }) {
+export default function PrescriptionPage({ route, navigation }) {
   // Get doctor details from navigation params (passed from DoctorDashboard)
   const doctorProfile = route?.params?.profile || {};
   const doctorEmail = doctorProfile.email || '';
@@ -48,6 +48,43 @@ export default function PrescriptionPage({ route }) {
 
   const [search, setSearch] = useState('');
   const [filteredMeds, setFilteredMeds] = useState(medicineList);
+
+  // Ayurvedic Prescription Form States
+  const [prescriptionForm, setPrescriptionForm] = useState({
+    // Patient Details
+    patientName: '',
+    age: '',
+    weight: '',
+    date: new Date().toISOString().split('T')[0],
+    phoneNo: '',
+    
+    // Ayurvedic Assessment
+    naadi: '',
+    rasa: '',
+    rakta: '',
+    mansa: '',
+    meda: '',
+    asthi: '',
+    majja: '',
+    shukra: '',
+    vata: '',
+    pitta: '',
+    kapha: '',
+    purisha: '',
+    mutra: '',
+    
+    // Case Study/Symptoms
+    caseStudy: '',
+    symptoms: '',
+    diagnosis: '',
+    treatment: '',
+    medicines: [],
+    advice: ''
+  });
+
+  // Modal and UI States
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedMed, setSelectedMed] = useState('');
   const [dosage, setDosage] = useState('');
   const [frequency, setFrequency] = useState('');
@@ -82,6 +119,88 @@ export default function PrescriptionPage({ route }) {
     setPrescriptions(prescriptions.filter((_, i) => i !== idx));
   };
 
+  // Enhanced Assessment Form Handlers
+  const updateFormField = (field, value) => {
+    setPrescriptionForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const openAssessmentModal = () => {
+    // Pre-fill patient data if selected
+    if (selectedPatient) {
+      setPrescriptionForm(prev => ({
+        ...prev,
+        patientName: selectedPatient.name || '',
+        age: selectedPatient.age?.toString() || '',
+        phoneNo: selectedPatient.phone || ''
+      }));
+    }
+    setModalVisible(true);
+  };
+
+  const handleSendComprehensive = async () => {
+    if (!selectedPatient) {
+      Alert.alert('Error', 'Please select a patient first');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const comprehensiveData = {
+        ...prescriptionForm,
+        medicines: prescriptions,
+        patient_id: selectedPatient.id,
+        doctor_email: doctorEmail,
+        created_at: new Date().toISOString()
+      };
+
+      const { error } = await supabase
+        .from('comprehensive_prescriptions')
+        .insert([comprehensiveData]);
+
+      if (error) throw error;
+
+      Alert.alert('Success', 'Comprehensive assessment sent successfully!');
+      
+      // Reset form
+      setPrescriptionForm({
+        patientName: '',
+        age: '',
+        weight: '',
+        date: new Date().toISOString().split('T')[0],
+        phoneNo: '',
+        naadi: '',
+        rasa: '',
+        rakta: '',
+        mansa: '',
+        meda: '',
+        asthi: '',
+        majja: '',
+        shukra: '',
+        vata: '',
+        pitta: '',
+        kapha: '',
+        purisha: '',
+        mutra: '',
+        caseStudy: '',
+        symptoms: '',
+        diagnosis: '',
+        treatment: '',
+        medicines: [],
+        advice: ''
+      });
+      setPrescriptions([]);
+      setModalVisible(false);
+      
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Save/send prescription
   const handleSend = async () => {
     if (!selectedPatient) {
@@ -114,31 +233,43 @@ export default function PrescriptionPage({ route }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, backgroundColor: '#f3f6fa', flexGrow: 1 }}>
-      
-      
-      <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12 }}>
-        <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{doctorName}</Text>
-        <Text style={{ color: '#388e3c', marginBottom: 4 }}>{doctorClinic}</Text>
-        <Divider style={{ marginVertical: 6 }} />
+    <PaperProvider>
+      <ScrollView contentContainerStyle={{ padding: 16, backgroundColor: '#f3f6fa', flexGrow: 1 }}>
+        {/* Back Button */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#1976d2"
+            size={24}
+            onPress={() => navigation?.goBack()}
+            style={{ margin: 0 }}
+          />
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1976d2' }}>Back</Text>
+        </View>
         
-        {/* Only show selected patient info - no selection mechanism */}
-        {selectedPatient ? (
-          <View style={{ 
-            flexDirection: 'row', 
-            alignItems: 'center', 
-            marginBottom: 8,
-            backgroundColor: '#e8f5e8',
-            padding: 10,
-            borderRadius: 8,
-            borderLeftWidth: 4,
-            borderLeftColor: '#4caf50'
-          }}>
-            <Text style={{ marginRight: 8, fontWeight: 'bold' }}>Patient:</Text>
-            <Text style={{ flex: 1, fontSize: 16, color: '#000000' }}>
-              {selectedPatient.name} ({selectedPatient.email})
-            </Text>
-          </View>
+        
+        <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12 }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{doctorName}</Text>
+          <Text style={{ color: '#388e3c', marginBottom: 4 }}>{doctorClinic}</Text>
+          <Divider style={{ marginVertical: 6 }} />
+          
+          {/* Only show selected patient info - no selection mechanism */}
+          {selectedPatient ? (
+            <View style={{ 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              marginBottom: 8,
+              backgroundColor: '#e8f5e8',
+              padding: 10,
+              borderRadius: 8,
+              borderLeftWidth: 4,
+              borderLeftColor: '#4caf50'
+            }}>
+              <Text style={{ marginRight: 8, fontWeight: 'bold' }}>Patient:</Text>
+              <Text style={{ flex: 1, fontSize: 16, color: '#000000' }}>
+                {selectedPatient.name} ({selectedPatient.email})
+              </Text>
+            </View>
         ) : (
           <View style={{ 
             backgroundColor: '#ffebee',
@@ -167,6 +298,24 @@ export default function PrescriptionPage({ route }) {
           </>
         )}
       </Card>
+
+      {/* Comprehensive Assessment Button */}
+      {selectedPatient && (
+        <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12, backgroundColor: '#e8f5e8' }}>
+          <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#2e7d32' }}>Ayurvedic Assessment</Text>
+          <Text style={{ marginBottom: 8, color: '#666' }}>
+            Complete comprehensive assessment including Naadi, Sapta Dhatu, Tridosha, and case study.
+          </Text>
+          <Button 
+            mode="contained" 
+            onPress={openAssessmentModal}
+            style={{ backgroundColor: '#2e7d32' }}
+          >
+            Open Comprehensive Assessment
+          </Button>
+        </Card>
+      )}
+
       <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12 }}>
         <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Add Prescription</Text>
         <TextInput
@@ -255,6 +404,416 @@ export default function PrescriptionPage({ route }) {
       <Button mode="contained" onPress={handleSend}>
         Send Prescription
       </Button>
-    </ScrollView>
+
+        {/* Comprehensive Assessment Modal */}
+        <Portal>
+          <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContainer}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={styles.modalTitle}>Comprehensive Ayurvedic Assessment</Text>
+              
+              {/* Patient Details Section */}
+              <Text style={styles.sectionTitle}>Patient Information</Text>
+              <TextInput
+                label="Patient Name"
+                value={prescriptionForm.patientName}
+                onChangeText={(text) => updateFormField('patientName', text)}
+                mode="outlined"
+                style={styles.input}
+              />
+              
+              <View style={styles.row}>
+                <TextInput
+                  label="Age"
+                  value={prescriptionForm.age}
+                  onChangeText={(text) => updateFormField('age', text)}
+                  mode="outlined"
+                  style={[styles.input, styles.halfInput]}
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  label="Weight (kg)"
+                  value={prescriptionForm.weight}
+                  onChangeText={(text) => updateFormField('weight', text)}
+                  mode="outlined"
+                  style={[styles.input, styles.halfInput]}
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <TextInput
+                label="Phone Number"
+                value={prescriptionForm.phoneNo}
+                onChangeText={(text) => updateFormField('phoneNo', text)}
+                mode="outlined"
+                style={styles.input}
+                keyboardType="phone-pad"
+              />
+
+              <TextInput
+                label="Date"
+                value={prescriptionForm.date}
+                onChangeText={(text) => updateFormField('date', text)}
+                mode="outlined"
+                style={styles.input}
+              />
+
+              {/* Naadi Assessment */}
+              <Text style={styles.sectionTitle}>Naadi Pariksha (Pulse Examination)</Text>
+              <View style={styles.radioGroup}>
+                {['Vata Naadi', 'Pitta Naadi', 'Kapha Naadi', 'Mixed'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.naadi === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('naadi', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Sapta Dhatu Assessment */}
+              <Text style={styles.sectionTitle}>Sapta Dhatu Assessment</Text>
+              
+              {/* Rasa */}
+              <Text style={styles.subTitle}>Rasa (Plasma)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Increased', 'Decreased', 'Vitiated'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.rasa === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('rasa', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Rakta */}
+              <Text style={styles.subTitle}>Rakta (Blood)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Increased', 'Decreased', 'Vitiated'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.rakta === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('rakta', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Mansa */}
+              <Text style={styles.subTitle}>Mansa (Muscle)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Increased', 'Decreased', 'Vitiated'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.mansa === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('mansa', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Meda */}
+              <Text style={styles.subTitle}>Meda (Fat)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Increased', 'Decreased', 'Vitiated'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.meda === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('meda', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Asthi */}
+              <Text style={styles.subTitle}>Asthi (Bone)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Increased', 'Decreased', 'Vitiated'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.asthi === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('asthi', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Majja */}
+              <Text style={styles.subTitle}>Majja (Nervous System)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Increased', 'Decreased', 'Vitiated'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.majja === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('majja', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Shukra */}
+              <Text style={styles.subTitle}>Shukra (Reproductive)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Increased', 'Decreased', 'Vitiated'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.shukra === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('shukra', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Tridosha Assessment */}
+              <Text style={styles.sectionTitle}>Tridosha Assessment</Text>
+              
+              {/* Vata */}
+              <Text style={styles.subTitle}>Vata</Text>
+              <View style={styles.radioGroup}>
+                {['Balanced', 'Increased', 'Decreased'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.vata === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('vata', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Pitta */}
+              <Text style={styles.subTitle}>Pitta</Text>
+              <View style={styles.radioGroup}>
+                {['Balanced', 'Increased', 'Decreased'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.pitta === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('pitta', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Kapha */}
+              <Text style={styles.subTitle}>Kapha</Text>
+              <View style={styles.radioGroup}>
+                {['Balanced', 'Increased', 'Decreased'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.kapha === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('kapha', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Mala Assessment */}
+              <Text style={styles.sectionTitle}>Mala Assessment</Text>
+              
+              {/* Purisha */}
+              <Text style={styles.subTitle}>Purisha (Stool)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Hard', 'Loose', 'Irregular'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.purisha === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('purisha', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Mutra */}
+              <Text style={styles.subTitle}>Mutra (Urine)</Text>
+              <View style={styles.radioGroup}>
+                {['Normal', 'Dark', 'Clear', 'Frequent', 'Scanty'].map((option) => (
+                  <View key={option} style={styles.radioItem}>
+                    <RadioButton
+                      value={option}
+                      status={prescriptionForm.mutra === option ? 'checked' : 'unchecked'}
+                      onPress={() => updateFormField('mutra', option)}
+                    />
+                    <Text style={styles.radioLabel}>{option}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Case Study and Clinical Information */}
+              <Text style={styles.sectionTitle}>Clinical Assessment</Text>
+              
+              <TextInput
+                label="Case Study / Chief Complaint"
+                value={prescriptionForm.caseStudy}
+                onChangeText={(text) => updateFormField('caseStudy', text)}
+                mode="outlined"
+                multiline
+                numberOfLines={4}
+                style={styles.input}
+              />
+
+              <TextInput
+                label="Symptoms"
+                value={prescriptionForm.symptoms}
+                onChangeText={(text) => updateFormField('symptoms', text)}
+                mode="outlined"
+                multiline
+                numberOfLines={3}
+                style={styles.input}
+              />
+
+              <TextInput
+                label="Diagnosis"
+                value={prescriptionForm.diagnosis}
+                onChangeText={(text) => updateFormField('diagnosis', text)}
+                mode="outlined"
+                multiline
+                numberOfLines={3}
+                style={styles.input}
+              />
+
+              <TextInput
+                label="Treatment Plan"
+                value={prescriptionForm.treatment}
+                onChangeText={(text) => updateFormField('treatment', text)}
+                mode="outlined"
+                multiline
+                numberOfLines={4}
+                style={styles.input}
+              />
+
+              <TextInput
+                label="Additional Advice"
+                value={prescriptionForm.advice}
+                onChangeText={(text) => updateFormField('advice', text)}
+                mode="outlined"
+                multiline
+                numberOfLines={3}
+                style={styles.input}
+              />
+
+              {/* Action Buttons */}
+              <View style={styles.buttonContainer}>
+                <Button
+                  mode="outlined"
+                  onPress={() => setModalVisible(false)}
+                  style={[styles.button, styles.cancelButton]}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={handleSendComprehensive}
+                  loading={loading}
+                  disabled={loading}
+                  style={[styles.button, styles.saveButton]}
+                >
+                  Save Assessment & Send
+                </Button>
+              </View>
+            </ScrollView>
+          </Modal>
+        </Portal>
+      </ScrollView>
+    </PaperProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    backgroundColor: '#f1f8e9',
+    margin: 10,
+    borderRadius: 16,
+    padding: 16,
+    maxHeight: '90%'
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    textAlign: 'center',
+    marginBottom: 20
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    marginTop: 16,
+    marginBottom: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: '#4caf50',
+    paddingBottom: 4
+  },
+  subTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#388e3c',
+    marginTop: 12,
+    marginBottom: 8
+  },
+  input: {
+    marginBottom: 12,
+    backgroundColor: '#ffffff'
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  halfInput: {
+    width: '48%'
+  },
+  radioGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 8
+  },
+  radioItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '50%',
+    marginBottom: 4
+  },
+  radioLabel: {
+    marginLeft: 4,
+    fontSize: 14,
+    color: '#333'
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    paddingHorizontal: 8
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 6
+  },
+  cancelButton: {
+    borderColor: '#f44336'
+  },
+  saveButton: {
+    backgroundColor: '#2e7d32'
+  }
+});

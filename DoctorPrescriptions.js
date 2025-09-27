@@ -263,7 +263,7 @@ export default function DoctorPrescriptionsScreen({ navigation, route }) {
       <ScrollView style={{ flex: 1, backgroundColor: '#e8f5e8' }}>
         <View style={{ padding: 20 }}>
           <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#2e7d32', textAlign: 'center' }}>
-            Write Prescriptions
+            Write Prescriptions at Yoga Wellness
           </Text>
 
           {patients.length === 0 ? (

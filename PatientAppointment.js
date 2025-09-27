@@ -104,6 +104,18 @@ export default function PatientAppointmentScreen({ navigation, route }) {
     <PaperProvider>
       <ScrollView style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
         <View style={{ padding: 20 }}>
+          {/* Back Button */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <IconButton
+              icon="arrow-left"
+              iconColor="#2e7d32"
+              size={24}
+              onPress={() => navigation.goBack()}
+              style={{ margin: 0 }}
+            />
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2e7d32' }}>Back</Text>
+          </View>
+          
           <Text variant="headlineMedium" style={{ marginBottom: 20, color: '#2e7d32', textAlign: 'center' }}>
             Request Appointment
           </Text>

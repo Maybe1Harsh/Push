@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
-import { Text, Card, Button, TextInput, Modal, Portal, Provider as PaperProvider, Divider, DataTable, Chip, FAB, Menu } from 'react-native-paper';
+import { Text, Card, Button, TextInput, Modal, Portal, Provider as PaperProvider, Divider, DataTable, Chip, FAB, Menu, IconButton } from 'react-native-paper';
 import { supabase } from './supabaseClient';
 
 export default function DoctorScheduleScreen({ route, navigation }) {
@@ -518,6 +518,18 @@ export default function DoctorScheduleScreen({ route, navigation }) {
           padding: 20,
         }}
       >
+        {/* Back Button */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#2e7d32"
+            size={24}
+            onPress={() => navigation.goBack()}
+            style={{ margin: 0 }}
+          />
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2e7d32' }}>Back</Text>
+        </View>
+        
         {/* Header Section */}
         <Card style={{ marginBottom: 20, backgroundColor: "#4caf50" }}>
           <Card.Content>
