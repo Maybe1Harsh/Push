@@ -589,7 +589,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           padding: 20,
           backgroundColor: "#F1F0E8"
         }}
-      >
+      
       {/* Header */}
       <Card style={{ marginBottom: 20, backgroundColor: "#96B6C5", elevation: 4, borderRadius: 12 }}>
         <Card.Content>
