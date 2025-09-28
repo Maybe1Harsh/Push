@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#F1F0E8',
     borderRadius: 50,
     width: 80,
     height: 80,

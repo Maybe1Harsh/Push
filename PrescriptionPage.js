@@ -234,17 +234,17 @@ export default function PrescriptionPage({ route, navigation }) {
 
   return (
     <PaperProvider>
-      <ScrollView contentContainerStyle={{ padding: 16, backgroundColor: '#f3f6fa', flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ padding: 16, backgroundColor: '#F1F0E8', flexGrow: 1 }}>
         {/* Back Button */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
           <IconButton
             icon="arrow-left"
-            iconColor="#1976d2"
+            iconColor="#2C3E50"
             size={24}
             onPress={() => navigation?.goBack()}
             style={{ margin: 0 }}
           />
-          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1976d2' }}>Back</Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2C3E50' }}>Back</Text>
         </View>
         
         
@@ -259,20 +259,20 @@ export default function PrescriptionPage({ route, navigation }) {
               flexDirection: 'row', 
               alignItems: 'center', 
               marginBottom: 8,
-              backgroundColor: '#e8f5e8',
+              backgroundColor: '#EEE0C9',
               padding: 10,
               borderRadius: 8,
               borderLeftWidth: 4,
-              borderLeftColor: '#4caf50'
+              borderLeftColor: '#96B6C5'
             }}>
-              <Text style={{ marginRight: 8, fontWeight: 'bold' }}>Patient:</Text>
-              <Text style={{ flex: 1, fontSize: 16, color: '#000000' }}>
+              <Text style={{ marginRight: 8, fontWeight: 'bold', color: '#2C3E50' }}>Patient:</Text>
+              <Text style={{ flex: 1, fontSize: 16, color: '#2C3E50' }}>
                 {selectedPatient.name} ({selectedPatient.email})
               </Text>
             </View>
         ) : (
           <View style={{ 
-            backgroundColor: '#ffebee',
+            backgroundColor: '#ADC4CE',
             padding: 10,
             borderRadius: 8,
             borderLeftWidth: 4,
@@ -301,34 +301,45 @@ export default function PrescriptionPage({ route, navigation }) {
 
       {/* Comprehensive Assessment Button */}
       {selectedPatient && (
-        <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12, backgroundColor: '#e8f5e8' }}>
-          <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#2e7d32' }}>Ayurvedic Assessment</Text>
-          <Text style={{ marginBottom: 8, color: '#666' }}>
+        <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12, backgroundColor: '#ADC4CE', elevation: 3 }}>
+          <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#2C3E50' }}>Ayurvedic Assessment</Text>
+          <Text style={{ marginBottom: 8, color: '#2C3E50' }}>
             Complete comprehensive assessment including Naadi, Sapta Dhatu, Tridosha, and case study.
           </Text>
           <Button 
             mode="contained" 
             onPress={openAssessmentModal}
-            style={{ backgroundColor: '#2e7d32' }}
+            style={{ backgroundColor: '#96B6C5' }}
+            labelStyle={{ color: '#2C3E50' }}
           >
             Open Comprehensive Assessment
           </Button>
         </Card>
       )}
 
-      <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12 }}>
-        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Add Prescription</Text>
+      <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12, backgroundColor: '#ADC4CE', elevation: 3 }}>
+        <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#2C3E50', fontSize: 16 }}>Add Prescription</Text>
         <TextInput
           label="Search Medicine"
           value={search}
           onChangeText={handleSearch}
-          style={{ marginBottom: 8 }}
+          style={{ marginBottom: 8, backgroundColor: '#F1F0E8' }}
+          textColor="#2C3E50"
+          outlineColor="#96B6C5"
+          activeOutlineColor="#96B6C5"
         />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 }}>
           {filteredMeds.map((med, idx) => (
             <Chip
               key={idx}
-              style={{ marginRight: 6, marginBottom: 6 }}
+              style={{ 
+                marginRight: 6, 
+                marginBottom: 6,
+                backgroundColor: selectedMed === med ? '#96B6C5' : '#F1F0E8'
+              }}
+              textStyle={{ 
+                color: selectedMed === med ? '#2C3E50' : '#2C3E50'
+              }}
               selected={selectedMed === med}
               onPress={() => setSelectedMed(med)}
             >
@@ -338,13 +349,18 @@ export default function PrescriptionPage({ route, navigation }) {
         </View>
         {/* Dosage dropdown */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <Text style={{ marginRight: 8 }}>Dosage:</Text>
+          <Text style={{ marginRight: 8, color: '#2C3E50', fontWeight: '600' }}>Dosage:</Text>
           <View style={{ position: 'relative' }}>
             <Menu
               visible={dosageMenuVisible}
               onDismiss={() => setDosageMenuVisible(false)}
               anchor={
-                <Button mode="outlined" onPress={() => setDosageMenuVisible(true)}>
+                <Button 
+                  mode="outlined" 
+                  onPress={() => setDosageMenuVisible(true)}
+                  style={{ borderColor: '#96B6C5' }}
+                  textColor="#2C3E50"
+                >
                   {dosage || 'Select Dosage'}
                 </Button>
               }
@@ -357,13 +373,18 @@ export default function PrescriptionPage({ route, navigation }) {
         </View>
         {/* Frequency dropdown */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <Text style={{ marginRight: 8 }}>Frequency:</Text>
+          <Text style={{ marginRight: 8, color: '#2C3E50', fontWeight: '600' }}>Frequency:</Text>
           <View style={{ position: 'relative' }}>
             <Menu
               visible={frequencyMenuVisible}
               onDismiss={() => setFrequencyMenuVisible(false)}
               anchor={
-                <Button mode="outlined" onPress={() => setFrequencyMenuVisible(true)}>
+                <Button 
+                  mode="outlined" 
+                  onPress={() => setFrequencyMenuVisible(true)}
+                  style={{ borderColor: '#96B6C5' }}
+                  textColor="#2C3E50"
+                >
                   {frequency || 'Select Frequency'}
                 </Button>
               }
@@ -374,34 +395,63 @@ export default function PrescriptionPage({ route, navigation }) {
             </Menu>
           </View>
         </View>
-        <Button mode="contained" onPress={handleAddMedicine} disabled={!selectedMed || !dosage || !frequency || prescriptions.length >= 100}>
+        <Button 
+          mode="contained" 
+          onPress={handleAddMedicine} 
+          disabled={!selectedMed || !dosage || !frequency || prescriptions.length >= 100}
+          style={{ 
+            backgroundColor: !selectedMed || !dosage || !frequency || prescriptions.length >= 100 ? '#ccc' : '#96B6C5',
+            marginTop: 8 
+          }}
+          labelStyle={{ color: '#2C3E50' }}
+        >
           Add Medicine
         </Button>
-        <Text style={{ marginTop: 6, color: '#888' }}>
+        <Text style={{ marginTop: 6, color: '#2C3E50', fontSize: 12, textAlign: 'center' }}>
           {prescriptions.length} / 100 medicines added
         </Text>
       </Card>
-      <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12 }}>
-        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Prescription List</Text>
-        {prescriptions.length === 0 && <Text>No medicines added yet.</Text>}
+      <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12, backgroundColor: '#EEE0C9', elevation: 3 }}>
+        <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#2C3E50', fontSize: 16 }}>Prescription List</Text>
+        {prescriptions.length === 0 && <Text style={{ color: '#2C3E50', fontStyle: 'italic' }}>No medicines added yet.</Text>}
         {prescriptions.map((med, idx) => (
-          <View key={idx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-            <Text style={{ flex: 1 }}>{med.name} - {med.dosage} - {med.frequency}</Text>
+          <View key={idx} style={{ 
+            flexDirection: 'row', 
+            alignItems: 'center', 
+            marginBottom: 6, 
+            backgroundColor: '#F1F0E8', 
+            borderRadius: 8, 
+            padding: 8 
+          }}>
+            <Text style={{ flex: 1, color: '#2C3E50' }}>{med.name} - {med.dosage} - {med.frequency}</Text>
             <IconButton icon="delete" iconColor="#d32f2f" onPress={() => handleRemoveMedicine(idx)} />
           </View>
         ))}
       </Card>
-      <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12 }}>
-        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Other Treatments / Advice</Text>
+      <Card style={{ marginBottom: 12, borderRadius: 12, padding: 12, backgroundColor: '#ADC4CE', elevation: 3 }}>
+        <Text style={{ fontWeight: 'bold', marginBottom: 8, color: '#2C3E50', fontSize: 16 }}>Other Treatments / Advice</Text>
         <TextInput
           label="Advice or Notes"
           value={otherAdvice}
           onChangeText={setOtherAdvice}
           multiline
           numberOfLines={3}
+          style={{ backgroundColor: '#F1F0E8' }}
+          textColor="#2C3E50"
+          outlineColor="#96B6C5"
+          activeOutlineColor="#96B6C5"
         />
       </Card>
-      <Button mode="contained" onPress={handleSend}>
+      <Button 
+        mode="contained" 
+        onPress={handleSend}
+        style={{ 
+          backgroundColor: '#96B6C5',
+          borderRadius: 12,
+          paddingVertical: 8
+        }}
+        labelStyle={{ color: '#2C3E50', fontSize: 16, fontWeight: 'bold' }}
+      >
         Send Prescription
       </Button>
 
@@ -743,7 +793,7 @@ export default function PrescriptionPage({ route, navigation }) {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: '#f1f8e9',
+    backgroundColor: '#F1F0E8',
     margin: 10,
     borderRadius: 16,
     padding: 16,
@@ -752,30 +802,30 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#2e7d32',
+    color: '#2C3E50',
     textAlign: 'center',
     marginBottom: 20
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2e7d32',
+    color: '#2C3E50',
     marginTop: 16,
     marginBottom: 12,
     borderBottomWidth: 2,
-    borderBottomColor: '#4caf50',
+    borderBottomColor: '#96B6C5',
     paddingBottom: 4
   },
   subTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#388e3c',
+    color: '#2C3E50',
     marginTop: 12,
     marginBottom: 8
   },
   input: {
     marginBottom: 12,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#F1F0E8'
   },
   row: {
     flexDirection: 'row',
@@ -811,9 +861,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 6
   },
   cancelButton: {
-    borderColor: '#f44336'
+    borderColor: '#96B6C5'
   },
   saveButton: {
-    backgroundColor: '#2e7d32'
+    backgroundColor: '#96B6C5'
   }
 });

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { Text, Card, Button, Provider as PaperProvider, IconButton } from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from './hooks/useTranslation';
 
  const dietTemplates = [
@@ -83,21 +82,17 @@ export default function DietChartTemplatesScreen({ navigation, route }) {
 
   return (
     <PaperProvider>
-      <LinearGradient
-        colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
-        style={styles.gradient}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* Back Button */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-            <IconButton
-              icon="arrow-left"
-              iconColor="#2e7d32"
-              size={24}
-              onPress={() => navigation.goBack()}
-              style={{ margin: 0 }}
-            />
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2e7d32' }}>Back</Text>
+      <ScrollView style={{ flex: 1, backgroundColor: '#F1F0E8' }} contentContainerStyle={styles.scrollContainer}>
+        {/* Back Button */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, paddingHorizontal: 20, paddingTop: 20 }}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#2C3E50"
+            size={24}
+            onPress={() => navigation.goBack()}
+            style={{ margin: 0 }}
+          />
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2C3E50' }}>Back</Text>
           </View>
           
           {/* Header Section */}
@@ -152,7 +147,6 @@ export default function DietChartTemplatesScreen({ navigation, route }) {
             </Card>
           ))}
         </ScrollView>
-      </LinearGradient>
     </PaperProvider>
   );
 }
@@ -171,7 +165,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   logoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#F1F0E8',
     borderRadius: 50,
     width: 80,
     height: 80,
@@ -188,7 +182,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
   },
   title: {
-    color: '#2e7d32',
+    color: '#2C3E50',
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 8,
@@ -198,7 +192,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#424242',
+    color: '#2C3E50',
     textAlign: 'center',
     fontWeight: '500',
     marginBottom: 20,
@@ -206,21 +200,21 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 20,
     marginVertical: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#ADC4CE',
     borderRadius: 15,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 8,
   },
   templateName: {
-    color: '#2e7d32',
+    color: '#2C3E50',
     marginBottom: 8,
     fontWeight: 'bold',
   },
   templateDescription: {
-    color: '#424242',
+    color: '#2C3E50',
     marginBottom: 12,
     fontSize: 14,
     lineHeight: 20,
@@ -241,15 +235,15 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   guidelinesText: {
-    color: '#424242',
+    color: '#2C3E50',
     fontSize: 12,
     fontStyle: 'italic',
     lineHeight: 16,
   },
   primaryButton: {
-    backgroundColor: '#4caf50',
+    backgroundColor: '#96B6C5',
     borderRadius: 25,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

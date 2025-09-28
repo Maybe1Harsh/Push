@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ScrollView, View, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, Card, Button, Divider, DataTable, Modal, Portal, TextInput, List, Chip } from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { supabase } from './supabaseClient';
 import { useFocusEffect } from '@react-navigation/native';
@@ -266,12 +265,9 @@ export default function PanchkarmaScreen({ route, navigation }) {
   };
 
   return (
-    <LinearGradient
-      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
-      style={styles.gradient}
-    >
+    <View style={{ flex: 1, backgroundColor: '#F1F0E8' }}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <ArrowLeft size={28} color="#333" />
+        <ArrowLeft size={28} color="#2C3E50" />
       </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Header */}
@@ -292,7 +288,7 @@ export default function PanchkarmaScreen({ route, navigation }) {
         <Button
           mode="contained"
           onPress={openPrescriptionModal}
-          style={{ flex: 1, backgroundColor: '#2e7d32' }}
+          style={{ flex: 1, backgroundColor: '#96B6C5' }}
           icon="plus"
         >
           New Prescription
@@ -321,7 +317,10 @@ export default function PanchkarmaScreen({ route, navigation }) {
             value={searchQuery}
             onChangeText={setSearchQuery}
             mode="outlined"
-            style={{ marginBottom: 12 }}
+            style={{ marginBottom: 12, backgroundColor: '#F1F0E8' }}
+            textColor="#2C3E50"
+            outlineColor="#96B6C5"
+            activeOutlineColor="#96B6C5"
           />
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
@@ -330,7 +329,13 @@ export default function PanchkarmaScreen({ route, navigation }) {
                 key={category}
                 selected={filterCategory === category}
                 onPress={() => setFilterCategory(category)}
-                style={{ marginRight: 8 }}
+                style={{ 
+                  marginRight: 8,
+                  backgroundColor: filterCategory === category ? '#96B6C5' : '#F1F0E8'
+                }}
+                textStyle={{ 
+                  color: filterCategory === category ? '#2C3E50' : '#2C3E50'
+                }}
               >
                 {category}
               </Chip>
@@ -421,27 +426,27 @@ export default function PanchkarmaScreen({ route, navigation }) {
             </Text>
             {selectedPatient ? (
               <View style={{ 
-                backgroundColor: '#e8f5e8',
+                backgroundColor: '#EEE0C9',
                 padding: 12,
                 borderRadius: 8,
                 borderLeftWidth: 4,
-                borderLeftColor: '#4caf50',
+                borderLeftColor: '#96B6C5',
                 marginBottom: 16
               }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#2C3E50' }}>
                   {selectedPatient.name}
                 </Text>
-                <Text style={{ color: '#666', fontSize: 14 }}>
+                <Text style={{ color: '#2C3E50', fontSize: 14 }}>
                   {selectedPatient.email}
                 </Text>
               </View>
             ) : (
               <View style={{ 
-                backgroundColor: '#ffebee',
+                backgroundColor: '#ADC4CE',
                 padding: 12,
                 borderRadius: 8,
                 borderLeftWidth: 4,
-                borderLeftColor: '#f44336',
+                borderLeftColor: '#96B6C5',
                 marginBottom: 16
               }}>
                 <Text style={{ color: '#d32f2f', fontWeight: 'bold' }}>
@@ -473,10 +478,10 @@ export default function PanchkarmaScreen({ route, navigation }) {
                   description={`${treatment.category} • ${treatment.duration}`}
                   left={props => <List.Icon {...props} icon="leaf" />}
                   right={props => isSelected ? 
-                    <List.Icon {...props} icon="check" color="#4caf50" /> : null}
+                    <List.Icon {...props} icon="check" color="#96B6C5" /> : null}
                   onPress={() => toggleTreatmentSelection(treatment)}
                   style={{
-                    backgroundColor: isSelected ? '#e8f5e8' : 'transparent',
+                    backgroundColor: isSelected ? '#EEE0C9' : 'transparent',
                     marginBottom: 4,
                     borderRadius: 8
                   }}
@@ -524,7 +529,7 @@ export default function PanchkarmaScreen({ route, navigation }) {
         </Modal>
       </Portal>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -549,14 +554,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   logoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#F1F0E8',
     borderRadius: 50,
     width: 80,
     height: 80,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -566,7 +571,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
   },
   title: {
-    color: '#2e7d32',
+    color: '#2C3E50',
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 8,
@@ -576,16 +581,16 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#424242',
+    color: '#2C3E50',
     textAlign: 'center',
     fontWeight: '500',
   },
   card: {
     marginHorizontal: 20,
     marginVertical: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#EEE0C9',
     borderRadius: 15,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -593,16 +598,16 @@ const styles = StyleSheet.create({
   },
   prescriptionCard: {
     marginBottom: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: '#EEE0C9',
     borderRadius: 12,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
   },
   sectionTitle: {
-    color: '#2e7d32',
+    color: '#2C3E50',
     fontWeight: 'bold',
     marginBottom: 16,
   },
@@ -614,9 +619,9 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: '#4caf50',
+    backgroundColor: '#96B6C5',
     borderRadius: 25,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -624,10 +629,10 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     flex: 1,
-    borderColor: '#4caf50',
+    borderColor: '#96B6C5',
     borderRadius: 25,
     borderWidth: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#F1F0E8',
   },
   buttonContent: {
     paddingVertical: 8,
@@ -640,15 +645,15 @@ const styles = StyleSheet.create({
   secondaryButtonLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#4caf50',
+    color: '#96B6C5',
   },
   modalContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: '#F1F0E8',
     padding: 25,
     margin: 20,
     borderRadius: 15,
     maxHeight: '80%',
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -657,27 +662,27 @@ const styles = StyleSheet.create({
   treatmentName: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#2e7d32',
+    color: '#2C3E50',
     marginBottom: 2,
   },
   treatmentDescription: {
     fontSize: 12,
-    color: '#424242',
+    color: '#2C3E50',
     lineHeight: 16,
   },
   tableHeader: {
-    color: '#2e7d32',
+    color: '#2C3E50',
     fontWeight: 'bold',
   },
   modalTitle: {
     fontWeight: 'bold',
     marginBottom: 16,
-    color: '#2e7d32',
+    color: '#2C3E50',
     textAlign: 'center',
   },
   modalSectionTitle: {
     marginBottom: 8,
-    color: '#2e7d32',
+    color: '#2C3E50',
     fontWeight: '600',
   },
 });

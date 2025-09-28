@@ -891,7 +891,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   welcomeText: {
-    color: '#000000',
+    color: "#2C3E50",
     fontWeight: 'bold',
   },
   logoutButtonContainer: {
@@ -902,7 +902,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -938,7 +938,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 20,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -963,7 +963,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cardDescription: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 14,
     marginBottom: 8,
     fontWeight: '500',
@@ -997,7 +997,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   doctorName: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 4,
@@ -1009,7 +1009,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   doctorStatus: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 14,
   },
   emptyState: {
@@ -1029,7 +1029,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   appointmentCount: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
@@ -1054,7 +1054,7 @@ const styles = StyleSheet.create({
   requestText: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#000000',
+    color: "#2C3E50",
     marginBottom: 4,
   },
   requestSpecialization: {
@@ -1152,7 +1152,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 20,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -1259,7 +1259,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
     elevation: 6,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -1431,7 +1431,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     marginBottom: 20,
-    color: '#000000',
+    color: "#2C3E50",
     textAlign: 'center',
   },
 });

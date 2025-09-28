@@ -121,42 +121,42 @@ export default function AddPatientScreen({ route, navigation }) {
       contentContainerStyle={{
         flexGrow: 1,
         padding: 20,
-        backgroundColor: "#f9fafc",
+        backgroundColor: "#F1F0E8",
       }}
     >
       {/* Back Button */}
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
         <IconButton
           icon="arrow-left"
-          iconColor="#1976d2"
+          iconColor="#2C3E50"
           size={24}
           onPress={() => navigation.goBack()}
           style={{ margin: 0 }}
         />
-        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#1976d2' }}>Back</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2C3E50' }}>Back</Text>
       </View>
       
       {/* Header */}
-      <Card style={{ marginBottom: 20, backgroundColor: "#1976d2" }}>
+      <Card style={{ marginBottom: 20, backgroundColor: "#96B6C5", elevation: 4, borderRadius: 12 }}>
         <Card.Content>
           <Text
             variant="headlineMedium"
-            style={{ color: "white", fontWeight: "bold" }}
+            style={{ color: "#2C3E50", fontWeight: "bold" }}
           >
             Add New Patient
           </Text>
-          <Text style={{ color: "white", marginTop: 5, fontSize: 16 }}>
+          <Text style={{ color: "#2C3E50", marginTop: 5, fontSize: 16 }}>
             Enter the patient's email address to add them to your care.
           </Text>
         </Card.Content>
       </Card>
 
       {/* Input Section */}
-      <Card style={{ marginBottom: 20, borderRadius: 12 }}>
+      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: "#EEE0C9", elevation: 3 }}>
         <Card.Content>
           <Text
             variant="titleMedium"
-            style={{ fontWeight: "bold", marginBottom: 15 }}
+            style={{ fontWeight: "bold", marginBottom: 15, color: "#2C3E50" }}
           >
             Patient Email
           </Text>
@@ -168,7 +168,10 @@ export default function AddPatientScreen({ route, navigation }) {
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
-            style={{ marginBottom: 15, backgroundColor: "#fff" }}
+            style={{ marginBottom: 15, backgroundColor: "#F1F0E8" }}
+            textColor="#2C3E50"
+            outlineColor="#96B6C5"
+            activeOutlineColor="#96B6C5"
           />
           <Button
             mode="contained"
@@ -176,11 +179,11 @@ export default function AddPatientScreen({ route, navigation }) {
             loading={loading}
             disabled={loading}
             style={{
-              backgroundColor: "#388e3c",
+              backgroundColor: "#ADC4CE",
               borderRadius: 10,
               paddingVertical: 5,
             }}
-            labelStyle={{ fontSize: 16 }}
+            labelStyle={{ fontSize: 16, color: "#2C3E50" }}
           >
             {loading ? "Adding Patient..." : "Add Patient"}
           </Button>
@@ -188,21 +191,21 @@ export default function AddPatientScreen({ route, navigation }) {
       </Card>
 
       {/* Instructions */}
-      <Card style={{ borderRadius: 12 }}>
+      <Card style={{ borderRadius: 12, backgroundColor: "#F1F0E8", elevation: 2 }}>
         <Card.Content>
           <Text
             variant="titleMedium"
-            style={{ fontWeight: "bold", marginBottom: 10 }}
+            style={{ fontWeight: "bold", marginBottom: 10, color: "#2C3E50" }}
           >
             Instructions
           </Text>
-          <Text style={{ marginBottom: 5 }}>
+          <Text style={{ marginBottom: 5, color: "#2C3E50" }}>
             • Enter the email address of the patient you want to add.
           </Text>
-          <Text style={{ marginBottom: 5 }}>
+          <Text style={{ marginBottom: 5, color: "#2C3E50" }}>
             • The patient must have already registered in the system.
           </Text>
-          <Text style={{ marginBottom: 5 }}>
+          <Text style={{ marginBottom: 5, color: "#2C3E50" }}>
             • Once added, the patient will appear in your patients list.
           </Text>
         </Card.Content>
