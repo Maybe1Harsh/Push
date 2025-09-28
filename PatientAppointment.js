@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Card, Provider as PaperProvider, Dropdown, Modal, Portal, Menu, Divider } from 'react-native-paper';
+import { Text, TextInput, Button, Card, Provider as PaperProvider, IconButton, Modal, Portal, Divider } from 'react-native-paper';
 import { supabase } from './supabaseClient';
 
 export default function PatientAppointmentScreen({ navigation, route }) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, View, Dimensions, TouchableOpacity } from "react-native";
+import { ScrollView, View, Dimensions, TouchableOpacity, SafeAreaView } from "react-native";
 import { Text, Card, Button, Divider, TextInput, Modal, Portal, Provider as PaperProvider } from "react-native-paper";
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -582,13 +582,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
 
   return (
     <PaperProvider>
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          padding: 20,
-          backgroundColor: "#e8f5e8",
-        }}
-      >
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#e8f5e8" }}>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            padding: 20,
+            backgroundColor: "#e8f5e8",
+          }}
+        >
       {/* Header */}
       <Card style={{ marginBottom: 20, backgroundColor: "#4caf50" }}>
         <Card.Content>
@@ -634,7 +635,89 @@ export default function DoctorDashboardScreen({ route, navigation }) {
         </Card.Content>
       </Card>
 
-      {/* Action Buttons */}
+      {/* Quick Action Buttons */}
+      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
+        <Card.Content>
+          <Text
+            variant="titleMedium"
+            style={{ fontWeight: "bold", marginBottom: 15, textAlign: 'center' }}
+          >
+            ⚡ Quick Actions
+          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap', gap: 10 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("DoctorSchedule", { 
+                profile: route.params?.profile,
+                doctorEmail: doctorEmail,
+                doctorName: doctorName
+              })}
+              style={{
+                backgroundColor: '#4caf50',
+                padding: 15,
+                borderRadius: 12,
+                alignItems: 'center',
+                minWidth: 80,
+                elevation: 3,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+              }}
+            >
+              <Text style={{ fontSize: 24, marginBottom: 5 }}>📅</Text>
+              <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 12, textAlign: 'center' }}>
+                Appointments
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setShowDietChartModal(true)}
+              style={{
+                backgroundColor: '#ff9800',
+                padding: 15,
+                borderRadius: 12,
+                alignItems: 'center',
+                minWidth: 80,
+                elevation: 3,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+              }}
+            >
+              <Text style={{ fontSize: 24, marginBottom: 5 }}>🍽️</Text>
+              <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 12, textAlign: 'center' }}>
+                Diet Charts
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("DoctorPrescriptions", { 
+                profile: route.params?.profile,
+                doctorEmail: doctorEmail,
+                doctorName: doctorName
+              })}
+              style={{
+                backgroundColor: '#2196f3',
+                padding: 15,
+                borderRadius: 12,
+                alignItems: 'center',
+                minWidth: 80,
+                elevation: 3,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+              }}
+            >
+              <Text style={{ fontSize: 24, marginBottom: 5 }}>💊</Text>
+              <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 12, textAlign: 'center' }}>
+                Prescriptions
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Card.Content>
+      </Card>
 
       {/* Today's Schedule Section */}
       <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
@@ -803,41 +886,50 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   marginBottom: 8,
                   backgroundColor: item.type === 'appointment' 
                     ? '#fff3e0' 
-                    : item.status === 'scheduled' 
-                      ? '#ffebee' 
-                      : '#f3e5f5',
+                    : '#f9f9f9',
                   borderRadius: 8,
-                  borderLeftWidth: 4,
+                  borderLeftWidth: item.type === 'appointment' ? 4 : 0,
                   borderLeftColor: item.type === 'appointment' 
                     ? '#ff9800' 
-                    : item.status === 'scheduled' 
-                      ? '#f44336' 
-                      : '#9c27b0'
+                    : 'transparent'
                 }}
               >
                 <Card.Content style={{ paddingVertical: 12 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-                          {item.display_time}
-                        </Text>
                         <View style={{
-                          marginLeft: 8,
-                          paddingHorizontal: 8,
-                          paddingVertical: 2,
-                          borderRadius: 12,
-                          backgroundColor: item.type === 'appointment' ? '#ff9800' : '#f44336'
+                          backgroundColor: '#4caf50',
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                          borderRadius: 8,
+                          marginRight: 8
                         }}>
                           <Text style={{ 
-                            color: 'white', 
-                            fontSize: 10, 
-                            fontWeight: 'bold',
-                            textTransform: 'uppercase'
+                            fontWeight: 'bold', 
+                            fontSize: 16,
+                            color: 'white'
                           }}>
-                            {item.type === 'appointment' ? 'APPOINTMENT' : 'SCHEDULED'}
+                            {item.display_time}
                           </Text>
                         </View>
+                        {item.type === 'appointment' && (
+                          <View style={{
+                            paddingHorizontal: 8,
+                            paddingVertical: 2,
+                            borderRadius: 12,
+                            backgroundColor: '#ff9800'
+                          }}>
+                            <Text style={{ 
+                              color: 'white', 
+                              fontSize: 10, 
+                              fontWeight: 'bold',
+                              textTransform: 'uppercase'
+                            }}>
+                              APPOINTMENT
+                            </Text>
+                          </View>
+                        )}
                       </View>
                       
                       <Text style={{ 
@@ -862,18 +954,16 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     </View>
                     
                     <View style={{ alignItems: 'flex-end' }}>
-                      <Text style={{ 
-                        color: item.type === 'appointment' 
-                          ? '#f57c00' 
-                          : item.status === 'scheduled' 
-                            ? '#d32f2f' 
-                            : '#7b1fa2',
-                        fontWeight: 'bold',
-                        textTransform: 'capitalize',
-                        fontSize: 12
-                      }}>
-                        {item.type === 'appointment' ? 'Booked' : 'Scheduled'}
-                      </Text>
+                      {item.type === 'appointment' && (
+                        <Text style={{ 
+                          color: '#f57c00',
+                          fontWeight: 'bold',
+                          textTransform: 'capitalize',
+                          fontSize: 12
+                        }}>
+                          Booked
+                        </Text>
+                      )}
                     </View>
                   </View>
                 </Card.Content>
@@ -1133,83 +1223,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           )}
         </Card.Content>
       </Card>
-
-      {/* Appointment Requests Section - Only show when there are pending requests */}
-      {appointments.length > 0 && (
-        <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
-          <Card.Content>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <Text
-                variant="titleMedium"
-                style={{ fontWeight: "bold" }}
-              >
-                📋 New Appointment Requests ({appointments.length})
-              </Text>
-              <Button
-                mode="outlined"
-                onPress={() => {
-                  console.log('Navigating to DoctorSchedule with params:', route.params);
-                  navigation.navigate("DoctorSchedule", { 
-                    profile: route.params?.profile,
-                    doctorEmail: doctorEmail,
-                    doctorName: doctorName
-                  });
-                }}
-                style={{ borderColor: '#4caf50' }}
-                textColor="#4caf50"
-                compact
-              >
-                View All
-              </Button>
-            </View>
-            <Divider style={{ marginBottom: 10 }} />
-            {appointments.map((app) => (
-              <Card
-                key={app.id}
-                style={{
-                  marginBottom: 12,
-                  backgroundColor: '#c8e6c9',
-                  borderRadius: 8
-                }}
-              >
-                <Card.Content>
-                  <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
-                    Patient: {app.patient_email}
-                  </Text>
-                  <Text style={{ color: '#000000', marginBottom: 4 }}>
-                    Requested: {new Date(app.requested_time).toLocaleString('en-IN')}
-                  </Text>
-                  {app.notes && (
-                    <Text style={{ color: '#000000', fontStyle: 'italic', marginBottom: 8 }}>
-                      Notes: {app.notes}
-                    </Text>
-                  )}
-                </Card.Content>
-                <Card.Actions>
-                  <Button 
-                    mode="contained" 
-                    onPress={() => handleAccept(app.id)}
-                    style={{ backgroundColor: '#4caf50', marginRight: 8 }}
-                    loading={loading}
-                    compact
-                  >
-                    Accept
-                  </Button>
-                  <Button 
-                    mode="outlined" 
-                    onPress={() => handleReject(app.id)}
-                    textColor="#f44336"
-                    loading={loading}
-                    compact
-                  >
-                    Reject
-                  </Button>
-                </Card.Actions>
-              </Card>
-            ))}
-          </Card.Content>
-        </Card>
-      )}
       
       {/* Date Picker Modal */}
       <Portal>
@@ -1537,6 +1550,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
         </Modal>
       </Portal>
     </ScrollView>
+      </SafeAreaView>
     </PaperProvider>
   );
 }
