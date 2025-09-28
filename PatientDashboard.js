@@ -318,51 +318,6 @@ export default function PatientDashboard({ navigation, route }) {
     });
   }, []);
 
-  const handleCardPress = (item, index) => {
-    // Enhanced card press animation with multiple effects
-    Animated.parallel([
-      Animated.sequence([
-        Animated.timing(cardAnimations[index].scale, {
-          toValue: 0.9,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.spring(cardAnimations[index].scale, {
-          toValue: 1.05,
-          tension: 300,
-          friction: 10,
-          useNativeDriver: true,
-        }),
-        Animated.timing(cardAnimations[index].scale, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]),
-      // Rotation effect on press
-      Animated.sequence([
-        Animated.timing(cardAnimations[index].rotation, {
-          toValue: 0.98,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.timing(cardAnimations[index].rotation, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
-
-    setTimeout(() => {
-      if (item.navigation === 'PatientAppointment') {
-        navigation.navigate('PatientAppointment', { patientEmail });
-      } else if (item.navigation) {
-        navigation.navigate(item.navigation);
-      }
-    }, 300);
-  };
-
   const toggleYoga = () => {
     const toValue = showYoga ? 0 : 1;
     setShowYoga(!showYoga);
@@ -399,85 +354,6 @@ export default function PatientDashboard({ navigation, route }) {
           </Animated.View>
         ))}
       </View>
-    );
-  };
-
-  const AnimatedCard = ({ item, index }) => {
-    return (
-      <Animated.View
-        style={[
-          {
-            opacity: cardAnimations[index].opacity,
-            transform: [
-              { translateY: cardAnimations[index].translateY },
-              { scale: cardAnimations[index].scale },
-              {
-                rotate: cardAnimations[index].rotation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['5deg', '0deg'],
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => handleCardPress(item, index)}
-        >
-          <View style={styles.cardWrapper}>
-            {/* Shimmer overlay */}
-            <Animated.View
-              style={[
-                styles.shimmerOverlay,
-                {
-                  opacity: cardAnimations[index].shimmer.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 0.3],
-                  }),
-                  transform: [
-                    {
-                      translateX: cardAnimations[index].shimmer.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-screenWidth, screenWidth],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            />
-            <LinearGradient
-              colors={item.color}
-              style={styles.dashboardCard}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <View style={styles.cardContent}>
-                <Animated.View 
-                  style={[
-                    styles.iconContainer,
-                    {
-                      transform: [{ scale: pulseAnim }],
-                    },
-                  ]}
-                >
-                  <Text style={styles.cardIcon}>{item.icon}</Text>
-                </Animated.View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.cardTitle}>{item.title}</Text>
-                  <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
-                </View>
-                <IconButton
-                  icon="chevron-right"
-                  iconColor="#ffffff"
-                  size={24}
-                  style={styles.chevron}
-                />
-              </View>
-            </LinearGradient>
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
     );
   };
 

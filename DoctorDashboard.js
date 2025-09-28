@@ -590,9 +590,6 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             backgroundColor: "#e8f5e8",
           }}
         >
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
           padding: 20,
           backgroundColor: "#F1F0E8",
         }}
@@ -897,22 +894,14 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 key={item.id || `schedule_${index}`}
                 style={{
                   marginBottom: 8,
-                  backgroundColor: item.type === 'appointment' 
-                    ? '#fff3e0' 
+                  backgroundColor: item.type === 'appointment'
+                    ? '#fff3e0'
                     : '#f9f9f9',
-                    ? '#EEE0C9' 
-                    : item.status === 'scheduled' 
-                      ? '#ADC4CE' 
-                      : '#F1F0E8',
                   borderRadius: 8,
                   borderLeftWidth: item.type === 'appointment' ? 4 : 0,
-                  borderLeftColor: item.type === 'appointment' 
-                    ? '#ff9800' 
-                    : 'transparent'
-                    ? '#96B6C5' 
-                    : item.status === 'scheduled' 
-                      ? '#96B6C5' 
-                      : '#ADC4CE',
+                  borderLeftColor: item.type === 'appointment'
+                    ? '#ff9800'
+                    : 'transparent',
                   elevation: 2
                 }}
               >
