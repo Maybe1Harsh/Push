@@ -17,13 +17,17 @@ export default function DashboardScreen({ navigation, route }) {
   const [loadingAppointments, setLoadingAppointments] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  // Slideshow state
+  // Slideshow state for infinite scroll
   const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [actualSlideIndex, setActualSlideIndex] = React.useState(0);
   const slideshowRef = React.useRef(null);
   const { width } = Dimensions.get('window');
+  const isScrolling = React.useRef(false);
+  const autoScrollEnabled = React.useRef(true);
+  const repositioning = React.useRef(false);
 
-  // Individual wellness features for slideshow
-  const wellnessFeatures = [
+  // Original wellness features for slideshow
+  const originalWellnessFeatures = [
     {
       id: 1,
       title: 'Dosha Quiz',
@@ -92,25 +96,109 @@ export default function DashboardScreen({ navigation, route }) {
     }
   ];
 
-  // Auto-scroll functionality
+  // Create infinite scroll data by tripling the array
+  const wellnessFeatures = React.useMemo(() => {
+    if (originalWellnessFeatures.length === 0) return [];
+    
+    // Create triple array: [set1, set2, set3] for seamless infinite scroll
+    const infiniteData = [
+      ...originalWellnessFeatures.map((item, index) => ({ ...item, id: `set1_${index}`, originalIndex: index })),
+      ...originalWellnessFeatures.map((item, index) => ({ ...item, id: `set2_${index}`, originalIndex: index })),
+      ...originalWellnessFeatures.map((item, index) => ({ ...item, id: `set3_${index}`, originalIndex: index }))
+    ];
+    
+    return infiniteData;
+  }, []);
+
+  // Initialize slideshow to middle set for infinite scroll with safety checks
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      if (slideshowRef.current && wellnessFeatures.length > 0) {
-        const nextSlide = (currentSlide + 1) % wellnessFeatures.length;
-        try {
-          // Calculate the offset manually for more reliable scrolling
-          const slideWidth = width - 48 + 16; // slide width + margin
-          const offset = nextSlide * slideWidth;
-          slideshowRef.current.scrollToOffset({ offset, animated: true });
-          setCurrentSlide(nextSlide);
-        } catch (error) {
-          console.log('Slideshow scroll error:', error);
+    if (slideshowRef.current && originalWellnessFeatures.length > 0) {
+      // Start at the middle set (set2)
+      const initialIndex = originalWellnessFeatures.length; // Start of set2
+      const slideWidth = width - 48 + 16;
+      const initialOffset = initialIndex * slideWidth;
+      
+      // Delay initialization to ensure FlatList is ready
+      const timer = setTimeout(() => {
+        if (slideshowRef.current) {
+          slideshowRef.current.scrollToOffset({ offset: initialOffset, animated: false });
+          setCurrentSlide(initialIndex);
+          setActualSlideIndex(0);
+          repositioning.current = false;
+          autoScrollEnabled.current = true;
+        }
+      }, 200);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [originalWellnessFeatures.length, width]);
+
+  // Safety mechanism to prevent infinite scroll from getting stuck
+  React.useEffect(() => {
+    const safetyCheck = setInterval(() => {
+      if (autoScrollEnabled.current && !isScrolling.current && !repositioning.current) {
+        const originalLength = originalWellnessFeatures.length;
+        // If we're at the very edges, reset to middle
+        if (currentSlide < 1 || currentSlide >= originalLength * 3 - 1) {
+          const safeIndex = originalLength + (actualSlideIndex || 0);
+          const slideWidth = width - 48 + 16;
+          const safeOffset = safeIndex * slideWidth;
+          
+          if (slideshowRef.current) {
+            slideshowRef.current.scrollToOffset({ offset: safeOffset, animated: false });
+            setCurrentSlide(safeIndex);
+          }
         }
       }
-    }, 4000); // Change slide every 4 seconds
+    }, 1000); // Check every second
+
+    return () => clearInterval(safetyCheck);
+  }, [currentSlide, actualSlideIndex, originalWellnessFeatures.length, width]);
+
+  // Auto-scroll functionality for truly infinite scroll
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (slideshowRef.current && 
+          autoScrollEnabled.current && 
+          !isScrolling.current && 
+          !repositioning.current && 
+          originalWellnessFeatures.length > 0) {
+        
+        const nextActualIndex = (actualSlideIndex + 1) % originalWellnessFeatures.length;
+        let nextSlideIndex = currentSlide + 1;
+        
+        // Ensure we stay within safe bounds of the triple array
+        const maxIndex = originalWellnessFeatures.length * 3 - 1;
+        if (nextSlideIndex > maxIndex) {
+          nextSlideIndex = originalWellnessFeatures.length; // Reset to middle set
+        }
+        
+        try {
+          const slideWidth = width - 48 + 16;
+          const offset = nextSlideIndex * slideWidth;
+          
+          isScrolling.current = true;
+          slideshowRef.current.scrollToOffset({ offset, animated: true });
+          setCurrentSlide(nextSlideIndex);
+          setActualSlideIndex(nextActualIndex);
+          
+          // Re-enable after animation
+          setTimeout(() => {
+            isScrolling.current = false;
+          }, 300);
+        } catch (error) {
+          console.log('Auto-scroll error:', error);
+          isScrolling.current = false;
+          // Reset to safe position on error
+          const safeIndex = originalWellnessFeatures.length;
+          setCurrentSlide(safeIndex);
+          setActualSlideIndex(0);
+        }
+      }
+    }, 3000); // Change slide every 3 seconds
 
     return () => clearInterval(interval);
-  }, [currentSlide, wellnessFeatures.length, width]);
+  }, [currentSlide, actualSlideIndex, originalWellnessFeatures.length, width]);
 
   // Consent state
   const [consentModalVisible, setConsentModalVisible] = React.useState(false);
@@ -425,18 +513,7 @@ export default function DashboardScreen({ navigation, route }) {
               </Card.Content>
             </Card>
 
-            {/* Quick Action Buttons */}
-            <View style={styles.actionButtonsContainer}>
-              <Button
-                mode="contained"
-                onPress={() => navigation.navigate('PatientAppointment', { patientEmail: profile?.email })}
-                style={styles.quickActionButton}
-                labelStyle={styles.quickActionLabel}
-                icon="calendar-plus"
-              >
-                📅 Book Appointment
-              </Button>
-            </View>
+
 
             {/* Your Doctor Card - Prominent */}
             <Card style={[styles.card, styles.prominentCard]}>
@@ -603,40 +680,87 @@ export default function DashboardScreen({ navigation, route }) {
                   snapToAlignment="start"
                   decelerationRate="fast"
                   onScroll={(event) => {
-                    const slideWidth = width - 48 + 16; // slide width + margin
-                    const slideIndex = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
-                    // Ensure slideIndex is within bounds
-                    const validSlideIndex = Math.max(0, Math.min(slideIndex, wellnessFeatures.length - 1));
-                    if (validSlideIndex !== currentSlide) {
-                      setCurrentSlide(validSlideIndex);
+                    if (originalWellnessFeatures.length === 0 || repositioning.current) return;
+                    
+                    const slideWidth = width - 48 + 16;
+                    const currentOffset = event.nativeEvent.contentOffset.x;
+                    const slideIndex = Math.round(currentOffset / slideWidth);
+                    
+                    // Update current slide
+                    if (slideIndex !== currentSlide && !repositioning.current) {
+                      setCurrentSlide(slideIndex);
+                    }
+                    
+                    // Calculate actual slide for pagination dots (real-time updates)
+                    const newActualIndex = slideIndex % originalWellnessFeatures.length;
+                    if (newActualIndex !== actualSlideIndex) {
+                      setActualSlideIndex(newActualIndex);
                     }
                   }}
                   onMomentumScrollEnd={(event) => {
-                    const slideWidth = width - 48 + 16; // slide width + margin
-                    const slideIndex = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
+                    if (originalWellnessFeatures.length === 0 || repositioning.current) return;
                     
-                    // Handle infinite scroll wrapping
-                    if (slideIndex >= wellnessFeatures.length) {
-                      // If scrolled past last slide, wrap to first slide
-                      setTimeout(() => {
-                        slideshowRef.current?.scrollToOffset({ offset: 0, animated: true });
-                        setCurrentSlide(0);
-                      }, 100);
-                    } else if (slideIndex < 0) {
-                      // If scrolled before first slide, wrap to last slide
-                      const lastSlideOffset = (wellnessFeatures.length - 1) * slideWidth;
-                      setTimeout(() => {
-                        slideshowRef.current?.scrollToOffset({ offset: lastSlideOffset, animated: true });
-                        setCurrentSlide(wellnessFeatures.length - 1);
-                      }, 100);
-                    } else {
-                      // Normal slide update
-                      const validSlideIndex = Math.max(0, Math.min(slideIndex, wellnessFeatures.length - 1));
-                      setCurrentSlide(validSlideIndex);
+                    const slideWidth = width - 48 + 16;
+                    const slideIndex = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
+                    const originalLength = originalWellnessFeatures.length;
+                    
+                    setCurrentSlide(slideIndex);
+                    
+                    // Calculate actual slide for pagination
+                    const newActualIndex = slideIndex % originalLength;
+                    setActualSlideIndex(newActualIndex);
+                    
+                    // Handle infinite scroll repositioning - trigger before reaching boundaries
+                    const shouldReposition = slideIndex <= 2 || slideIndex >= (originalLength * 2) - 2;
+                    
+                    if (shouldReposition && !repositioning.current) {
+                      repositioning.current = true;
+                      autoScrollEnabled.current = false;
+                      
+                      let targetIndex;
+                      if (slideIndex <= 2) {
+                        // If near beginning of first set, jump to middle set equivalent
+                        targetIndex = slideIndex + originalLength;
+                      } else {
+                        // If near end of third set, jump to middle set equivalent
+                        targetIndex = slideIndex - originalLength;
+                      }
+                      
+                      const targetOffset = targetIndex * slideWidth;
+                      
+                      // Perform invisible jump immediately after momentum ends
+                      requestAnimationFrame(() => {
+                        if (slideshowRef.current && repositioning.current) {
+                          slideshowRef.current.scrollToOffset({ 
+                            offset: targetOffset, 
+                            animated: false 
+                          });
+                          setCurrentSlide(targetIndex);
+                          
+                          // Ensure actualSlideIndex stays correct
+                          const correctedActualIndex = targetIndex % originalLength;
+                          if (correctedActualIndex !== actualSlideIndex) {
+                            setActualSlideIndex(correctedActualIndex);
+                          }
+                          
+                          // Re-enable auto-scroll immediately
+                          repositioning.current = false;
+                          autoScrollEnabled.current = true;
+                        }
+                      });
                     }
                   }}
                   onScrollBeginDrag={() => {
-                    // User started manual scrolling - this ensures onScroll is properly triggered
+                    isScrolling.current = true;
+                    autoScrollEnabled.current = false; // Disable auto-scroll when user interacts
+                  }}
+                  onScrollEndDrag={() => {
+                    setTimeout(() => {
+                      isScrolling.current = false;
+                      if (!repositioning.current) {
+                        autoScrollEnabled.current = true; // Re-enable auto-scroll
+                      }
+                    }, 200);
                   }}
                   scrollEventThrottle={16}
                   onScrollToIndexFailed={(info) => {
@@ -651,28 +775,7 @@ export default function DashboardScreen({ navigation, route }) {
                   style={styles.slideshow}
                 />
 
-                {/* Pagination Dots */}
-                <View style={styles.paginationContainer}>
-                  {wellnessFeatures.map((_, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.paginationDot,
-                        currentSlide === index && styles.activePaginationDot
-                      ]}
-                      onPress={() => {
-                        try {
-                          const slideWidth = width - 48 + 16; // slide width + margin
-                          const offset = index * slideWidth;
-                          slideshowRef.current?.scrollToOffset({ offset, animated: true });
-                          setCurrentSlide(index);
-                        } catch (error) {
-                          console.log('Manual scroll error:', error);
-                        }
-                      }}
-                    />
-                  ))}
-                </View>
+
 
                 {/* All Features List */}
                 <View style={styles.featuresListSection}>
@@ -685,7 +788,7 @@ export default function DashboardScreen({ navigation, route }) {
                   <Text style={styles.featuresSubtitle}>Choose any feature to get started with your wellness journey</Text>
                   
                   <View style={styles.featuresGrid}>
-                    {wellnessFeatures.map((feature, index) => (
+                    {originalWellnessFeatures.map((feature, index) => (
                       <TouchableOpacity
                         key={feature.id}
                         style={styles.featureListItem}
@@ -788,7 +891,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   welcomeText: {
-    color: '#000000',
+    color: "#2C3E50",
     fontWeight: 'bold',
   },
   logoutButtonContainer: {
@@ -799,7 +902,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -835,7 +938,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 20,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -860,7 +963,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cardDescription: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 14,
     marginBottom: 8,
     fontWeight: '500',
@@ -894,7 +997,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   doctorName: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 4,
@@ -906,7 +1009,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   doctorStatus: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 14,
   },
   emptyState: {
@@ -926,7 +1029,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   appointmentCount: {
-    color: '#000000',
+    color: "#2C3E50",
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
@@ -951,7 +1054,7 @@ const styles = StyleSheet.create({
   requestText: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#000000',
+    color: "#2C3E50",
     marginBottom: 4,
   },
   requestSpecialization: {
@@ -1049,7 +1152,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 20,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -1104,25 +1207,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#c8e6c9',
-    marginHorizontal: 4,
-  },
-  activePaginationDot: {
-    backgroundColor: '#4caf50',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
+
   categoryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1174,7 +1259,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
     elevation: 6,
-    shadowColor: '#000',
+    shadowColor: "#96B6C5",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -1346,7 +1431,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     marginBottom: 20,
-    color: '#000000',
+    color: "#2C3E50",
     textAlign: 'center',
   },
 });

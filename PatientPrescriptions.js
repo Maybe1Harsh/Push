@@ -262,20 +262,20 @@ export default function PatientPrescriptions({ route, navigation }) {
         {/* Dosha Assessment */}
         {(prescData.vata || prescData.pitta || prescData.kapha) && (
           <>
-            <Text style={{ fontWeight: 'bold', marginBottom: 6, color: '#2e7d32' }}>Dosha Assessment:</Text>
+            <Text style={{ fontWeight: 'bold', marginBottom: 6, color: '#2C3E50' }}>Dosha Assessment:</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginLeft: 8, marginBottom: 8 }}>
               {prescData.vata && (
-                <Chip style={{ margin: 2, backgroundColor: '#e8f5e8' }} textStyle={{ color: '#2e7d32' }}>
+                <Chip style={{ margin: 2, backgroundColor: '#EEE0C9' }} textStyle={{ color: '#2C3E50' }}>
                   Vata: {prescData.vata}
                 </Chip>
               )}
               {prescData.pitta && (
-                <Chip style={{ margin: 2, backgroundColor: '#fff3e0' }} textStyle={{ color: '#f57c00' }}>
+                <Chip style={{ margin: 2, backgroundColor: '#ADC4CE' }} textStyle={{ color: '#2C3E50' }}>
                   Pitta: {prescData.pitta}
                 </Chip>
               )}
               {prescData.kapha && (
-                <Chip style={{ margin: 2, backgroundColor: '#e3f2fd' }} textStyle={{ color: '#1976d2' }}>
+                <Chip style={{ margin: 2, backgroundColor: '#96B6C5' }} textStyle={{ color: '#2C3E50' }}>
                   Kapha: {prescData.kapha}
                 </Chip>
               )}
@@ -612,14 +612,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#F1F0E8',
     borderRadius: 50,
     width: 80,
     height: 80,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -629,7 +629,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
   },
   title: {
-    color: '#2e7d32',
+    color: '#2C3E50',
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 8,

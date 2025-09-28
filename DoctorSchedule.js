@@ -511,10 +511,10 @@ export default function DoctorScheduleScreen({ route, navigation }) {
   return (
     <PaperProvider>
       <ScrollView 
-        style={{ flex: 1, backgroundColor: '#e8f5e8' }}
+        style={{ flex: 1, backgroundColor: '#F1F0E8' }}
         contentContainerStyle={{
           flexGrow: 1,
-          backgroundColor: "#e8f5e8",
+          backgroundColor: "#F1F0E8",
           padding: 20,
         }}
       >
@@ -531,11 +531,11 @@ export default function DoctorScheduleScreen({ route, navigation }) {
         </View>
         
         {/* Header Section */}
-        <Card style={{ marginBottom: 20, backgroundColor: "#4caf50" }}>
+        <Card style={{ marginBottom: 20, backgroundColor: "#96B6C5", elevation: 4, borderRadius: 12 }}>
           <Card.Content>
             <Text
               variant="headlineMedium"
-              style={{ color: "white", fontWeight: "bold", textAlign: "center" }}
+              style={{ color: "#2C3E50", fontWeight: "bold", textAlign: "center" }}
             >
               Schedule & Appointments
             </Text>
@@ -549,15 +549,15 @@ export default function DoctorScheduleScreen({ route, navigation }) {
         </Card>
 
           {/* Schedule Management Section */}
-          <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
+          <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#EEE0C9', elevation: 3 }}>
             <Card.Content>
               <Text
                 variant="titleMedium"
-                style={{ fontWeight: "bold", marginBottom: 15, color: '#000000' }}
+                style={{ fontWeight: "bold", marginBottom: 15, color: '#2C3E50' }}
               >
                 📅 My Schedule
               </Text>
-              <Divider style={{ marginBottom: 15 }} />
+              <Divider style={{ marginBottom: 15, backgroundColor: '#96B6C5' }} />
               
               {schedule.length === 0 ? (
                 <Text style={{ color: '#666', textAlign: 'center', marginVertical: 16 }}>

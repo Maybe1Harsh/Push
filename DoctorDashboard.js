@@ -11,8 +11,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
 
   if (!doctorEmail) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#e8f5e8' }}>
-        <Text style={{ color: '#000000', fontSize: 18 }}>No doctor profile found. Please log in again.</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff' }}>
+        <Text style={{ color: '#283618', fontSize: 18 }}>No doctor profile found. Please log in again.</Text>
       </View>
     );
   }
@@ -21,68 +21,68 @@ export default function DoctorDashboardScreen({ route, navigation }) {
   const dietTemplates = [
     {
       id: 1,
-      name: 'Vata Balancing Diet',
-      description: 'Light, warm, and nourishing foods for Vata constitution',
+      name: 'Vata Balancing Diet Plan',
+      description: 'Therapeutic nutritional regimen designed to pacify Vata dosha through warm, grounding, and easily digestible foods',
       emoji: '🌿',
       meals: {
-        breakfast: 'Garam doodh mein khajoor aur badam, daliya',
-        lunch: 'Moong dal khichdi ghee ke saath, paka hua sabzi, chawal',
-        dinner: 'Sabzi ka soup, chawal ya soft gehu ki roti',
-        snacks: 'Adrak wali chai, bhige hue kishmish, aam ya kele jaise meethay phal'
+        breakfast: 'Warm spiced milk (150ml) with 4-5 soaked dates and almonds, followed by cooked oats porridge (daliya) with cardamom and ghee (1 tsp)',
+        lunch: 'Moong dal khichdi (1 cup) prepared with basmati rice, turmeric, cumin, and clarified butter (2 tsp), served with steamed seasonal vegetables and white rice',
+        dinner: 'Nourishing vegetable broth soup with root vegetables, accompanied by soft whole wheat chapati or steamed basmati rice (1 cup)',
+        snacks: 'Fresh ginger tea with honey, pre-soaked raisins (10-12 pieces), seasonal sweet fruits like mango, banana, or papaya (1 medium portion)'
       },
-      guidelines: 'Khaana garam aur paka hua ho. Thanda, kaccha khana na khayein. Ghee aur tel ka upyog karein.'
+      guidelines: 'Consume warm, well-cooked meals at regular intervals. Avoid cold, raw, or dry foods. Include adequate healthy fats (ghee/sesame oil). Maintain proper meal timing and eat in a calm environment.'
     },
     {
       id: 2,
-      name: 'Pitta Pacifying Diet',
-      description: 'Cooling and calming foods for Pitta constitution',
+      name: 'Pitta Pacifying Diet Plan',
+      description: 'Therapeutic cooling regimen formulated to balance excess Pitta dosha through naturally cooling, alkaline, and anti-inflammatory foods',
       emoji: '🧊',
       meals: {
-        breakfast: 'Tarbooz, nashpati, anaar, ya saunf ke paani ke saath phal',
-        lunch: 'Basmati chawal, moong dal, kakdi, lauki, nariyal wali sabzi',
-        dinner: 'Halka khichdi dhaniya-pudina chutney ke saath, ya thandi sabzi ka soup',
-        snacks: 'Nariyal paani, meethay phal, gulab ya pudina wali chai'
+        breakfast: 'Fresh seasonal fruits (1 cup): watermelon, pears, pomegranate, served with fennel-infused water (200ml) to enhance digestive fire without aggravating Pitta',
+        lunch: 'Basmati rice (1 cup) with split yellow moong dal (½ cup), cucumber raita, bottle gourd curry prepared with coconut oil (1 tsp), and fresh coriander garnish',
+        dinner: 'Light khichdi (¾ cup) served with cooling coriander-mint chutney (2 tbsp), or chilled vegetable soup with seasonal cooling vegetables like cucumber and bottle gourd',
+        snacks: 'Fresh coconut water (200ml), sweet seasonal fruits (1 medium portion), cooling herbal teas - rose petal or mint tea without caffeine'
       },
-      guidelines: 'Thanda aur shant karne wala khaana khayein. Teekha aur mirch-masala kam karein.'
+      guidelines: 'Prioritize cool or room temperature foods and beverages. Minimize spicy, acidic, and heating foods. Include natural cooling herbs like coriander, fennel, and mint. Eat in a peaceful environment and avoid eating when emotionally disturbed.'
     },
     {
       id: 3,
-      name: 'Kapha Reducing Diet',
-      description: 'Light, warm, and stimulating foods for Kapha constitution',
+      name: 'Kapha Reducing Diet Plan',
+      description: 'Therapeutic metabolic enhancement regimen designed to reduce excess Kapha dosha through light, warming, and digestive-stimulating foods',
       emoji: '🔥',
       meals: {
-        breakfast: 'Adrak wali chai shahad ke saath, seb ya nashpati jaise halkay phal',
-        lunch: 'Jau ya bajre ki roti, karela, palak, ya dal',
-        dinner: 'Sabzi ka garam soup, kali mirch aur haldi ke saath',
-        snacks: 'Bhuna chana, tulsi wali chai, anar ya seb'
+        breakfast: 'Warming ginger tea (200ml) with raw honey (1 tsp), accompanied by light seasonal fruits like apples or pears (1 medium) to stimulate sluggish digestion',
+        lunch: 'Ancient grain flatbread - barley or pearl millet roti (2 pieces), bitter gourd curry, fresh spinach sauté, or protein-rich lentil dal (½ cup) with digestive spices',
+        dinner: 'Hot vegetable broth soup (1 bowl) infused with black pepper, turmeric, and ginger to enhance metabolic fire and reduce mucus formation',
+        snacks: 'Dry-roasted chickpeas (¼ cup), therapeutic tulsi tea with metabolism-boosting herbs, astringent fruits like pomegranate or crisp apples (1 small portion)'
       },
-      guidelines: 'Halka, garam khaana khayein. Tel, dahi, aur bhari khana na khayein. Teekha aur katu swad shamil karein.'
+      guidelines: 'Emphasize light, warm, and easily digestible foods. Strictly avoid heavy, oily, dairy-rich, and cold foods. Incorporate pungent and bitter tastes to stimulate metabolism. Practice portion control and avoid overeating to prevent Kapha accumulation.'
     },
     {
       id: 4,
-      name: 'General Ayurvedic Diet',
-      description: 'Balanced diet suitable for all constitutions',
+      name: 'General Ayurvedic Diet Plan',
+      description: 'Comprehensive tridoshic nutritional regimen incorporating classical Ayurvedic principles for optimal health maintenance across all constitutional types',
       emoji: '⚖️',
       meals: {
-        breakfast: 'Seasonal phal (seb, angoor), bhige hue badam, cardamom wala daliya',
-        lunch: 'Chawal, dal, roti, paka hua sabzi, salad nimbu ke saath',
-        dinner: 'Halka khichdi, sabzi ka soup',
-        snacks: 'Herbal chai (adrak, saunf, tulsi), phal, bhige hue nuts'
+        breakfast: 'Fresh seasonal fruits (1 cup) - apples, grapes, or seasonal varieties, pre-soaked almonds (5-6 pieces), cardamom-spiced oats porridge (daliya) prepared with warm milk or plant-based alternatives',
+        lunch: 'Complete balanced meal: Basmati rice (1 cup), protein-rich lentil dal (½ cup), whole wheat roti (1-2 pieces), seasonal cooked vegetables with minimal oil, fresh salad with lemon dressing for digestive enhancement',
+        dinner: 'Light khichdi (¾ cup) prepared with moong dal and digestive spices, accompanied by warming vegetable soup with seasonal vegetables and therapeutic herbs',
+        snacks: 'Therapeutic herbal teas - ginger, fennel, or tulsi blend (200ml), seasonal fresh fruits (1 small portion), pre-soaked nuts and seeds for sustained energy'
       },
-      guidelines: 'Hamesha taza aur seasonal khana khayein. Chhe ras (meetha, khatta, lavan, katu, tikta, kashaya) shamil karein.'
+      guidelines: 'Prioritize fresh, seasonal, and locally-sourced foods. Incorporate all six tastes (Shadrasa) - sweet, sour, salty, pungent, bitter, and astringent in daily meals. Maintain regular eating schedule, proper food combinations, and mindful eating practices. Cook with love and gratitude for optimal prana absorption.'
     },
     {
       id: 5,
-      name: 'Detox Diet',
-      description: 'Cleansing diet for body purification',
+      name: 'Ayurvedic Detoxification Diet Plan',
+      description: 'Comprehensive panchakarma-inspired cleansing protocol designed for systematic elimination of ama (toxins) and restoration of optimal digestive function',
       emoji: '🌱',
       meals: {
-        breakfast: 'Garam nimbu paani shahad ke saath, papita ya seb',
-        lunch: 'Moong dal khichdi haldi aur jeera ke saath',
-        dinner: 'Sabzi ka saaf soup, kali mirch ke saath',
-        snacks: 'Triphala ka kadha, jeera-dhaniya-adrak ka pani, halkay phal'
+        breakfast: 'Warm lemon water (250ml) with raw honey (1 tsp) to stimulate digestive enzymes, followed by detoxifying fruits - papaya or apple (1 medium) rich in natural enzymes and fiber',
+        lunch: 'Therapeutic moong dal khichdi (1 cup) prepared with turmeric, cumin, and digestive spices - easily digestible protein and carbohydrates to support gentle detoxification without taxing the system',
+        dinner: 'Clear vegetable broth soup (1 bowl) with seasonal cleansing vegetables, enhanced with black pepper and warming spices to promote toxin elimination through natural sweating',
+        snacks: 'Classical Triphala decoction (150ml) for colon cleansing, CCF tea blend (cumin-coriander-fennel water, 200ml), light seasonal fruits with natural detox properties'
       },
-      guidelines: 'Packet aur bazaar ka khana na khayein. Zyada paani piyein. Safaai karne wali jadi-booti shamil karein.'
+      guidelines: 'Eliminate all processed, packaged, and restaurant foods during detox period. Increase pure water intake to 2-3 liters daily for optimal kidney function. Incorporate classical detoxifying herbs like Triphala, Neem, and Turmeric. Practice gentle yoga and meditation to support mental-emotional cleansing. Maintain early sleep schedule for optimal liver detoxification.'
     }
   ];
 
@@ -590,31 +590,38 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             backgroundColor: "#e8f5e8",
           }}
         >
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          padding: 20,
+          backgroundColor: "#F1F0E8",
+        }}
+      >
       {/* Header */}
-      <Card style={{ marginBottom: 20, backgroundColor: "#4caf50" }}>
+      <Card style={{ marginBottom: 20, backgroundColor: "#96B6C5", elevation: 4, borderRadius: 12 }}>
         <Card.Content>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={{ flex: 1 }}>
               <Text
                 variant="headlineMedium"
-                style={{ color: "#000000", fontWeight: "bold" }}
+                style={{ color: "#2C3E50", fontWeight: "bold" }}
               >
                 Welcome, Dr. {doctorName}
               </Text>
             </View>
             
-            {/* Logout Button - Professional Blue Circle */}
+            {/* Logout Button - Professional Style */}
             <TouchableOpacity 
               onPress={handleLogout}
               style={{
                 width: 60,
                 height: 60,
                 borderRadius: 30,
-                backgroundColor: '#1565c0',
+                backgroundColor: '#ADC4CE',
                 justifyContent: 'center',
                 alignItems: 'center',
                 elevation: 3,
-                shadowColor: '#000',
+                shadowColor: '#96B6C5',
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.84,
@@ -720,12 +727,12 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       </Card>
 
       {/* Today's Schedule Section */}
-      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
+      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#EEE0C9', elevation: 3 }}>
         <Card.Content>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <Text
               variant="titleMedium"
-              style={{ fontWeight: "bold" }}
+              style={{ fontWeight: "bold", color: "#2C3E50" }}
             >
               📅 Schedule
             </Text>
@@ -740,8 +747,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     doctorName: doctorName
                   });
                 }}
-                style={{ borderColor: '#4caf50' }}
-                textColor="#4caf50"
+                style={{ borderColor: '#96B6C5' }}
+                textColor="#2C3E50"
                 compact
               >
                 Manage Schedule
@@ -751,17 +758,19 @@ export default function DoctorDashboardScreen({ route, navigation }) {
 
           {/* Date Selector */}
           <View style={{ 
-            backgroundColor: '#c8e6c9', 
+            backgroundColor: '#F1F0E8', 
             padding: 12, 
             borderRadius: 8, 
             marginBottom: 10,
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: '#96B6C5'
           }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: '#000000', marginBottom: 2 }}>Viewing Schedule For:</Text>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#000000' }}>
+              <Text style={{ fontSize: 12, color: '#2C3E50', marginBottom: 2 }}>Viewing Schedule For:</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2C3E50' }}>
                 {formatDateForDisplay(selectedDate)}
               </Text>
             </View>
@@ -769,7 +778,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               mode="contained"
               onPress={() => setShowDatePicker(true)}
               compact
-              style={{ backgroundColor: '#4caf50' }}
+              buttonColor="#96B6C5"
+              textColor="#2C3E50"
             >
               Change Date
             </Button>
@@ -789,10 +799,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               style={{ 
                 flex: 1,
                 ...(selectedDate === new Date().toISOString().slice(0, 10) 
-                  ? { backgroundColor: '#4caf50' } 
-                  : { borderColor: '#4caf50' })
+                  ? { backgroundColor: '#96B6C5' } 
+                  : { borderColor: '#96B6C5' })
               }}
-              textColor={selectedDate === new Date().toISOString().slice(0, 10) ? undefined : "#000000"}
+              textColor={selectedDate === new Date().toISOString().slice(0, 10) ? "#2C3E50" : "#2C3E50"}
             >
               Today
             </Button>
@@ -803,10 +813,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               style={{ 
                 flex: 1,
                 ...(selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) 
-                  ? { backgroundColor: '#4caf50' } 
-                  : { borderColor: '#4caf50' })
+                  ? { backgroundColor: '#96B6C5' } 
+                  : { borderColor: '#96B6C5' })
               }}
-              textColor={selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#000000"}
+              textColor={selectedDate === new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? "#2C3E50" : "#2C3E50"}
             >
               Tomorrow
             </Button>
@@ -817,10 +827,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               style={{ 
                 flex: 1,
                 ...(selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) 
-                  ? { backgroundColor: '#4caf50' } 
-                  : { borderColor: '#4caf50' })
+                  ? { backgroundColor: '#96B6C5' } 
+                  : { borderColor: '#96B6C5' })
               }}
-              textColor={selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? undefined : "#000000"}
+              textColor={selectedDate === new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10) ? "#2C3E50" : "#2C3E50"}
             >
               Day After
             </Button>
@@ -829,30 +839,32 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           {/* Schedule Summary */}
           {todaySchedule.length > 0 && (
             <View style={{ 
-              backgroundColor: '#e8f5e8', 
+              backgroundColor: '#F1F0E8', 
               padding: 12, 
               borderRadius: 8, 
               marginBottom: 10,
               flexDirection: 'row',
-              justifyContent: 'space-around'
+              justifyContent: 'space-around',
+              borderWidth: 1,
+              borderColor: '#96B6C5'
             }}>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: '#000000' }}>
+                <Text style={{ fontWeight: 'bold', color: '#2C3E50' }}>
                   {todaySchedule.filter(item => item.type === 'manual_schedule').length}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#000000' }}>Scheduled Slots</Text>
+                <Text style={{ fontSize: 12, color: '#2C3E50' }}>Scheduled Slots</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: '#000000' }}>
+                <Text style={{ fontWeight: 'bold', color: '#2C3E50' }}>
                   {todaySchedule.filter(item => item.type === 'appointment').length}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#000000' }}>Appointments</Text>
+                <Text style={{ fontSize: 12, color: '#2C3E50' }}>Appointments</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold', color: '#000000' }}>
+                <Text style={{ fontWeight: 'bold', color: '#2C3E50' }}>
                   {todaySchedule.length}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#000000' }}>Total Items</Text>
+                <Text style={{ fontSize: 12, color: '#2C3E50' }}>Total Items</Text>
               </View>
             </View>
           )}
@@ -860,7 +872,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           <Divider style={{ marginBottom: 10 }} />
           {todaySchedule.length === 0 ? (
             <View style={{ alignItems: 'center', paddingVertical: 20 }}>
-              <Text style={{ color: '#000000', marginBottom: 12, textAlign: 'center' }}>
+              <Text style={{ color: '#2C3E50', marginBottom: 12, textAlign: 'center' }}>
                 No schedule found for {formatDateForDisplay(selectedDate).toLowerCase()}.
               </Text>
               <Button
@@ -873,7 +885,8 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     doctorName: doctorName
                   });
                 }}
-                style={{ backgroundColor: '#4caf50' }}
+                buttonColor="#96B6C5"
+                textColor="#2C3E50"
               >
                 Add Schedule
               </Button>
@@ -887,11 +900,20 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                   backgroundColor: item.type === 'appointment' 
                     ? '#fff3e0' 
                     : '#f9f9f9',
+                    ? '#EEE0C9' 
+                    : item.status === 'scheduled' 
+                      ? '#ADC4CE' 
+                      : '#F1F0E8',
                   borderRadius: 8,
                   borderLeftWidth: item.type === 'appointment' ? 4 : 0,
                   borderLeftColor: item.type === 'appointment' 
                     ? '#ff9800' 
                     : 'transparent'
+                    ? '#96B6C5' 
+                    : item.status === 'scheduled' 
+                      ? '#96B6C5' 
+                      : '#ADC4CE',
+                  elevation: 2
                 }}
               >
                 <Card.Content style={{ paddingVertical: 12 }}>
@@ -941,13 +963,13 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                       </Text>
                       
                       {item.type === 'manual_schedule' && item.description && (
-                        <Text style={{ color: '#000000', fontSize: 12 }}>
+                        <Text style={{ color: '#2C3E50', fontSize: 12 }}>
                           {item.description}
                         </Text>
                       )}
                       
                       {item.type === 'appointment' && item.notes && (
-                        <Text style={{ color: '#000000', fontSize: 12, fontStyle: 'italic' }}>
+                        <Text style={{ color: '#2C3E50', fontSize: 12, fontStyle: 'italic' }}>
                           Notes: {item.notes}
                         </Text>
                       )}
@@ -974,20 +996,21 @@ export default function DoctorDashboardScreen({ route, navigation }) {
       </Card>
 
       {/* Patients Section */}
-      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
+      <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#ADC4CE', elevation: 4 }}>
         <Card.Content>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
             <Text
               variant="titleMedium"
-              style={{ fontWeight: "bold" }}
+              style={{ fontWeight: "bold", color: "#2C3E50" }}
             >
               👥 My Patients ({patients.length})
             </Text>
             <Button
               mode="contained"
               onPress={() => navigation.navigate("AddPatient", { doctorEmail })}
+              buttonColor="#96B6C5"
+              textColor="#2C3E50"
               style={{
-                backgroundColor: "#4caf50",
                 borderRadius: 10,
                 paddingVertical: 5,
                 paddingHorizontal: 15,
@@ -1007,18 +1030,22 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             onChangeText={setSearchQuery}
             style={{ 
               marginBottom: 15, 
-              backgroundColor: '#ffffff',
+              backgroundColor: '#F1F0E8',
               fontSize: 16
             }}
-            left={<TextInput.Icon icon="magnify" />}
-            right={searchQuery ? <TextInput.Icon icon="close" onPress={() => setSearchQuery('')} /> : null}
+            textColor="#2C3E50"
+            placeholderTextColor="#2C3E50"
+            outlineColor="#96B6C5"
+            activeOutlineColor="#96B6C5"
+            left={<TextInput.Icon icon="magnify" iconColor="#2C3E50" />}
+            right={searchQuery ? <TextInput.Icon icon="close" iconColor="#2C3E50" onPress={() => setSearchQuery('')} /> : null}
           />
           
-          <Divider style={{ marginBottom: 15 }} />
+          <Divider style={{ marginBottom: 15, backgroundColor: '#96B6C5' }} />
           
           {patients.length === 0 ? (
             <View style={{ padding: 20, alignItems: 'center' }}>
-              <Text style={{ color: '#000000', fontSize: 16 }}>
+              <Text style={{ color: '#283618', fontSize: 16 }}>
                 No patients found. Patients will appear here when they approve your consultation requests.
               </Text>
             </View>
@@ -1029,7 +1056,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 <ScrollView nestedScrollEnabled={true}>
                   {filteredPatients.length === 0 ? (
                     <View style={{ padding: 20, alignItems: 'center' }}>
-                      <Text style={{ color: '#000000', fontSize: 16 }}>
+                      <Text style={{ color: '#283618', fontSize: 16 }}>
                         No patients found matching "{searchQuery}"
                       </Text>
                     </View>
@@ -1039,30 +1066,31 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                         key={patient.id}
                         style={{
                           marginBottom: 8,
-                          backgroundColor: selectedPatient?.id === patient.id ? '#c8e6c9' : '#ffffff',
+                          backgroundColor: selectedPatient?.id === patient.id ? '#96B6C5' : '#F1F0E8',
                           borderRadius: 8,
                           borderWidth: selectedPatient?.id === patient.id ? 2 : 1,
-                          borderColor: selectedPatient?.id === patient.id ? '#4caf50' : '#e0e0e0'
+                          borderColor: '#96B6C5',
+                          elevation: selectedPatient?.id === patient.id ? 4 : 2
                         }}
                         onPress={() => setSelectedPatient(patient)}
                       >
                         <Card.Content style={{ paddingVertical: 12 }}>
                           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                             <View style={{ flex: 1 }}>
-                              <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                              <Text style={{ fontWeight: 'bold', fontSize: 16, color: selectedPatient?.id === patient.id ? '#2C3E50' : '#2C3E50' }}>
                                 {patient.name}
                               </Text>
-                              <Text style={{ fontSize: 14, color: '#000000', marginTop: 2 }}>
+                              <Text style={{ fontSize: 14, color: selectedPatient?.id === patient.id ? '#2C3E50' : '#2C3E50', marginTop: 2 }}>
                                 {patient.email}
                               </Text>
-                              <Text style={{ fontSize: 12, color: '#000000', marginTop: 2 }}>
+                              <Text style={{ fontSize: 12, color: selectedPatient?.id === patient.id ? '#2C3E50' : '#2C3E50', marginTop: 2 }}>
                                 Age: {patient.age} | ID: {patient.id.slice(0, 8)}...
                               </Text>
                             </View>
                             {selectedPatient?.id === patient.id && (
                               <View style={{ alignItems: 'center' }}>
-                                <Text style={{ fontSize: 20 }}>✓</Text>
-                                <Text style={{ fontSize: 10, color: '#000000', fontWeight: 'bold' }}>
+                                <Text style={{ fontSize: 20, color: '#2C3E50' }}>✓</Text>
+                                <Text style={{ fontSize: 10, color: '#2C3E50', fontWeight: 'bold' }}>
                                   SELECTED
                                 </Text>
                               </View>
@@ -1079,16 +1107,17 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               {selectedPatient && (
                 <Card style={{ 
                   marginTop: 15, 
-                  backgroundColor: '#e8f5e8',
+                  backgroundColor: '#EEE0C9',
                   borderRadius: 12,
                   borderLeftWidth: 4,
-                  borderLeftColor: '#4caf50'
+                  borderLeftColor: '#96B6C5',
+                  elevation: 3
                 }}>
                   <Card.Content>
                     <Text style={{ 
                       fontSize: 16, 
                       fontWeight: 'bold', 
-                      color: '#000000', 
+                      color: '#2C3E50', 
                       marginBottom: 15,
                       textAlign: 'center'
                     }}>
@@ -1102,10 +1131,11 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                         onPress={() => {
                           fetchPrescriptionHistory(selectedPatient.email);
                         }}
+                        buttonColor="#96B6C5"
+                        textColor="#2C3E50"
                         style={{ 
                           flex: 1,
                           minWidth: '45%',
-                          backgroundColor: '#2196f3',
                           borderRadius: 25
                         }}
                         icon="history"
@@ -1128,12 +1158,12 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                           selectedPatient: selectedPatient
                         });
                       }}
+                      buttonColor="#ADC4CE"
+                      textColor="#2C3E50"
                       style={{ 
                         marginTop: 10,
-                        backgroundColor: '#2196f3',
                         borderRadius: 25
                       }}
-                      textColor="#ffffff"
                       icon="medical-bag"
                     >
                       Send Prescription
@@ -1149,12 +1179,12 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                         }
                         setShowDietChartModal(true);
                       }}
+                      buttonColor="#ADC4CE"
+                      textColor="#2C3E50"
                       style={{ 
                         marginTop: 10,
-                        backgroundColor: '#ff9800',
                         borderRadius: 25
                       }}
-                      textColor="#ffffff"
                       icon="food-apple"
                     >
                       Send Diet Chart
@@ -1173,12 +1203,12 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                           selectedPatient: selectedPatient
                         });
                       }}
+                      buttonColor="#ADC4CE"
+                      textColor="#2C3E50"
                       style={{ 
                         marginTop: 10,
-                        backgroundColor: '#4caf50',
                         borderRadius: 25
                       }}
-                      textColor="#ffffff"
                       icon="spa"
                     >
                       Send Panchkarma
@@ -1190,9 +1220,9 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                       onPress={() => setSelectedPatient(null)}
                       style={{ 
                         marginTop: 10,
-                        borderColor: '#4caf50'
+                        borderColor: '#96B6C5'
                       }}
-                      textColor="#000000"
+                      textColor="#2C3E50"
                       compact
                     >
                       Clear Selection
@@ -1205,16 +1235,17 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               <View style={{
                 marginTop: 15,
                 padding: 12,
-                backgroundColor: '#e8f5e8',
+                backgroundColor: '#96B6C5',
                 borderRadius: 8,
                 borderLeftWidth: 4,
-                borderLeftColor: '#4caf50'
+                borderLeftColor: '#ADC4CE',
+                elevation: 2
               }}>
-                <Text style={{ fontSize: 14, color: '#000000', fontWeight: 'bold' }}>
+                <Text style={{ fontSize: 14, color: '#2C3E50', fontWeight: 'bold' }}>
                   📊 Summary: {filteredPatients.length} of {patients.length} patient{patients.length !== 1 ? 's' : ''} shown
                 </Text>
                 {searchQuery && (
-                  <Text style={{ fontSize: 12, color: '#000000', marginTop: 4 }}>
+                  <Text style={{ fontSize: 12, color: '#2C3E50', marginTop: 4 }}>
                     Filtered by: "{searchQuery}"
                   </Text>
                 )}
@@ -1223,6 +1254,83 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           )}
         </Card.Content>
       </Card>
+
+      {/* Appointment Requests Section - Only show when there are pending requests */}
+      {appointments.length > 0 && (
+        <Card style={{ marginBottom: 20, borderRadius: 12, backgroundColor: '#f1f8e9' }}>
+          <Card.Content>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <Text
+                variant="titleMedium"
+                style={{ fontWeight: "bold" }}
+              >
+                📋 New Appointment Requests ({appointments.length})
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={() => {
+                  console.log('Navigating to DoctorSchedule with params:', route.params);
+                  navigation.navigate("DoctorSchedule", { 
+                    profile: route.params?.profile,
+                    doctorEmail: doctorEmail,
+                    doctorName: doctorName
+                  });
+                }}
+                style={{ borderColor: '#4caf50' }}
+                textColor="#4caf50"
+                compact
+              >
+                View All
+              </Button>
+            </View>
+            <Divider style={{ marginBottom: 10 }} />
+            {appointments.map((app) => (
+              <Card
+                key={app.id}
+                style={{
+                  marginBottom: 12,
+                  backgroundColor: '#c8e6c9',
+                  borderRadius: 8
+                }}
+              >
+                <Card.Content>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
+                    Patient: {app.patient_email}
+                  </Text>
+                  <Text style={{ color: '#2C3E50', marginBottom: 4 }}>
+                    Requested: {new Date(app.requested_time).toLocaleString('en-IN')}
+                  </Text>
+                  {app.notes && (
+                    <Text style={{ color: '#2C3E50', fontStyle: 'italic', marginBottom: 8 }}>
+                      Notes: {app.notes}
+                    </Text>
+                  )}
+                </Card.Content>
+                <Card.Actions>
+                  <Button 
+                    mode="contained" 
+                    onPress={() => handleAccept(app.id)}
+                    style={{ backgroundColor: '#4caf50', marginRight: 8 }}
+                    loading={loading}
+                    compact
+                  >
+                    Accept
+                  </Button>
+                  <Button 
+                    mode="outlined" 
+                    onPress={() => handleReject(app.id)}
+                    textColor="#f44336"
+                    loading={loading}
+                    compact
+                  >
+                    Reject
+                  </Button>
+                </Card.Actions>
+              </Card>
+            ))}
+          </Card.Content>
+        </Card>
+      )}
       
       {/* Date Picker Modal */}
       <Portal>
@@ -1241,7 +1349,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             Select Date for Schedule
           </Text>
           
-          <Text style={{ marginBottom: 16, color: '#000000', textAlign: 'center' }}>
+          <Text style={{ marginBottom: 16, color: '#2C3E50', textAlign: 'center' }}>
             Choose a date to view the schedule
           </Text>
           
@@ -1280,15 +1388,16 @@ export default function DoctorDashboardScreen({ route, navigation }) {
           visible={showHistoryModal} 
           onDismiss={() => setShowHistoryModal(false)}
           contentContainerStyle={{
-            backgroundColor: '#f1f8e9',
+            backgroundColor: '#F1F0E8',
             margin: 20,
             borderRadius: 16,
-            maxHeight: '80%'
+            maxHeight: '80%',
+            elevation: 10
           }}
         >
           <ScrollView style={{ padding: 20 }}>
             <Text variant="headlineSmall" style={{ 
-              color: '#000000', 
+              color: '#2C3E50', 
               textAlign: 'center', 
               marginBottom: 20,
               fontWeight: 'bold'
@@ -1299,14 +1408,15 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             {selectedPatient && (
               <Card style={{ 
                 marginBottom: 20, 
-                backgroundColor: '#e8f5e8',
-                borderRadius: 12
+                backgroundColor: '#EEE0C9',
+                borderRadius: 12,
+                elevation: 3
               }}>
                 <Card.Content>
-                  <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#2C3E50' }}>
                     Patient: {selectedPatient.name}
                   </Text>
-                  <Text style={{ color: '#000000', marginTop: 4 }}>
+                  <Text style={{ color: '#2C3E50', marginTop: 4 }}>
                     Email: {selectedPatient.email} | Age: {selectedPatient.age}
                   </Text>
                 </Card.Content>
@@ -1320,10 +1430,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                 borderRadius: 12,
                 alignItems: 'center'
               }}>
-                <Text style={{ color: '#666', fontSize: 16, textAlign: 'center' }}>
+                <Text style={{ color: '#2C3E50', fontSize: 16, textAlign: 'center' }}>
                   No prescription history found for this patient.
                 </Text>
-                <Text style={{ color: '#999', fontSize: 14, textAlign: 'center', marginTop: 8 }}>
+                <Text style={{ color: '#2C3E50', fontSize: 14, textAlign: 'center', marginTop: 8 }}>
                   Previous prescriptions will appear here once you write them.
                 </Text>
               </Card>
@@ -1331,17 +1441,18 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               prescriptionHistory.map((prescription, index) => (
                 <Card key={prescription.id || index} style={{
                   marginBottom: 15,
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#ADC4CE',
                   borderRadius: 12,
                   borderLeftWidth: 4,
-                  borderLeftColor: '#4caf50'
+                  borderLeftColor: '#96B6C5',
+                  elevation: 3
                 }}>
                   <Card.Content>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                      <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#000000' }}>
+                      <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#2C3E50' }}>
                         Prescription #{prescriptionHistory.length - index}
                       </Text>
-                      <Text style={{ color: '#000000', fontSize: 12 }}>
+                      <Text style={{ color: '#2C3E50', fontSize: 12 }}>
                         {new Date(prescription.created_at).toLocaleDateString('en-IN', {
                           year: 'numeric',
                           month: 'short',
@@ -1355,12 +1466,12 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     {/* Medicines */}
                     {prescription.medicines && prescription.medicines.length > 0 && (
                       <View style={{ marginBottom: 10 }}>
-                        <Text style={{ fontWeight: 'bold', color: '#000000', marginBottom: 5 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#2C3E50', marginBottom: 5 }}>
                           💊 Medicines:
                         </Text>
                         {prescription.medicines.map((medicine, medIndex) => (
                           <Text key={medIndex} style={{ 
-                            color: '#000000', 
+                            color: '#2C3E50', 
                             fontSize: 14, 
                             marginBottom: 3,
                             paddingLeft: 10
@@ -1374,10 +1485,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     {/* Advice */}
                     {prescription.advice && (
                       <View>
-                        <Text style={{ fontWeight: 'bold', color: '#000000', marginBottom: 5 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#2C3E50', marginBottom: 5 }}>
                           📝 Advice:
                         </Text>
-                        <Text style={{ color: '#000000', fontSize: 14, lineHeight: 20 }}>
+                        <Text style={{ color: '#2C3E50', fontSize: 14, lineHeight: 20 }}>
                           {prescription.advice}
                         </Text>
                       </View>
@@ -1386,10 +1497,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     {/* Prescription Data (if available) */}
                     {prescription.prescription_data && (
                       <View style={{ marginTop: 10 }}>
-                        <Text style={{ fontWeight: 'bold', color: '#000000', marginBottom: 5 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#2C3E50', marginBottom: 5 }}>
                           🩺 Assessment Details:
                         </Text>
-                        <Text style={{ color: '#000000', fontSize: 12 }}>
+                        <Text style={{ color: '#2C3E50', fontSize: 12 }}>
                           Ayurvedic assessment data recorded
                         </Text>
                       </View>
@@ -1423,18 +1534,19 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             setDietSearchQuery('');
           }}
           contentContainerStyle={{
-            backgroundColor: 'white',
+            backgroundColor: '#F1F0E8',
             padding: 20,
             margin: 20,
             borderRadius: 15,
-            maxHeight: '80%'
+            maxHeight: '80%',
+            elevation: 10
           }}
         >
           <ScrollView>
             <Text style={{ 
               fontSize: 24, 
               fontWeight: 'bold', 
-              color: '#000000', 
+              color: '#2C3E50', 
               textAlign: 'center',
               marginBottom: 10
             }}>
@@ -1443,7 +1555,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             
             <Text style={{ 
               fontSize: 16, 
-              color: '#000000', 
+              color: '#2C3E50', 
               textAlign: 'center',
               marginBottom: 20
             }}>
@@ -1453,11 +1565,17 @@ export default function DoctorDashboardScreen({ route, navigation }) {
             {/* Search Box */}
             <TextInput
               placeholder="Search diet charts..."
+              placeholderTextColor="#7D8A93"
               value={dietSearchQuery}
               onChangeText={setDietSearchQuery}
               mode="outlined"
-              style={{ marginBottom: 15 }}
-              textColor="#000000"
+              style={{ 
+                marginBottom: 15,
+                backgroundColor: '#F1F0E8'
+              }}
+              textColor="#2C3E50"
+              outlineColor="#96B6C5"
+              activeOutlineColor="#96B6C5"
               left={<TextInput.Icon icon="magnify" />}
               right={
                 dietSearchQuery ? (
@@ -1481,19 +1599,23 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               </Text>
             ) : (
               filteredDietTemplates.map((template) => (
-                <Card key={template.id} style={{ marginBottom: 15 }}>
+                <Card key={template.id} style={{ 
+                  marginBottom: 15,
+                  backgroundColor: '#EEE0C9',
+                  elevation: 3
+                }}>
                   <Card.Content style={{ padding: 15 }}>
                     <Text style={{ 
                       fontSize: 20, 
                       fontWeight: 'bold', 
-                      color: '#000000',
+                      color: '#2C3E50',
                       marginBottom: 5
                     }}>
                       {template.emoji} {template.name}
                     </Text>
                     <Text style={{ 
                       fontSize: 14, 
-                      color: '#666',
+                      color: '#2C3E50',
                       marginBottom: 10
                     }}>
                       {template.description}
@@ -1502,7 +1624,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                     {/* Sample meals preview */}
                     <Text style={{ 
                       fontSize: 12, 
-                      color: '#333',
+                      color: '#2C3E50',
                       marginBottom: 10,
                       fontStyle: 'italic'
                     }}>
@@ -1522,7 +1644,7 @@ export default function DoctorDashboardScreen({ route, navigation }) {
                         setDietSearchQuery('');
                       }}
                       style={{
-                        backgroundColor: '#4caf50',
+                        backgroundColor: '#96B6C5',
                         borderRadius: 25
                       }}
                     >
@@ -1541,8 +1663,10 @@ export default function DoctorDashboardScreen({ route, navigation }) {
               }}
               style={{
                 marginTop: 20,
-                borderRadius: 25
+                borderRadius: 25,
+                borderColor: '#96B6C5'
               }}
+              textColor="#96B6C5"
             >
               Cancel
             </Button>

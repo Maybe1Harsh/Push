@@ -218,7 +218,7 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   numberOfLines={2}
                   mode="outlined"
                   style={styles.textInput}
-                  textColor="#000000"
+                  textColor="#2C3E50"
                   contentStyle={{ color: '#000000' }}
                 />
                 
@@ -230,7 +230,7 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   numberOfLines={2}
                   mode="outlined"
                   style={styles.textInput}
-                  textColor="#000000"
+                  textColor="#2C3E50"
                   contentStyle={{ color: '#000000' }}
                 />
                 
@@ -242,7 +242,7 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   numberOfLines={2}
                   mode="outlined"
                   style={styles.textInput}
-                  textColor="#000000"
+                  textColor="#2C3E50"
                   contentStyle={{ color: '#000000' }}
                 />
                 
@@ -254,7 +254,7 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   numberOfLines={2}
                   mode="outlined"
                   style={styles.textInput}
-                  textColor="#000000"
+                  textColor="#2C3E50"
                   contentStyle={{ color: '#000000' }}
                 />
                 
@@ -266,7 +266,7 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   numberOfLines={2}
                   mode="outlined"
                   style={styles.textInput}
-                  textColor="#000000"
+                  textColor="#2C3E50"
                   contentStyle={{ color: '#000000' }}
                 />
                 
@@ -279,7 +279,7 @@ ${customizedDiet.additionalNotes ? `ADDITIONAL NOTES:\n${customizedDiet.addition
                   mode="outlined"
                   style={styles.textInput}
                   placeholder="Add any specific instructions or modifications..."
-                  textColor="#000000"
+                  textColor="#2C3E50"
                   contentStyle={{ color: '#000000' }}
                 />
               </Card.Content>
@@ -509,20 +509,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   primaryButton: {
-    backgroundColor: '#4caf50',
+    backgroundColor: '#96B6C5',
     borderRadius: 25,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   modalContent: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F1F0E8',
     padding: 24,
     margin: 24,
     borderRadius: 15,
-    shadowColor: '#4caf50',
+    shadowColor: '#96B6C5',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -530,13 +530,13 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     marginBottom: 16,
-    color: '#000000',
+    color: '#2C3E50',
     textAlign: 'center',
     fontWeight: 'bold',
   },
   modalText: {
     marginBottom: 16,
-    color: '#000000',
+    color: '#2C3E50',
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -547,12 +547,12 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     marginRight: 8,
-    borderColor: '#4caf50',
+    borderColor: '#96B6C5',
   },
   confirmButton: {
     flex: 1,
     marginLeft: 8,
-    backgroundColor: '#4caf50',
+    backgroundColor: '#96B6C5',
   },
   errorTitle: {
     color: '#d32f2f',
