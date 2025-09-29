@@ -584,16 +584,12 @@ export default function DoctorDashboardScreen({ route, navigation }) {
     <PaperProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#e8f5e8" }}>
         <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            padding: 20,
-            backgroundColor: "#e8f5e8",
-          }}
-        >
+        contentContainerStyle={{
+          flexGrow: 1,
           padding: 20,
-          backgroundColor: "#F1F0E8",
+          backgroundColor: "#F1F0E8"
         }}
-      >
+      
       {/* Header */}
       <Card style={{ marginBottom: 20, backgroundColor: "#96B6C5", elevation: 4, borderRadius: 12 }}>
         <Card.Content>

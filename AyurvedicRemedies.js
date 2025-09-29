@@ -134,7 +134,6 @@ const healthIssues = {
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function AyurvedicRemedies({ navigation }) {
-  console.log('AyurvedicRemedies component loaded');
   const { t } = useTranslation();
   const [selected, setSelected] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -247,59 +246,42 @@ export default function AyurvedicRemedies({ navigation }) {
   };
 
   const AnimatedCard = ({ issue, data, onPress }) => {
-    const animation = cardAnimations.current[issue];
-    if (!animation) return null;
-
+    // Use static card without complex animations for now
     return (
-      <Animated.View
-        style={[
-          {
-            opacity: animation.opacity,
-            transform: [
-              { translateY: animation.translateY },
-              { scale: animation.scale },
-            ],
-          },
-        ]}
-      >
+      <View style={{ opacity: 1, margin: 8 }}>
         <TouchableWithoutFeedback onPress={onPress}>
-          <LinearGradient
-            colors={[data.color, '#ffffff', data.color]}
+          <View
             style={[
               styles.card,
               {
-                borderLeftColor: data.iconColor,
-                shadowColor: data.iconColor,
+                backgroundColor: '#ffffff',
+                borderLeftColor: '#4caf50',
+                shadowColor: '#4caf50',
               },
               selected === issue && styles.cardSelected,
             ]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
           >
             <View style={styles.cardContent}>
-              <View style={[styles.iconContainer, { backgroundColor: data.iconColor }]}>
+              <View style={[styles.iconContainer, { backgroundColor: '#4caf50' }]}>
                 <Text style={styles.cardEmoji}>{issue.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu)?.[0] || '🌿'}</Text>
               </View>
               <Text style={styles.cardTitle}>{removeEmojis(issue)}</Text>
               <View style={styles.cardIndicator} />
             </View>
-          </LinearGradient>
+          </View>
         </TouchableWithoutFeedback>
-      </Animated.View>
+      </View>
     );
   };
 
   return (
-    <LinearGradient
-      colors={['#e8f5e8', '#c8e6c9', '#a5d6a7']}
-      style={styles.gradient}
-    >
+    <View style={{ flex: 1, backgroundColor: '#e8f5e8' }}>
         {/* Back Button */}
         <TouchableOpacity 
           style={styles.backButton} 
           onPress={() => navigation.goBack()}
         >
-          <ArrowLeft size={28} color="#333" />
+          <ArrowLeft size={28} color="#2e7d32" />
         </TouchableOpacity>
 
         <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
@@ -373,17 +355,14 @@ export default function AyurvedicRemedies({ navigation }) {
               >
                 {selected && (
                   <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
-                    <LinearGradient
-                      colors={[healthIssues[selected].color, '#ffffff']}
-                      style={styles.modalHeader}
-                    >
-                      <View style={[styles.modalIconContainer, { backgroundColor: healthIssues[selected].iconColor }]}>
+                    <View style={styles.modalHeader}>
+                      <View style={[styles.modalIconContainer, { backgroundColor: '#4caf50' }]}>
                         <Text style={styles.modalEmoji}>
                           {selected.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F700}-\u{1F77F}]|[\u{1F780}-\u{1F7FF}]|[\u{1F800}-\u{1F8FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu)?.[0] || '🌿'}
                         </Text>
                       </View>
                       <Text style={styles.modalTitle}>{removeEmojis(selected)}</Text>
-                    </LinearGradient>
+                    </View>
                     
                     <View style={styles.modalContent}>
                       <Text style={styles.modalExplanation}>{healthIssues[selected].explanation}</Text>
@@ -403,12 +382,9 @@ export default function AyurvedicRemedies({ navigation }) {
                       </View>
                       
                       <TouchableWithoutFeedback onPress={hideModal}>
-                        <LinearGradient
-                          colors={['#4caf50', '#66bb6a']}
-                          style={styles.closeButton}
-                        >
+                        <View style={styles.closeButton}>
                           <Text style={styles.closeButtonText}>{t.commonClose || 'Close'}</Text>
-                        </LinearGradient>
+                        </View>
                       </TouchableWithoutFeedback>
                     </View>
                   </ScrollView>
@@ -417,7 +393,7 @@ export default function AyurvedicRemedies({ navigation }) {
             </Modal>
           </Portal>
         </ScrollView>
-      </LinearGradient>
+    </View>
   );
 }
 
@@ -520,7 +496,7 @@ const styles = StyleSheet.create({
   cardIndicator: {
     width: 30,
     height: 3,
-    backgroundColor: 'rgba(46, 125, 50, 0.3)',
+    backgroundColor: '#4caf50',
     borderRadius: 2,
   },
   cardSelected: {
@@ -572,6 +548,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 25,
     paddingHorizontal: 20,
+    backgroundColor: 'rgba(232, 245, 232, 0.7)',
   },
   modalIconContainer: {
     width: 60,
@@ -645,6 +622,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     alignItems: 'center',
     marginTop: 10,
+    backgroundColor: '#4caf50',
     shadowColor: '#4caf50',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
